@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">SoftwareEngineeringDaily</string>
+    <string name="item_title">SoftwareEngineeringDaily</string>
+    <string name="item_desc">SoftwareEngineeringDaily</string>
+    <string name="title_activity_podcast_detail">PodcastDetailActivity</string>
+    <string name="title_activity_login_register">LoginRegisterActivity</string>
+
+    <string name="label_pause">Pause</string>
+    <string name="label_play">Play</string>
+
+    <string name="just_for_you">Just For You</string>
+    <string name="greatest_hits">Greatest Hits</string>
+    <string name="latest">Latest</string>
+</resources>

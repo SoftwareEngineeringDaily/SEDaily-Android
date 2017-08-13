@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal" android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    >
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_marginLeft="16dp"
+        android:textSize="30dp"
+        android:text="Recent"
+        android:textAppearance="@style/TextAppearance.AppCompat.Title"
+        android:id="@+id/title" />
+
+    <android.support.v7.widget.RecyclerView
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/my_recycler_view"
+        android:scrollbars="horizontal"
+        android:clipToPadding="false"
+        android:paddingBottom="24dp"
+        android:paddingTop="24dp"
+        android:layout_width="wrap_content"
+        android:layout_height="220dp"
+        android:layout_below="@+id/title" />
+</RelativeLayout>

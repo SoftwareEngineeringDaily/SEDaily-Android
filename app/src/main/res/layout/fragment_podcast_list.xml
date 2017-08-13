@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/card_view"
+    android:layout_width="150dp"
+    android:layout_height="150dp"
+    android:layout_marginBottom="@dimen/md_keylines"
+    android:layout_marginLeft="@dimen/md_keylines"
+    android:layout_marginRight="8dp"
+    android:foreground="?attr/selectableItemBackground">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="10dp">
+
+        <ImageView
+            android:id="@+id/card_image"
+            android:layout_width="match_parent"
+            android:layout_height="80dp"
+            android:scaleType="centerCrop"
+             />
+
+        <!--android:layout_alignBottom="@+id/card_image"-->
+        <TextView
+            android:id="@+id/card_title"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:text="@string/item_title"
+            android:textSize="14dp"
+            android:textColor="@color/dark_grey"
+            android:layout_below="@+id/card_image"/>
+
+        <TextView
+            android:id="@+id/score"
+            android:layout_width="match_parent"
+            android:layout_height="30dp"
+            android:text="0"
+            android:textSize="20dp"
+            android:textAlignment="center"
+            android:textColor="@color/dark_grey"
+            android:layout_below="@+id/card_title"/>
+
+        <!--<TextView-->
+            <!--android:id="@+id/card_text"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_below="@+id/card_title"-->
+            <!--android:layout_marginLeft="@dimen/md_keylines"-->
+            <!--android:layout_marginTop="@dimen/md_keylines"-->
+            <!--android:layout_marginBottom="@dimen/md_keylines"-->
+            <!--android:layout_marginRight="@dimen/md_keylines"-->
+            <!--tools:text="@string/item_desc"-->
+            <!--android:ellipsize="end"-->
+            <!--android:singleLine="true"-->
+            <!--android:textColor="@color/dark_grey"-->
+            <!--android:textSize="@dimen/article_subheading" />-->
+
+        <Button
+            android:id="@+id/action_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/score"
+            android:layout_centerHorizontal="true"
+            style="?android:attr/borderlessButtonStyle"
+            android:textColor="?attr/colorPrimary"
+            android:text="Play"
+            android:layout_alignParentBottom="true"/>
+
+    </RelativeLayout>
+</android.support.v7.widget.CardView>
