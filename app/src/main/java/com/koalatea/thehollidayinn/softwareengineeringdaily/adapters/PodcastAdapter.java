@@ -46,8 +46,7 @@ public class PodcastAdapter extends RecyclerView.Adapter<PodcastAdapter.ViewHold
         public ViewHolder(View v) {
             super(v);
             mTextView = (TextView) v.findViewById(R.id.card_title);
-            scoreTextView = (TextView) v.findViewById(R.id.score);
-            actionButton = (Button) v.findViewById(R.id.action_button);
+//            scoreTextView = (TextView) v.findViewById(R.id.score);
             imageView = (ImageView) v.findViewById(R.id.card_image);
         }
     }
@@ -76,8 +75,6 @@ public class PodcastAdapter extends RecyclerView.Adapter<PodcastAdapter.ViewHold
 
         final ViewHolder viewHolder = new ViewHolder(view);
 
-        Button actionButton = (Button) view.findViewById(R.id.action_button);
-
         view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -89,32 +86,16 @@ public class PodcastAdapter extends RecyclerView.Adapter<PodcastAdapter.ViewHold
             }
         });
 
-        actionButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                final int position = viewHolder.getAdapterPosition();
-                if (position != RecyclerView.NO_POSITION) {
-                    Post post = posts.get(position);
-                    playPostMp3(post);
-//                    MediaBrowserCompat.MediaItem item = mediaItemList.get(position);
-//                    boolean isPlaying = item.getMediaId().equals(mediaPlayer.getPlayingMediaId());
-//                    mediaPlayer.onMediaItemSelected(item, isPlaying);
-
-//                    if (activeActionButton != null && actionButton != activeActionButton) {
-//                        Log.v("keithtest", "string");
-//                        activeActionButton.setText("Play");
-//                    }
-//
-//                    if (actionButton.getText().toString().equals("Play")) {
-//                        actionButton.setText("Pause");
-//                    } else {
-//                        actionButton.setText("Play");
-//                    }
-
-//                    activeActionButton = actionButton;
-                }
-            }
-        });
+//        actionButton.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                final int position = viewHolder.getAdapterPosition();
+//                if (position != RecyclerView.NO_POSITION) {
+//                    Post post = posts.get(position);
+//                    playPostMp3(post);
+//                }
+//            }
+//        });
 
         return viewHolder;
     }
@@ -160,7 +141,7 @@ public class PodcastAdapter extends RecyclerView.Adapter<PodcastAdapter.ViewHold
     public void onBindViewHolder(ViewHolder holder, int position) {
         Post post = posts.get(position);
         holder.mTextView.setText(post.title.rendered);
-        holder.scoreTextView.setText(String.valueOf(post.score));
+//        holder.scoreTextView.setText(String.valueOf(post.score));
 
         String imageLink = "http://i.imgur.com/DvpvklR.png";
         if (post.featuredImage != null) {

@@ -5,13 +5,11 @@ import android.content.Intent;
 import android.os.RemoteException;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
-import android.support.design.widget.TabLayout;
 import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaControllerCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
-import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -21,12 +19,9 @@ import android.view.View;
 import android.widget.ImageView;
 
 import com.koalatea.thehollidayinn.softwareengineeringdaily.activities.LoginRegisterActivity;
-import com.koalatea.thehollidayinn.softwareengineeringdaily.adapters.MainNavAdapter;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.audio.MusicService;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.data.repositories.UserRepository;
-import com.koalatea.thehollidayinn.softwareengineeringdaily.fragments.FeedFragment;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.fragments.PodCardFragment;
-import com.koalatea.thehollidayinn.softwareengineeringdaily.fragments.PodcastFragment;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -83,12 +78,6 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-//        ViewPager viewPager = (ViewPager) findViewById(R.id.pager);
-//        setupViewPager(viewPager);
-//
-//        TabLayout tabs = (TabLayout) findViewById(R.id.tabs);
-//        tabs.setupWithViewPager(viewPager);
-
         userRepository = UserRepository.getInstance(this);
 
         mMediaBrowser = new MediaBrowserCompat(this,
@@ -97,6 +86,15 @@ public class MainActivity extends AppCompatActivity {
                 null); // optional Bundle
 
         setUpBottomNavigation();
+        showInitialPage();
+    }
+
+    private void showInitialPage () {
+        PodCardFragment firstFragment = PodCardFragment.newInstance("Latest", "");
+        this.getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.fragment_container, firstFragment)
+                .commit();
     }
 
     private void setUpBottomNavigation() {
@@ -122,18 +120,21 @@ public class MainActivity extends AppCompatActivity {
                         .commit();
                 break;
             case R.id.action_schedules:
-
+                PodCardFragment second = PodCardFragment.newInstance("Greatest Hits", "");
+                this.getSupportFragmentManager()
+                        .beginTransaction()
+                        .replace(R.id.fragment_container, second)
+                        .commit();
+                break;
             case R.id.action_music:
-
+                PodCardFragment third = PodCardFragment.newInstance("Just For You", "");
+                this.getSupportFragmentManager()
+                        .beginTransaction()
+                        .replace(R.id.fragment_container, third)
+                        .commit();
+                break;
         }
         return true;
-    }
-
-    private void setupViewPager(ViewPager viewPager) {
-        MainNavAdapter adapter = new MainNavAdapter(getSupportFragmentManager());
-        adapter.addFragment(new PodcastFragment(), "Podcast");
-        adapter.addFragment(new FeedFragment(), "Feed");
-        viewPager.setAdapter(adapter);
     }
 
     @Override

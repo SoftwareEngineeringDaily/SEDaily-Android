@@ -122,10 +122,8 @@ public class MediaPlayer {
             new MediaControllerCompat.Callback() {
                 @Override
                 public void onMetadataChanged(MediaMetadataCompat newMetadata) {
-                    Log.v("keithtest", "BITCH");
                     if (newMetadata != null) {
 //                        podcastAdapter.setCurrentMediaMetadata(metadata);
-                        Log.v("keithtest", "SHIT");
                         setCurrentMediaMetadata(newMetadata);
                         metadata = newMetadata;
                     }

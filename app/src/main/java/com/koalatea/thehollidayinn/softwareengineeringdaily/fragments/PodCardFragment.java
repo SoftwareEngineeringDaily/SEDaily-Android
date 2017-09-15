@@ -47,7 +47,6 @@ public class PodCardFragment extends Fragment {
     public static PodCardFragment newInstance(String title, String mediaId) {
         PodCardFragment f = new PodCardFragment();
         Bundle args = new Bundle();
-//        args.putString(ARG_MEDIA_ID, mediaId);
         f.title = title;
         f.setArguments(args);
         return f;
@@ -59,14 +58,11 @@ public class PodCardFragment extends Fragment {
         View rootView =  (View) inflater.inflate(
                 R.layout.fragment_podcast_horizontal, container, false);
 
-        TextView titleView = (TextView) rootView.findViewById(R.id.title);
-        titleView.setText(title);
-
         RecyclerView recyclerView = (RecyclerView) rootView.findViewById(R.id.my_recycler_view);
 
         recyclerView.setHasFixedSize(true);
 
-        GridLayoutManager mLayoutManager = new GridLayoutManager(this.getContext(), 2);
+        LinearLayoutManager mLayoutManager = new LinearLayoutManager(this.getContext());
         recyclerView.setLayoutManager(mLayoutManager);
 
         podcastAdapter = new PodcastAdapter(this);
@@ -113,16 +109,4 @@ public class PodCardFragment extends Fragment {
                 }
             });
     }
-
-//    @Override
-//    public void onStart() {
-//        super.onStart();
-//        mMediaBrowser.connect();
-//    }
-//
-//    @Override
-//    public void onStop() {
-//        super.onStop();
-//        mMediaBrowser.disconnect();
-//    }
 }
