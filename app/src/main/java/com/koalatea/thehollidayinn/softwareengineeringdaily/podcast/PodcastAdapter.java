@@ -138,7 +138,7 @@ public class PodcastAdapter extends RecyclerView.Adapter<PodcastAdapter.ViewHold
         holder.mTextView.setText(post.title.rendered);
 //        holder.scoreTextView.setText(String.valueOf(post.score));
 
-        String imageLink = "http://i.imgur.com/DvpvklR.png";
+        String imageLink = "https://softwareengineeringdaily.com/wp-content/uploads/2015/08/sed21.png";
         if (post.featuredImage != null) {
             imageLink = post.featuredImage;
         }
