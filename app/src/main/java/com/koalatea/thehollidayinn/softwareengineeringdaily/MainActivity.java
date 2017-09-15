@@ -18,10 +18,10 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 
-import com.koalatea.thehollidayinn.softwareengineeringdaily.activities.LoginRegisterActivity;
+import com.koalatea.thehollidayinn.softwareengineeringdaily.auth.LoginRegisterActivity;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.audio.MusicService;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.data.repositories.UserRepository;
-import com.koalatea.thehollidayinn.softwareengineeringdaily.fragments.PodCardFragment;
+import com.koalatea.thehollidayinn.softwareengineeringdaily.podcast.PodCardFragment;
 
 public class MainActivity extends AppCompatActivity {
 

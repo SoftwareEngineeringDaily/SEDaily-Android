@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.koalatea.thehollidayinn.softwareengineeringdaily.activities.LoginRegisterActivity">
+    tools:context="com.koalatea.thehollidayinn.softwareengineeringdaily.auth.LoginRegisterActivity">
 
     <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"

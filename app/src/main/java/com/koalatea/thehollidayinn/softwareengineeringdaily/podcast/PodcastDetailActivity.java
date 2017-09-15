@@ -1,4 +1,4 @@
-package com.koalatea.thehollidayinn.softwareengineeringdaily.activities;
+package com.koalatea.thehollidayinn.softwareengineeringdaily.podcast;
 
 import android.content.DialogInterface;
 import android.content.Intent;

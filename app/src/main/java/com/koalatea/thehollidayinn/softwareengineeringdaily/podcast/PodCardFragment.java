@@ -1,24 +1,14 @@
-package com.koalatea.thehollidayinn.softwareengineeringdaily.fragments;
+package com.koalatea.thehollidayinn.softwareengineeringdaily.podcast;
 
-import android.content.ComponentName;
 import android.os.Bundle;
-import android.os.RemoteException;
 import android.support.v4.app.Fragment;
-import android.support.v4.media.MediaBrowserCompat;
-import android.support.v4.media.MediaMetadataCompat;
-import android.support.v4.media.session.MediaControllerCompat;
-import android.support.v4.media.session.PlaybackStateCompat;
-import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
-import com.koalatea.thehollidayinn.softwareengineeringdaily.audio.MusicService;
-import com.koalatea.thehollidayinn.softwareengineeringdaily.adapters.PodcastAdapter;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.R;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.data.models.Post;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.data.remote.APIInterface;

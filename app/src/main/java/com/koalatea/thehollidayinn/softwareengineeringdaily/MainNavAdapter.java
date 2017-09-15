@@ -1,4 +1,4 @@
-package com.koalatea.thehollidayinn.softwareengineeringdaily.adapters;
+package com.koalatea.thehollidayinn.softwareengineeringdaily;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;

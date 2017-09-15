@@ -10,8 +10,6 @@ import android.support.v4.media.session.MediaControllerCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.util.Log;
 
-import com.koalatea.thehollidayinn.softwareengineeringdaily.adapters.PodcastAdapter;
-
 import java.util.List;
 
 /**

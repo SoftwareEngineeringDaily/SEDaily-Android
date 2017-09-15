@@ -27,11 +27,11 @@
         </service>
 
         <activity
-            android:name=".activities.PodcastDetailActivity"
+            android:name=".podcast.PodcastDetailActivity"
             android:label="@string/title_activity_podcast_detail"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".activities.LoginRegisterActivity"
+            android:name=".auth.LoginRegisterActivity"
             android:label="@string/title_activity_login_register"
             android:theme="@style/AppTheme"></activity>
     </application>
