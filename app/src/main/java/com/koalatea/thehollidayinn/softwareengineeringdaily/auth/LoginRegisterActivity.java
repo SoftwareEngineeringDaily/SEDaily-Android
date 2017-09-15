@@ -12,6 +12,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.MainActivity;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.R;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.data.models.User;
@@ -38,6 +39,7 @@ public class LoginRegisterActivity extends AppCompatActivity {
     private Button loginRegButton;
     private Button toggleButton;
     private UserRepository userRepository;
+    private FirebaseAnalytics mFirebaseAnalytics;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,6 +48,7 @@ public class LoginRegisterActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
         userRepository = UserRepository.getInstance(this);
         title = (TextView) findViewById(R.id.title);
         usernameEditText = (EditText) findViewById(R.id.username);
@@ -112,11 +115,20 @@ public class LoginRegisterActivity extends AppCompatActivity {
         APIInterface mService = ApiUtils.getKibbleService(this);
         rx.Observable query;
 
+        String type = "";
+
         if (register) {
+            type = "Register";
             query = mService.register(username, password);
         } else {
+            type = "Login";
             query = mService.login(username, password);
         }
+
+        Bundle bundle = new Bundle();
+        bundle.putString(FirebaseAnalytics.Param.ITEM_ID, username);
+        bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, type);
+        mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
 
         query
             .subscribeOn(Schedulers.io())

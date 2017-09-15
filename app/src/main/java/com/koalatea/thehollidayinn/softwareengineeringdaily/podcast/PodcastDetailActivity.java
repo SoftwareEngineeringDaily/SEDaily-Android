@@ -19,6 +19,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.R;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.audio.MediaPlayer;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.audio.MusicProvider;
@@ -45,11 +46,16 @@ public class PodcastDetailActivity extends AppCompatActivity {
     private Post post;
     private APIInterface mService;
     private MediaPlayer mediaPlayer;
+    private String postId;
+    private FirebaseAnalytics mFirebaseAnalytics;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_podcast_detail);
+
+        // Obtain the FirebaseAnalytics instance.
+        mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -58,7 +64,7 @@ public class PodcastDetailActivity extends AppCompatActivity {
         userRepository = UserRepository.getInstance(this);
 
         Intent intent = getIntent(); // gets the previously created intent
-        String postId = intent.getStringExtra("POST_ID");
+        postId = intent.getStringExtra("POST_ID");
 
         mediaPlayer = MediaPlayer.getInstance(this);
 
@@ -133,7 +139,10 @@ public class PodcastDetailActivity extends AppCompatActivity {
                     return;
                 }
 
+                String direction = "";
+
                 if (post.upvoted != null && post.upvoted) {
+                    direction = "up";
                     post.score -= 1;
                     post.upvoted = false;
                     post.downvoted = false;
@@ -142,6 +151,7 @@ public class PodcastDetailActivity extends AppCompatActivity {
                         downButton.getDrawable().setTint(getResources().getColor(R.color.button_grey));
                     }
                 } else {
+                    direction = "down";
                     post.score += 1;
 
                     if (post.downvoted) {
@@ -155,6 +165,12 @@ public class PodcastDetailActivity extends AppCompatActivity {
                         downButton.getDrawable().setTint(getResources().getColor(R.color.button_grey));
                     }
                 }
+
+                Bundle bundle = new Bundle();
+                bundle.putString(FirebaseAnalytics.Param.ITEM_ID, postId);
+                bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, direction);
+                bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, "VOTE");
+                mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
 
                 scoreText.setText(String.valueOf(post.score));
 

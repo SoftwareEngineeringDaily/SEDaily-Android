@@ -18,13 +18,14 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.auth.LoginRegisterActivity;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.audio.MusicService;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.data.repositories.UserRepository;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.podcast.PodCardFragment;
 
 public class MainActivity extends AppCompatActivity {
-
+    private FirebaseAnalytics mFirebaseAnalytics;
     private UserRepository userRepository;
     private MediaBrowserCompat mMediaBrowser;
     private final MediaBrowserCompat.ConnectionCallback mConnectionCallbacks =
@@ -74,6 +75,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
