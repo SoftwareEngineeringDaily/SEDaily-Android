@@ -25,6 +25,7 @@ import com.koalatea.thehollidayinn.softwareengineeringdaily.adapters.MainNavAdap
 import com.koalatea.thehollidayinn.softwareengineeringdaily.audio.MusicService;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.data.repositories.UserRepository;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.fragments.FeedFragment;
+import com.koalatea.thehollidayinn.softwareengineeringdaily.fragments.PodCardFragment;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.fragments.PodcastFragment;
 
 public class MainActivity extends AppCompatActivity {
@@ -82,11 +83,11 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        ViewPager viewPager = (ViewPager) findViewById(R.id.pager);
-        setupViewPager(viewPager);
-
-        TabLayout tabs = (TabLayout) findViewById(R.id.tabs);
-        tabs.setupWithViewPager(viewPager);
+//        ViewPager viewPager = (ViewPager) findViewById(R.id.pager);
+//        setupViewPager(viewPager);
+//
+//        TabLayout tabs = (TabLayout) findViewById(R.id.tabs);
+//        tabs.setupWithViewPager(viewPager);
 
         userRepository = UserRepository.getInstance(this);
 
@@ -106,17 +107,26 @@ public class MainActivity extends AppCompatActivity {
                 new BottomNavigationView.OnNavigationItemSelectedListener() {
                     @Override
                     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                        switch (item.getItemId()) {
-                            case R.id.action_favorites:
-
-                            case R.id.action_schedules:
-
-                            case R.id.action_music:
-
-                        }
-                        return true;
+                        return navigationItemSelected(item);
                     }
                 });
+    }
+
+    private Boolean navigationItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_favorites:
+                PodCardFragment firstFragment = PodCardFragment.newInstance("Latest", "");
+                this.getSupportFragmentManager()
+                        .beginTransaction()
+                        .replace(R.id.fragment_container, firstFragment)
+                        .commit();
+                break;
+            case R.id.action_schedules:
+
+            case R.id.action_music:
+
+        }
+        return true;
     }
 
     private void setupViewPager(ViewPager viewPager) {
