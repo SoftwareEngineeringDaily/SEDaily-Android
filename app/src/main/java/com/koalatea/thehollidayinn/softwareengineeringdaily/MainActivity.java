@@ -22,7 +22,8 @@ import com.google.firebase.analytics.FirebaseAnalytics;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.auth.LoginRegisterActivity;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.audio.MusicService;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.data.repositories.UserRepository;
-import com.koalatea.thehollidayinn.softwareengineeringdaily.podcast.PodCardFragment;
+import com.koalatea.thehollidayinn.softwareengineeringdaily.podcast.PodListFragment;
+import com.koalatea.thehollidayinn.softwareengineeringdaily.podcast.RecentPodcastFragment;
 
 public class MainActivity extends AppCompatActivity {
     private FirebaseAnalytics mFirebaseAnalytics;
@@ -93,7 +94,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void showInitialPage () {
-        PodCardFragment firstFragment = PodCardFragment.newInstance("Latest", "");
+//        PodListFragment firstFragment = PodListFragment.newInstance("Latest", "");
+//        this.getSupportFragmentManager()
+//                .beginTransaction()
+//                .replace(R.id.fragment_container, firstFragment)
+//                .commit();
+        RecentPodcastFragment firstFragment = RecentPodcastFragment.newInstance();
         this.getSupportFragmentManager()
                 .beginTransaction()
                 .replace(R.id.fragment_container, firstFragment)
@@ -116,21 +122,17 @@ public class MainActivity extends AppCompatActivity {
     private Boolean navigationItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_favorites:
-                PodCardFragment firstFragment = PodCardFragment.newInstance("Latest", "");
-                this.getSupportFragmentManager()
-                        .beginTransaction()
-                        .replace(R.id.fragment_container, firstFragment)
-                        .commit();
+                showInitialPage();
                 break;
             case R.id.action_schedules:
-                PodCardFragment second = PodCardFragment.newInstance("Greatest Hits", "");
+                PodListFragment second = PodListFragment.newInstance("Greatest Hits", "");
                 this.getSupportFragmentManager()
                         .beginTransaction()
                         .replace(R.id.fragment_container, second)
                         .commit();
                 break;
             case R.id.action_music:
-                PodCardFragment third = PodCardFragment.newInstance("Just For You", "");
+                PodListFragment third = PodListFragment.newInstance("Just For You", "");
                 this.getSupportFragmentManager()
                         .beginTransaction()
                         .replace(R.id.fragment_container, third)

@@ -1,19 +1,4 @@
-package com.koalatea.thehollidayinn.softwareengineeringdaily.audio;/*
-* Copyright (C) 2014 The Android Open Source Project
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-*
-*      http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*/
-
+package com.koalatea.thehollidayinn.softwareengineeringdaily.audio;
 
 import android.app.Notification;
 import android.app.PendingIntent;
@@ -45,73 +30,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-
-;
-
-/**
- * This class provides a MediaBrowser through a service. It exposes the media library to a browsing
- * client, through the onGetRoot and onLoadChildren methods. It also creates a MediaSession and
- * exposes it through its MediaSession.Token, which allows the client to create a MediaController
- * that connects to and send control commands to the MediaSession remotely. This is useful for
- * user interfaces that need to interact with your media session, like Android Auto. You can
- * (should) also use the same service from your app's UI, which gives a seamless playback
- * experience to the user.
- * <p>
- * To implement a MediaBrowserService, you need to:
- * <p>
- * <ul>
- * <p>
- * <li> Extend {@link android.support.v4.media.MediaBrowserServiceCompat}, implementing the media
- * browsing related methods {@link android.support.v4.media.MediaBrowserServiceCompat#onGetRoot} and
- * {@link android.support.v4.media.MediaBrowserServiceCompat#onLoadChildren};
- * <li> In onCreate, start a new {@link android.support.v4.media.session.MediaSessionCompat} and
- * notify its parent with the session's token
- * {@link android.support.v4.media.MediaBrowserServiceCompat#setSessionToken};
- * <p>
- * <li> Set a callback on the
- * {@link android.support.v4.media.session.MediaSessionCompat#setCallback(MediaSessionCompat.Callback)}.
- * The callback will receive all the user's actions, like play, pause, etc;
- * <p>
- * <li> Handle all the actual music playing using any method your app prefers (for example,
- * {@link android.media.MediaPlayer})
- * <p>
- * <li> Update playbackState, "now playing" metadata and queue, using MediaSession proper methods
- * {@link android.support.v4.media.session.MediaSessionCompat#setPlaybackState(PlaybackStateCompat)}
- * {@link android.support.v4.media.session.MediaSessionCompat#setMetadata(MediaMetadataCompat)} and
- * if your implementation allows it,
- * {@link android.support.v4.media.session.MediaSessionCompat#setQueue(List)})
- * <p>
- * <li> Declare and export the service in AndroidManifest with an intent receiver for the action
- * android.media.browse.MediaBrowserService
- * <li> Declare a broadcast receiver to receive media button events. This is required if your app
- * supports Android KitKat or previous:
- * &lt;receiver android:name="android.support.v4.media.session.MediaButtonReceiver"&gt;
- * &lt;intent-filter&gt;
- * &lt;action android:name="android.intent.action.MEDIA_BUTTON" /&gt;
- * &lt;/intent-filter&gt;
- * &lt;/receiver&gt;
- * <p>
- * </ul>
- * <p>
- * To make your app compatible with Android Auto, you also need to:
- * <p>
- * <ul>
- * <p>
- * <li> Declare a meta-data tag in AndroidManifest.xml linking to a xml resource
- * with a &lt;automotiveApp&gt; root element. For a media app, this must include
- * an &lt;uses name="media"/&gt; element as a child.
- * For example, in AndroidManifest.xml:
- * &lt;meta-data android:name="com.google.android.gms.car.application"
- * android:resource="@xml/automotive_app_desc"/&gt;
- * And in res/values/automotive_app_desc.xml:
- * &lt;automotiveApp&gt;
- * &lt;uses name="media"/&gt;
- * &lt;/automotiveApp&gt;
- * <p>
- * </ul>
- *
- * @see <a href="README.md">README.md</a> for more details.
- */
 
 public class MusicService extends MediaBrowserServiceCompat {
     private static final String TAG = "keithtest";

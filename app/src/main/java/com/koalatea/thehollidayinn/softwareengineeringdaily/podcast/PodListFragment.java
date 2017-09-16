@@ -28,16 +28,17 @@ import rx.schedulers.Schedulers;
  * Created by krh12 on 5/22/2017.
  */
 
-public class PodCardFragment extends Fragment {
+public class PodListFragment extends Fragment {
 
     private String title;
-    private static final String TAG = PodCardFragment.class.getSimpleName();
+    private String tagId;
     private PodcastAdapter podcastAdapter;
 
-    public static PodCardFragment newInstance(String title, String mediaId) {
-        PodCardFragment f = new PodCardFragment();
+    public static PodListFragment newInstance(String title, String tagId) {
+        PodListFragment f = new PodListFragment();
         Bundle args = new Bundle();
         f.title = title;
+        f.tagId = tagId;
         f.setArguments(args);
         return f;
     }
@@ -58,9 +59,13 @@ public class PodCardFragment extends Fragment {
         podcastAdapter = new PodcastAdapter(this);
         recyclerView.setAdapter(podcastAdapter);
 
-        getPosts();
-
         return rootView;
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        getPosts();
     }
 
     public void getPosts() {
@@ -76,6 +81,8 @@ public class PodCardFragment extends Fragment {
             data.put("type", "top");
         } else if (this.title.equals("Just For You") && !userRepository.getToken().isEmpty()) {
             query = mService.getRecommendations(data);
+        } else if (tagId != null && !tagId.isEmpty()) {
+            data.put("categories", tagId);
         }
 
         query

@@ -139,10 +139,7 @@ public class PodcastDetailActivity extends AppCompatActivity {
                     return;
                 }
 
-                String direction = "";
-
                 if (post.upvoted != null && post.upvoted) {
-                    direction = "up";
                     post.score -= 1;
                     post.upvoted = false;
                     post.downvoted = false;
@@ -151,7 +148,6 @@ public class PodcastDetailActivity extends AppCompatActivity {
                         downButton.getDrawable().setTint(getResources().getColor(R.color.button_grey));
                     }
                 } else {
-                    direction = "down";
                     post.score += 1;
 
                     if (post.downvoted) {
@@ -168,7 +164,7 @@ public class PodcastDetailActivity extends AppCompatActivity {
 
                 Bundle bundle = new Bundle();
                 bundle.putString(FirebaseAnalytics.Param.ITEM_ID, postId);
-                bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, direction);
+                bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, "UP");
                 bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, "VOTE");
                 mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
 
@@ -232,6 +228,12 @@ public class PodcastDetailActivity extends AppCompatActivity {
                         upButton.getDrawable().setTint(getResources().getColor(R.color.button_grey));
                     }
                 }
+
+                Bundle bundle = new Bundle();
+                bundle.putString(FirebaseAnalytics.Param.ITEM_ID, postId);
+                bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, "DOWN");
+                bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, "VOTE");
+                mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
 
                 scoreText.setText(String.valueOf(post.score));
 

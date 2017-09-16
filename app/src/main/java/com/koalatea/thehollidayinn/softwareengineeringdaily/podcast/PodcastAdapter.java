@@ -28,7 +28,7 @@ import java.util.List;
 public class PodcastAdapter extends RecyclerView.Adapter<PodcastAdapter.ViewHolder> {
     private List<Post> posts = new ArrayList<>();
     private List<MediaBrowserCompat.MediaItem> mediaItemList;
-    private PodCardFragment context;
+    private PodListFragment context;
     private Button activeActionButton;
     private MediaPlayer mediaPlayer;
 
@@ -48,7 +48,7 @@ public class PodcastAdapter extends RecyclerView.Adapter<PodcastAdapter.ViewHold
 
     public PodcastAdapter(Fragment context) {
         mediaItemList = new ArrayList<>();
-        this.context = (PodCardFragment) context;
+        this.context = (PodListFragment) context;
         this.mediaPlayer = MediaPlayer.getInstance(context.getActivity());
     }
 
