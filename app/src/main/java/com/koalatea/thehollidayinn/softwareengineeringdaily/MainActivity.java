@@ -1,6 +1,8 @@
 package com.koalatea.thehollidayinn.softwareengineeringdaily;
 
+import android.app.SearchManager;
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
 import android.os.RemoteException;
 import android.support.annotation.NonNull;
@@ -10,9 +12,12 @@ import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaControllerCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -21,14 +26,17 @@ import android.widget.ImageView;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.auth.LoginRegisterActivity;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.audio.MusicService;
+import com.koalatea.thehollidayinn.softwareengineeringdaily.data.repositories.FilterRepository;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.data.repositories.UserRepository;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.podcast.PodListFragment;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.podcast.RecentPodcastFragment;
 
-public class MainActivity extends AppCompatActivity {
-    private FirebaseAnalytics mFirebaseAnalytics;
+public class MainActivity extends AppCompatActivity implements SearchView.OnQueryTextListener {
     private UserRepository userRepository;
+    private RecentPodcastFragment firstFragment;
     private MediaBrowserCompat mMediaBrowser;
+    private FilterRepository filterRepository;
+
     private final MediaBrowserCompat.ConnectionCallback mConnectionCallbacks =
             new MediaBrowserCompat.ConnectionCallback() {
                 @Override
@@ -77,12 +85,11 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
-
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         userRepository = UserRepository.getInstance(this);
+        filterRepository = FilterRepository.getInstance();
 
         mMediaBrowser = new MediaBrowserCompat(this,
                 new ComponentName(this, MusicService.class),
@@ -99,7 +106,7 @@ public class MainActivity extends AppCompatActivity {
 //                .beginTransaction()
 //                .replace(R.id.fragment_container, firstFragment)
 //                .commit();
-        RecentPodcastFragment firstFragment = RecentPodcastFragment.newInstance();
+        firstFragment = RecentPodcastFragment.newInstance();
         this.getSupportFragmentManager()
                 .beginTransaction()
                 .replace(R.id.fragment_container, firstFragment)
@@ -153,6 +160,30 @@ public class MainActivity extends AppCompatActivity {
             menu.getItem(0).setVisible(true);
             menu.getItem(1).setVisible(false);
         }
+
+        // Associate searchable configuration with the SearchView
+        SearchManager searchManager =
+                (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+        SearchView searchView =
+                (SearchView) menu.findItem(R.id.search).getActionView();
+        searchView.setSearchableInfo(
+                searchManager.getSearchableInfo(getComponentName()));
+        searchView.setOnQueryTextListener(this);
+        searchView.setSubmitButtonEnabled(true);
+
+        MenuItemCompat.setOnActionExpandListener(menu.findItem(R.id.search),
+            new MenuItemCompat.OnActionExpandListener() {
+                @Override
+                public boolean onMenuItemActionCollapse(MenuItem item) {
+                    filterRepository.setSearch("");
+                    return true;
+                }
+
+                @Override
+                public boolean onMenuItemActionExpand(MenuItem item) {
+                    return true;
+                }
+            });
 
         return true;
     }
@@ -219,5 +250,16 @@ public class MainActivity extends AppCompatActivity {
 
         // Register a Callback to stay in sync
         mediaController.registerCallback(controllerCallback);
+    }
+
+    @Override
+    public boolean onQueryTextSubmit(String query) {
+        filterRepository.setSearch(query);
+        return false;
+    }
+
+    @Override
+    public boolean onQueryTextChange(String newText) {
+        return true;
     }
 }

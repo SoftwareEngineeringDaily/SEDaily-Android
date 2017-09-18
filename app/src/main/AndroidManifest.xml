@@ -12,12 +12,15 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+
+            <meta-data android:name="android.app.searchable"
+                android:resource="@xml/searchable" />
         </activity>
 
         <service android:name=".audio.MusicService">
@@ -30,10 +33,11 @@
             android:name=".podcast.PodcastDetailActivity"
             android:label="@string/title_activity_podcast_detail"
             android:theme="@style/AppTheme.NoActionBar" />
+
         <activity
             android:name=".auth.LoginRegisterActivity"
             android:label="@string/title_activity_login_register"
-            android:theme="@style/AppTheme"></activity>
+            android:theme="@style/AppTheme" />
     </application>
 
 </manifest>

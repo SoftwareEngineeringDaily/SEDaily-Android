@@ -13,6 +13,7 @@ import com.koalatea.thehollidayinn.softwareengineeringdaily.R;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.data.models.Post;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.data.remote.APIInterface;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.data.remote.ApiUtils;
+import com.koalatea.thehollidayinn.softwareengineeringdaily.data.repositories.FilterRepository;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.data.repositories.PostRepository;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.data.repositories.UserRepository;
 
@@ -33,6 +34,7 @@ public class PodListFragment extends Fragment {
     private String title;
     private String tagId;
     private PodcastAdapter podcastAdapter;
+    private FilterRepository filterRepository;
 
     public static PodListFragment newInstance(String title, String tagId) {
         PodListFragment f = new PodListFragment();
@@ -59,16 +61,31 @@ public class PodListFragment extends Fragment {
         podcastAdapter = new PodcastAdapter(this);
         recyclerView.setAdapter(podcastAdapter);
 
+        filterRepository = FilterRepository.getInstance();
+        Subscriber<String> mySubscriber = new Subscriber<String>() {
+            @Override
+            public void onNext(String s) {
+                getPosts(s);
+            }
+
+            @Override
+            public void onCompleted() { }
+
+            @Override
+            public void onError(Throwable e) { }
+        };
+        filterRepository.getModelChanges().subscribe(mySubscriber);
+
         return rootView;
     }
 
     @Override
     public void onStart() {
         super.onStart();
-        getPosts();
+        getPosts("");
     }
 
-    public void getPosts() {
+    public void getPosts(String search) {
         APIInterface mService = ApiUtils.getKibbleService(getActivity());
 
         Map<String, String> data = new HashMap<>();
@@ -83,6 +100,10 @@ public class PodListFragment extends Fragment {
             query = mService.getRecommendations(data);
         } else if (tagId != null && !tagId.isEmpty()) {
             data.put("categories", tagId);
+        }
+
+        if (!search.isEmpty()) {
+            data.put("search", search);
         }
 
         query

@@ -4,6 +4,7 @@
     <string name="item_desc">SoftwareEngineeringDaily</string>
     <string name="title_activity_podcast_detail">PodcastDetailActivity</string>
     <string name="title_activity_login_register">LoginRegisterActivity</string>
+    <string name="search_hint">Search</string>
 
     <string name="label_pause">Pause</string>
     <string name="label_play">Play</string>

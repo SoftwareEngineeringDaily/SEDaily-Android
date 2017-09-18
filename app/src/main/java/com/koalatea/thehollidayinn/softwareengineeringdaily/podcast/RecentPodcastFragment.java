@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,7 +19,6 @@ import com.koalatea.thehollidayinn.softwareengineeringdaily.R;
 public class RecentPodcastFragment extends Fragment {
     RecentPodcatsPageAdapter recentPodcatsPageAdapter;
     ViewPager viewPager;
-
     public static RecentPodcastFragment newInstance() {
         RecentPodcastFragment f = new RecentPodcastFragment();
         return f;
@@ -27,7 +27,7 @@ public class RecentPodcastFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        View rootView =  (View) inflater.inflate(
+        View rootView = (View) inflater.inflate(
                 R.layout.fragment_recent_podcast, container, false);
 
         final TabLayout tabLayout = (TabLayout) rootView.findViewById(R.id.tabs);
@@ -43,5 +43,4 @@ public class RecentPodcastFragment extends Fragment {
 
         return rootView;
     }
-
 }
