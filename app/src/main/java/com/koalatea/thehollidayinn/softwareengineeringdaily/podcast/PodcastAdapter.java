@@ -81,55 +81,7 @@ public class PodcastAdapter extends RecyclerView.Adapter<PodcastAdapter.ViewHold
             }
         });
 
-//        actionButton.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                final int position = viewHolder.getAdapterPosition();
-//                if (position != RecyclerView.NO_POSITION) {
-//                    Post post = posts.get(position);
-//                    playPostMp3(post);
-//                }
-//            }
-//        });
-
         return viewHolder;
-    }
-
-    private void playPostMp3 (Post post) {
-        if (post.mp3 == null || post.mp3.isEmpty()) {
-            return;
-        }
-
-        String source = post.mp3;
-        String id = String.valueOf(source.hashCode());
-
-        MusicProvider mMusicProvider = MusicProvider.getInstance();
-        MediaMetadataCompat item = mMusicProvider.getMusic(id);
-
-        if (item == null) {
-            item = new MediaMetadataCompat.Builder()
-                    .putString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID, id)
-                    .putString(MediaMetadataCompat.METADATA_KEY_MEDIA_URI, source)
-//                        .putString(MediaMetadataCompat.METADATA_KEY_ALBUM, album)
-//                        .putString(MediaMetadataCompat.METADATA_KEY_ARTIST, artist)
-//                        .putLong(MediaMetadataCompat.METADATA_KEY_DURATION, duration)
-//                        .putString(MediaMetadataCompat.METADATA_KEY_GENRE, genre)
-//                        .putString(MediaMetadataCompat.METADATA_KEY_ALBUM_ART_URI, iconUrl)
-//                        .putString(MediaMetadataCompat.METADATA_KEY_TITLE, title)
-//                        .putLong(MediaMetadataCompat.METADATA_KEY_TRACK_NUMBER, trackNumber)
-//                        .putLong(MediaMetadataCompat.METADATA_KEY_NUM_TRACKS, totalTrackCount)
-                    .build();
-
-
-            mMusicProvider.updateMusic(id, item);
-        }
-
-        MediaBrowserCompat.MediaItem bItem =
-                new MediaBrowserCompat.MediaItem(item.getDescription(),
-                        MediaBrowserCompat.MediaItem.FLAG_PLAYABLE);
-
-        boolean isPlaying = id.equals(mediaPlayer.getPlayingMediaId());
-        mediaPlayer.onMediaItemSelected(bItem, isPlaying);
     }
 
     @Override

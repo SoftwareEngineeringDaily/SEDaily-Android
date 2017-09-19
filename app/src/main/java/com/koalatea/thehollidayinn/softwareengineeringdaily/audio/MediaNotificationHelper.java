@@ -135,12 +135,9 @@ public class MediaNotificationHelper extends BroadcastReceiver {
             art = BitmapFactory.decodeResource(mService.getResources(),
                     R.drawable.sedaily_logo);
         }
-
+        Log.v("keithtest", String.valueOf(description.getTitle()));
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(mService);
         notificationBuilder
-                .setContentTitle(description.getTitle())
-                .setContentText(description.getSubtitle())
-                .setSubText(description.getDescription())
                 .setLargeIcon(art)
                 .setContentIntent(controller.getSessionActivity())
                 .setDeleteIntent(mStopInent)
@@ -152,7 +149,9 @@ public class MediaNotificationHelper extends BroadcastReceiver {
                         // show only play/pause in compact view.
                         .setShowActionsInCompactView(new int[]{0})
                         .setMediaSession(mSessionToken))
-                .setShowWhen(false);
+                .setShowWhen(false)
+                .setContentTitle(description.getTitle())
+                .setContentText(description.getSubtitle());
 
 
         return notificationBuilder.build();
