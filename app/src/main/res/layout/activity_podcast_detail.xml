@@ -18,7 +18,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="0dp">
 
-            <LinearLayout
+            <RelativeLayout
                 android:id="@+id/actions"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -40,24 +40,27 @@
                     android:layout_height="40dp"
                     android:textAlignment="center"
                     android:text="0"
-                    style="@style/TextAppearance.AppCompat.Large"/>
+                    style="@style/TextAppearance.AppCompat.Large"
+                    android:layout_toRightOf="@+id/up_button"/>
 
                 <ImageView
                     android:id="@+id/down_button"
                     android:layout_width="40dp"
                     android:layout_height="40dp"
-                    android:src="@drawable/ic_down_arrow" />
+                    android:src="@drawable/ic_down_arrow"
+                    android:layout_toRightOf="@+id/scoreTextView"/>
 
                 <Button
                     android:id="@+id/playButton"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="40dp"
+                    android:layout_marginRight="10dp"
                     android:textAlignment="center"
                     android:text="Play"
+                    android:layout_alignParentRight="true"
                     style="@style/Widget.AppCompat.Button.Colored"/>
 
-            </LinearLayout>
+            </RelativeLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
