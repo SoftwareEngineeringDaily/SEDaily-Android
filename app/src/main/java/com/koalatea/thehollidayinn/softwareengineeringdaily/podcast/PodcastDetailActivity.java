@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v7.app.AlertDialog;
@@ -28,12 +29,6 @@ import com.koalatea.thehollidayinn.softwareengineeringdaily.data.remote.APIInter
 import com.koalatea.thehollidayinn.softwareengineeringdaily.data.remote.ApiUtils;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.data.repositories.PostRepository;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.data.repositories.UserRepository;
-
-import org.w3c.dom.Text;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
@@ -126,7 +121,7 @@ public class PodcastDetailActivity extends AppCompatActivity {
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             if (post.upvoted != null && post.upvoted) {
-                upButton.getDrawable().setTint(getResources().getColor(R.color.colorPrimary));
+                upButton.getDrawable().setTint(ContextCompat.getColor(this, R.color.colorAccent));
             }
         }
 
@@ -194,7 +189,7 @@ public class PodcastDetailActivity extends AppCompatActivity {
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             if (post.downvoted != null && post.downvoted) {
-                downButton.getDrawable().setTint(getResources().getColor(R.color.colorPrimary));
+                downButton.getDrawable().setTint(ContextCompat.getColor(this, R.color.colorAccent));
             }
         }
 

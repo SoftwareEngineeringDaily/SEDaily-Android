@@ -10,6 +10,7 @@ import android.preference.PreferenceManager;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
+import android.util.Log;
 
 /**
  * Created by krh12 on 6/11/2017.

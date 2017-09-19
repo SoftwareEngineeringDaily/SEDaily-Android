@@ -147,13 +147,12 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_main, menu);
-
         if (!userRepository.getToken().isEmpty()) {
-            menu.getItem(0).setVisible(false);
-            menu.getItem(1).setVisible(true);
+            menu.findItem(R.id.action_toggle_login_register).setVisible(false);
+            menu.findItem(R.id.action_logout).setVisible(true);
         } else {
-            menu.getItem(0).setVisible(true);
-            menu.getItem(1).setVisible(false);
+            menu.findItem(R.id.action_toggle_login_register).setVisible(true);
+            menu.findItem(R.id.action_logout).setVisible(false);
         }
 
         // Associate searchable configuration with the SearchView

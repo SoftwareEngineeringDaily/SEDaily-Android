@@ -29,13 +29,10 @@ public class PodcastAdapter extends RecyclerView.Adapter<PodcastAdapter.ViewHold
     private List<Post> posts = new ArrayList<>();
     private List<MediaBrowserCompat.MediaItem> mediaItemList;
     private PodListFragment context;
-    private Button activeActionButton;
-    private MediaPlayer mediaPlayer;
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         public TextView mTextView;
         public TextView scoreTextView;
-        public Button actionButton;
         public ImageView imageView;
 
         public ViewHolder(View v) {
@@ -49,7 +46,6 @@ public class PodcastAdapter extends RecyclerView.Adapter<PodcastAdapter.ViewHold
     public PodcastAdapter(Fragment context) {
         mediaItemList = new ArrayList<>();
         this.context = (PodListFragment) context;
-        this.mediaPlayer = MediaPlayer.getInstance(context.getActivity());
     }
 
     public void add(MediaBrowserCompat.MediaItem item) {

@@ -346,42 +346,8 @@ public class MusicService extends MediaBrowserServiceCompat {
         // locked screen and in other places.
         if (track.getDescription().getIconBitmap() == null
                 && track.getDescription().getIconUri() != null) {
-            fetchArtwork(trackId, track.getDescription().getIconUri());
             postNotification();
         }
-    }
-
-    private void fetchArtwork(final String trackId, final Uri albumUri) {
-        AlbumArtCache.getInstance().fetch(albumUri.toString(),
-                new AlbumArtCache.FetchListener() {
-                    @Override
-                    public void onFetched(String artUrl, Bitmap bitmap, Bitmap icon) {
-                        MediaSessionCompat.QueueItem queueItem = mCurrentMedia;
-                        MediaMetadataCompat track = mMusicProvider.getMusic(trackId);
-                        track = new MediaMetadataCompat.Builder(track)
-
-                                // Set high resolution bitmap in METADATA_KEY_ALBUM_ART. This is
-                                // used, for example, on the lockscreen background when the media
-                                // session is active.
-                                .putBitmap(MediaMetadataCompat.METADATA_KEY_ALBUM_ART, bitmap)
-
-                                // Set small version of the album art in the DISPLAY_ICON. This is
-                                // used on the MediaDescription and thus it should be small to be
-                                // serialized if necessary.
-                                .putBitmap(MediaMetadataCompat.METADATA_KEY_DISPLAY_ICON, icon)
-
-                                .build();
-
-                        mMusicProvider.updateMusic(trackId, track);
-
-                        // If we are still playing the same music
-                        String currentPlayingId = queueItem.getDescription().getMediaId();
-                        if (trackId.equals(currentPlayingId)) {
-                            mSession.setMetadata(track);
-                            postNotification();
-                        }
-                    }
-                });
     }
 
     /**
