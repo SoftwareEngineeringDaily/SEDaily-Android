@@ -12,6 +12,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.os.RemoteException;
 import android.os.SystemClock;
 import android.support.annotation.NonNull;
 import android.support.v4.app.NotificationManagerCompat;
@@ -52,6 +53,7 @@ public class MusicService extends MediaBrowserServiceCompat {
     private Playback mPlayback;
     private MediaSessionCompat.QueueItem mCurrentMedia;
     private AudioBecomingNoisyReceiver mAudioBecomingNoisyReceiver;
+    MediaNotificationHelper mediaNotificationHelper;
 
     /**
      * Custom {@link Handler} to process the delayed stop command.
@@ -123,6 +125,12 @@ public class MusicService extends MediaBrowserServiceCompat {
         mAudioBecomingNoisyReceiver = new AudioBecomingNoisyReceiver(this);
 
         updatePlaybackState(null);
+
+        try {
+            mediaNotificationHelper = new MediaNotificationHelper(this);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -420,8 +428,8 @@ public class MusicService extends MediaBrowserServiceCompat {
         mSession.setPlaybackState(stateBuilder.build());
 
         if (state == PlaybackStateCompat.STATE_PLAYING) {
-            Notification notification = postNotification();
-            startForeground(NOTIFICATION_ID, notification);
+            postNotification();
+//            startForeground(NOTIFICATION_ID, notification);
             mAudioBecomingNoisyReceiver.register();
         } else {
             if (state == PlaybackStateCompat.STATE_PAUSED) {
@@ -434,14 +442,12 @@ public class MusicService extends MediaBrowserServiceCompat {
         }
     }
 
-    private Notification postNotification() {
-        Notification notification = MediaNotificationHelper.createNotification(this, mSession);
-        if (notification == null) {
-            return null;
+    private void postNotification() {
+        if (mediaNotificationHelper == null) {
+            return;
         }
-
-        mNotificationManager.notify(NOTIFICATION_ID, notification);
-        return notification;
+        mediaNotificationHelper.createNotification();
+        mediaNotificationHelper.startNotification();
     }
 
     /**

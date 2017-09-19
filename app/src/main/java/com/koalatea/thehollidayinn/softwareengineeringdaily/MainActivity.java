@@ -101,11 +101,6 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
     }
 
     private void showInitialPage () {
-//        PodListFragment firstFragment = PodListFragment.newInstance("Latest", "");
-//        this.getSupportFragmentManager()
-//                .beginTransaction()
-//                .replace(R.id.fragment_container, firstFragment)
-//                .commit();
         firstFragment = RecentPodcastFragment.newInstance();
         this.getSupportFragmentManager()
                 .beginTransaction()
