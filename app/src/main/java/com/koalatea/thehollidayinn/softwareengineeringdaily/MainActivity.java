@@ -220,21 +220,21 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
         // Grab the view for the play/pause button
         ImageView mPlayPause = (ImageView) findViewById(R.id.logo);
 
-        // Attach a listener to the button
-        mPlayPause.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Since this is a play/pause button, you'll need to test the current state
-                // and choose the action accordingly
-
-                int pbState = MediaControllerCompat.getMediaController(MainActivity.this).getPlaybackState().getState();
-                if (pbState == PlaybackStateCompat.STATE_PLAYING) {
-                    MediaControllerCompat.getMediaController(MainActivity.this).getTransportControls().pause();
-                } else {
-                    MediaControllerCompat.getMediaController(MainActivity.this).getTransportControls().play();
-                }
-            }
-        });
+        // @TODO: Move this to fragment player when we add it
+//        mPlayPause.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                // Since this is a play/pause button, you'll need to test the current state
+//                // and choose the action accordingly
+//
+//                int pbState = MediaControllerCompat.getMediaController(MainActivity.this).getPlaybackState().getState();
+//                if (pbState == PlaybackStateCompat.STATE_PLAYING) {
+//                    MediaControllerCompat.getMediaController(MainActivity.this).getTransportControls().pause();
+//                } else {
+//                    MediaControllerCompat.getMediaController(MainActivity.this).getTransportControls().play();
+//                }
+//            }
+//        });
 
         MediaControllerCompat mediaController = MediaControllerCompat.getMediaController(MainActivity.this);
 
