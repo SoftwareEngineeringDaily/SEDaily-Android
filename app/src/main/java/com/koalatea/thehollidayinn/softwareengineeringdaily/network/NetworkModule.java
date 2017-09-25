@@ -71,13 +71,10 @@ public class NetworkModule {
     @AppScope
     OkHttpClient providesHttpClient(@NonNull HttpLoggingInterceptor loggingInterceptor,
                                     @NonNull Interceptor headerInterceptor) {
-
         return new OkHttpClient.Builder()
                 .addInterceptor(loggingInterceptor)
                 .addInterceptor(headerInterceptor)
                 .build();
-
-
     }
 
     @Provides
