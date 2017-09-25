@@ -6,6 +6,7 @@ import android.support.annotation.VisibleForTesting;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.BuildConfig;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.app.AppScope;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.data.remote.APIInterface;
+import com.koalatea.thehollidayinn.softwareengineeringdaily.network.api.EpisodePostNetworkService;
 
 import java.io.IOException;
 
@@ -92,6 +93,12 @@ public class NetworkModule {
     @AppScope
     APIInterface providesApiInterface(@NonNull Retrofit retrofit) {
         return retrofit.create(APIInterface.class);
+    }
+
+    @Provides
+    @AppScope
+    EpisodePostNetworkService providesPostNetworkService(@NonNull Retrofit retrofit) {
+        return retrofit.create(EpisodePostNetworkService.class);
     }
 
 }
