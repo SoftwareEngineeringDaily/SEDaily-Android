@@ -3,6 +3,8 @@ package com.koalatea.thehollidayinn.softwareengineeringdaily.network;
 import android.support.annotation.NonNull;
 import android.support.annotation.VisibleForTesting;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.BuildConfig;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.app.AppScope;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.data.remote.APIInterface;
@@ -29,6 +31,14 @@ public class NetworkModule {
 
     @VisibleForTesting
     final String BASE_URL = "https://software-enginnering-daily-api.herokuapp.com/api/";
+
+    @Provides
+    @AppScope
+    Gson providesGson() {
+        return new GsonBuilder()
+                .setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
+                .create();
+    }
 
     @Provides
     @AppScope
@@ -80,12 +90,12 @@ public class NetworkModule {
 
     @Provides
     @AppScope
-    Retrofit providesRetrofitClient(@NonNull OkHttpClient httpClient) {
+    Retrofit providesRetrofitClient(@NonNull OkHttpClient httpClient, @NonNull Gson gson) {
         return new Retrofit.Builder()
                 .baseUrl(BASE_URL)
                 .client(httpClient)
                 .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
-                .addConverterFactory(GsonConverterFactory.create())
+                .addConverterFactory(GsonConverterFactory.create(gson))
                 .build();
     }
 
