@@ -8,6 +8,7 @@ import com.google.gson.GsonBuilder;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.BuildConfig;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.app.AppScope;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.data.remote.APIInterface;
+import com.koalatea.thehollidayinn.softwareengineeringdaily.network.api.AuthNetworkService;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.network.api.EpisodePostNetworkService;
 
 import java.io.IOException;
@@ -109,6 +110,12 @@ public class NetworkModule {
     @AppScope
     EpisodePostNetworkService providesPostNetworkService(@NonNull Retrofit retrofit) {
         return retrofit.create(EpisodePostNetworkService.class);
+    }
+
+    @Provides
+    @AppScope
+    AuthNetworkService providesAuthNetworkService(@NonNull Retrofit retrofit) {
+        return retrofit.create(AuthNetworkService.class);
     }
 
 }
