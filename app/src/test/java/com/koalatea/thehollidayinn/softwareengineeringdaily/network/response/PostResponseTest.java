@@ -1,11 +1,8 @@
 package com.koalatea.thehollidayinn.softwareengineeringdaily.network.response;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.stream.JsonReader;
-import com.koalatea.thehollidayinn.softwareengineeringdaily.base.BaseJsonParseTest;
+import com.koalatea.thehollidayinn.softwareengineeringdaily.test.BaseJsonParseTest;
 
-import org.junit.Before;
 import org.junit.Test;
 
 import java.text.SimpleDateFormat;

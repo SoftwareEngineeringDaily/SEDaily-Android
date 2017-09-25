@@ -117,5 +117,4 @@ public class NetworkModule {
     AuthNetworkService providesAuthNetworkService(@NonNull Retrofit retrofit) {
         return retrofit.create(AuthNetworkService.class);
     }
-
 }

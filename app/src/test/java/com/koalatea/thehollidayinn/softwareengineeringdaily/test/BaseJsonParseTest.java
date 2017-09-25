@@ -1,4 +1,4 @@
-package com.koalatea.thehollidayinn.softwareengineeringdaily.base;
+package com.koalatea.thehollidayinn.softwareengineeringdaily.test;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -21,6 +21,7 @@ public abstract class BaseJsonParseTest extends BaseUnitTest {
 
     @Before
     public void setUp() {
+        super.setUp();
         //Possibly receive this via DI rather than manual instance to keep consistency
         gson = new GsonBuilder()
                 .setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")

@@ -44,6 +44,7 @@ public class AppModule {
     @Provides
     @AppScope
     FirebaseAnalytics providesFirebaseAnalytics(@NonNull Context context) {
+        //TODO wrap this in a platform-independent wrapper
         return FirebaseAnalytics.getInstance(context);
     }
 }
