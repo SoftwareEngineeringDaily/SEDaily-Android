@@ -18,10 +18,6 @@ public abstract class PostResponse {
     public abstract Date date();
     @SerializedName("link")
     public abstract String episodeLink();
-    @SerializedName("upvoted")
-    public abstract boolean upVoted();
-    @SerializedName("downvoted")
-    public abstract boolean downVoted();
     @SerializedName("mp3")
     public abstract String audioLink();
     @SerializedName("featuredImage")
@@ -30,6 +26,8 @@ public abstract class PostResponse {
     public abstract ContentResponse content();
     @SerializedName("title")
     public abstract TitleResponse title();
+    @SerializedName("score")
+    public abstract int score();
 
     public static TypeAdapter<PostResponse> typeAdapter(Gson gson) {
         return new AutoValue_PostResponse.GsonTypeAdapter(gson);

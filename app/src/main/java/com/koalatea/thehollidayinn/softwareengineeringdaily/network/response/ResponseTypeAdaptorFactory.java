@@ -8,7 +8,7 @@ import com.ryanharter.auto.value.gson.GsonTypeAdapterFactory;
  * Created by Kurian on 25-Sep-17.
  */
 @GsonTypeAdapterFactory
-abstract class ResponseTypeAdaptorFactory implements TypeAdapterFactory {
+public abstract class ResponseTypeAdaptorFactory implements TypeAdapterFactory {
 
     // Static factory method to access the package
     // private generated implementation

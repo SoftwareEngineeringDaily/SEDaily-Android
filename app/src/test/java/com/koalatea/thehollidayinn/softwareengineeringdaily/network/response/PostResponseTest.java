@@ -8,8 +8,7 @@ import com.koalatea.thehollidayinn.softwareengineeringdaily.base.BaseJsonParseTe
 import org.junit.Before;
 import org.junit.Test;
 
-import java.io.FileNotFoundException;
-import java.io.FileReader;
+import java.text.SimpleDateFormat;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -19,20 +18,10 @@ import static org.junit.Assert.assertNotNull;
  */
 public class PostResponseTest extends BaseJsonParseTest{
 
-    Gson gson;
-
-    @Before
-    public void setUp() {
-        //Possibly receive this via DI rather than manual instance to keep consistency
-        gson = new GsonBuilder()
-                .setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
-                .registerTypeAdapterFactory(ResponseTypeAdaptorFactory.create())
-                .create();
-    }
-
     @Test
     public void parsing_PostItem_contains_expected_values() throws Exception {
-        JsonReader reader = loadJson("post_response.json");
+        JsonReader reader = loadJson("200_post_response.json");
+
         PostResponse actual = gson.fromJson(reader, PostResponse.class);
         assertNotNull(actual);
         assertEquals("1234", actual.id());
@@ -41,9 +30,8 @@ public class PostResponseTest extends BaseJsonParseTest{
         assertEquals("image link", actual.featuredImageLink());
         assertEquals("rendered content", actual.content().renderedContent());
         assertEquals("rendered title", actual.title().renderedTitle());
-    }
-
-    protected JsonReader loadJson(String filename) throws FileNotFoundException {
-        return new JsonReader(new FileReader(loadJsonFile(filename)));
+        assertEquals(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
+                .parse("2017-09-25T02:00:53.000Z"), actual.date());
+        assertEquals(0, actual.score());
     }
 }

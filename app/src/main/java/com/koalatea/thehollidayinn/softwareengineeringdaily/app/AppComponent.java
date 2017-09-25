@@ -3,6 +3,7 @@ package com.koalatea.thehollidayinn.softwareengineeringdaily.app;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.network.NetworkModule;
 
 import dagger.Component;
@@ -15,4 +16,5 @@ import dagger.Component;
 public interface AppComponent {
     Context context();
     SharedPreferences sharedPreferences();
+    FirebaseAnalytics firebaseAnalytics();
 }
