@@ -4,6 +4,8 @@ import android.support.annotation.NonNull;
 
 import com.koalatea.thehollidayinn.softwareengineeringdaily.app.AppScope;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.data.mapper.PostItemMapper;
+import com.koalatea.thehollidayinn.softwareengineeringdaily.data.preference.AuthPreference;
+import com.koalatea.thehollidayinn.softwareengineeringdaily.network.api.AuthNetworkService;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.network.api.EpisodePostNetworkService;
 
 import dagger.Module;
@@ -20,5 +22,12 @@ public class DomainModule {
     PostRepository providesPostRepository(@NonNull EpisodePostNetworkService service,
                                           @NonNull PostItemMapper mapper) {
         return new PostRepositoryImpl(service, mapper);
+    }
+
+    @Provides
+    @AppScope
+    UserRepository providesUserRepository(@NonNull AuthNetworkService service,
+                                          @NonNull AuthPreference authPreference) {
+        return new UserRepositoryImpl(service, authPreference);
     }
 }

@@ -2,10 +2,12 @@ package com.koalatea.thehollidayinn.softwareengineeringdaily.data.preference;
 
 import android.support.annotation.NonNull;
 
+import com.koalatea.thehollidayinn.softwareengineeringdaily.data.preference.base.PreferenceProvider;
+
 /**
  * Created by Kurian on 25-Sep-17.
  */
-public interface AuthPreference {
+public interface AuthPreference extends PreferenceProvider {
 
     String TOKEN_DEFAULT = "";
 
@@ -26,5 +28,10 @@ public interface AuthPreference {
      * @return true if user has logged in to an account
      */
     boolean isLoggedIn();
+
+    /**
+     * Remove the token from preferences
+     */
+    void clearToken();
 
 }

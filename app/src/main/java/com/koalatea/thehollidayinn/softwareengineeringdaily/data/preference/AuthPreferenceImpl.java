@@ -27,4 +27,9 @@ public class AuthPreferenceImpl extends BasePreferences implements AuthPreferenc
     public boolean isLoggedIn() {
         return !SDEApp.component().textUtils().isEmpty(getToken());
     }
+
+    @Override
+    public void clearToken() {
+        getEditor().remove(AUTH_TOKEN).apply();
+    }
 }

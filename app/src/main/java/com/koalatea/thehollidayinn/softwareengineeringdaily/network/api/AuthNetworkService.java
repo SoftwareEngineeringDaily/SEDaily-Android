@@ -2,7 +2,7 @@ package com.koalatea.thehollidayinn.softwareengineeringdaily.network.api;
 
 import com.koalatea.thehollidayinn.softwareengineeringdaily.network.response.AuthResponse;
 
-import io.reactivex.Observable;
+import io.reactivex.Single;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.POST;
@@ -15,12 +15,12 @@ public interface AuthNetworkService {
 
     @FormUrlEncoded
     @POST("auth/login")
-    Observable<AuthResponse> login(@Field("username") String username,
-                                   @Field("password") String password);
+    Single<AuthResponse> login(@Field("username") String username,
+                               @Field("password") String password);
 
     @FormUrlEncoded
     @POST("auth/register")
-    Observable<AuthResponse> register(@Field("username") String username,
+    Single<AuthResponse> register(@Field("username") String username,
                                       @Field("password") String password);
 
 }
