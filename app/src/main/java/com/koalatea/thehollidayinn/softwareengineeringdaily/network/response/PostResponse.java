@@ -35,6 +35,16 @@ public abstract class PostResponse {
     @SerializedName("downvoted")
     public abstract boolean downVoted();
 
+    @VisibleForTesting
+    public static PostResponse create(String id, Date date, String episodeLink, String audioLink,
+                                      String featuredImageLink, ContentResponse content,
+                                      TitleResponse title, int score,
+                                      boolean upVoted, boolean downVoted) {
+        return new AutoValue_PostResponse(id, date, episodeLink, audioLink,
+                featuredImageLink, content, title, score, upVoted, downVoted);
+    }
+
+
     public static TypeAdapter<PostResponse> typeAdapter(Gson gson) {
         return new AutoValue_PostResponse.GsonTypeAdapter(gson);
     }
