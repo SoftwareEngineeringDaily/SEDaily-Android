@@ -95,6 +95,11 @@ public class PodcastDetailActivity extends AppCompatActivity {
     private void loadPost (final String postId) {
         post = postRepository.getPostById(postId);
 
+        // @TODO: Why would this be null?
+        if (post == null) {
+            return;
+        }
+
         CollapsingToolbarLayout collapsingToolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
         collapsingToolbarLayout.setTitle(post.title.rendered);
 
