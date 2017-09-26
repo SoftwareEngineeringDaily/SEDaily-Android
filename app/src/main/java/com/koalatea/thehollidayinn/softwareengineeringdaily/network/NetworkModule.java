@@ -7,6 +7,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.BuildConfig;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.app.AppScope;
+import com.koalatea.thehollidayinn.softwareengineeringdaily.data.preference.AuthPreference;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.data.remote.APIInterface;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.network.api.AuthNetworkService;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.network.api.EpisodePostNetworkService;
@@ -22,7 +23,9 @@ import okhttp3.Response;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
+import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
+import timber.log.Timber;
 
 /**
  * Created by Kurian on 25-Sep-17.
@@ -60,20 +63,16 @@ public class NetworkModule {
 
     @Provides
     @AppScope
-    Interceptor providesHeaderInterceptor() {
+    Interceptor providesHeaderInterceptor(@NonNull final AuthPreference authPreference) {
         return new Interceptor() {
             @Override
             public Response intercept(Chain chain) throws IOException {
                 Request.Builder ongoing = chain.request().newBuilder();
                 ongoing.addHeader("Accept", "application/json;versions=1");
-
-                /*
-                Timber.v("keithtest", userLogin.getToken());
-                if (!userLogin.getToken().isEmpty()) {
-                    ongoing.addHeader("Authorization", "Bearer " + userLogin.getToken());
+                if (authPreference.isLoggedIn()) {
+                    Timber.v("keithtest", authPreference.getToken());
+                    ongoing.addHeader("Authorization", "Bearer " + authPreference.getToken());
                 }
-                */
-
                 return chain.proceed(ongoing.build());
             }
         };
@@ -95,7 +94,7 @@ public class NetworkModule {
         return new Retrofit.Builder()
                 .baseUrl(BASE_URL)
                 .client(httpClient)
-                .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
+                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .addConverterFactory(GsonConverterFactory.create(gson))
                 .build();
     }
