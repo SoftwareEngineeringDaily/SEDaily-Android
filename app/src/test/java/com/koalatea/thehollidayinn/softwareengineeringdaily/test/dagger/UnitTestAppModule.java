@@ -6,6 +6,8 @@ import android.test.mock.MockContext;
 
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.app.AppScope;
+import com.koalatea.thehollidayinn.softwareengineeringdaily.test.mock.TestTextUtils;
+import com.koalatea.thehollidayinn.softwareengineeringdaily.utils.LocalTextUtils;
 
 import dagger.Module;
 import dagger.Provides;
@@ -35,5 +37,11 @@ class UnitTestAppModule {
     @AppScope
     FirebaseAnalytics providesFirebaseAnalytics() {
         return null;
+    }
+
+    @Provides
+    @AppScope
+    LocalTextUtils providesLocalTextUtils() {
+        return spy(new TestTextUtils());
     }
 }

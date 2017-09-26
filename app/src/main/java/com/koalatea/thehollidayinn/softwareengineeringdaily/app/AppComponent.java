@@ -4,7 +4,9 @@ import android.content.Context;
 import android.content.SharedPreferences;
 
 import com.google.firebase.analytics.FirebaseAnalytics;
+import com.koalatea.thehollidayinn.softwareengineeringdaily.data.DataModule;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.network.NetworkModule;
+import com.koalatea.thehollidayinn.softwareengineeringdaily.utils.LocalTextUtils;
 
 import dagger.Component;
 
@@ -12,9 +14,10 @@ import dagger.Component;
  * Created by Kurian on 25-Sep-17.
  */
 @AppScope
-@Component(modules = {AppModule.class, NetworkModule.class})
+@Component(modules = {AppModule.class, NetworkModule.class, DataModule.class})
 public interface AppComponent {
     Context context();
     SharedPreferences sharedPreferences();
     FirebaseAnalytics firebaseAnalytics();
+    LocalTextUtils textUtils();
 }

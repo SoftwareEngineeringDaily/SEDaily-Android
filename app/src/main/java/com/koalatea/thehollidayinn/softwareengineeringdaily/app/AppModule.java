@@ -7,6 +7,7 @@ import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 
 import com.google.firebase.analytics.FirebaseAnalytics;
+import com.koalatea.thehollidayinn.softwareengineeringdaily.utils.LocalTextUtils;
 
 import dagger.Module;
 import dagger.Provides;
@@ -46,5 +47,11 @@ public class AppModule {
     FirebaseAnalytics providesFirebaseAnalytics(@NonNull Context context) {
         //TODO wrap this in a platform-independent wrapper
         return FirebaseAnalytics.getInstance(context);
+    }
+
+    @Provides
+    @AppScope
+    LocalTextUtils providesLocalTextUtils() {
+        return new LocalTextUtils();
     }
 }
