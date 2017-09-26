@@ -1,5 +1,7 @@
 package com.koalatea.thehollidayinn.softwareengineeringdaily.network.response;
 
+import android.support.annotation.VisibleForTesting;
+
 import com.google.auto.value.AutoValue;
 import com.google.gson.Gson;
 import com.google.gson.TypeAdapter;
@@ -28,6 +30,10 @@ public abstract class PostResponse {
     public abstract TitleResponse title();
     @SerializedName("score")
     public abstract int score();
+    @SerializedName("upvoted")
+    public abstract boolean upVoted();
+    @SerializedName("downvoted")
+    public abstract boolean downVoted();
 
     public static TypeAdapter<PostResponse> typeAdapter(Gson gson) {
         return new AutoValue_PostResponse.GsonTypeAdapter(gson);
