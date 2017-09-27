@@ -6,6 +6,9 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 
+import com.google.firebase.analytics.FirebaseAnalytics;
+import com.koalatea.thehollidayinn.softwareengineeringdaily.utils.LocalTextUtils;
+
 import dagger.Module;
 import dagger.Provides;
 
@@ -37,5 +40,18 @@ public class AppModule {
     @AppScope
     SharedPreferences providesSharedPreferences(@NonNull Context context) {
         return PreferenceManager.getDefaultSharedPreferences(context);
+    }
+
+    @Provides
+    @AppScope
+    FirebaseAnalytics providesFirebaseAnalytics(@NonNull Context context) {
+        //TODO wrap this in a platform-independent wrapper
+        return FirebaseAnalytics.getInstance(context);
+    }
+
+    @Provides
+    @AppScope
+    LocalTextUtils providesLocalTextUtils() {
+        return new LocalTextUtils();
     }
 }

@@ -1,6 +1,7 @@
 package com.koalatea.thehollidayinn.softwareengineeringdaily.app;
 
 import android.app.Application;
+import android.support.annotation.VisibleForTesting;
 
 import com.koalatea.thehollidayinn.softwareengineeringdaily.BuildConfig;
 
@@ -12,7 +13,8 @@ import timber.log.Timber;
 
 public class SDEApp extends Application {
 
-    static AppComponent component;
+    @VisibleForTesting
+    public static AppComponent component;
 
     @Override
     public void onCreate() {
