@@ -15,7 +15,7 @@ import java.io.FileReader;
  * Created by Kurian on 25-Sep-17.
  */
 
-public abstract class BaseJsonParseTest extends BaseUnitTest {
+public abstract class BaseJsonParseUnitTest extends BaseUnitTest {
 
     protected Gson gson;
 

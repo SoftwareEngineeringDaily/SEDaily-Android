@@ -1,7 +1,7 @@
 package com.koalatea.thehollidayinn.softwareengineeringdaily.network.response;
 
 import com.google.gson.stream.JsonReader;
-import com.koalatea.thehollidayinn.softwareengineeringdaily.test.BaseJsonParseTest;
+import com.koalatea.thehollidayinn.softwareengineeringdaily.test.BaseJsonParseUnitTest;
 
 import org.junit.Test;
 
@@ -15,7 +15,7 @@ import static org.junit.Assert.assertTrue;
 /**
  * Created by Kurian on 25-Sep-17.
  */
-public class PostResponseTest extends BaseJsonParseTest{
+public class PostResponseTest extends BaseJsonParseUnitTest {
 
     private static final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
 
