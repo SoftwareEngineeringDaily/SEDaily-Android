@@ -85,4 +85,15 @@ class UserRepositoryImpl implements UserRepository {
             }
         });
     }
+
+    @Override
+    public Single<Boolean> isLoggedIn() {
+        return Single.just(preference)
+                .map(new Function<AuthPreference, Boolean>() {
+                    @Override
+                    public Boolean apply(@NonNull AuthPreference authPreference) throws Exception {
+                        return preference.isLoggedIn();
+                    }
+                });
+    }
 }

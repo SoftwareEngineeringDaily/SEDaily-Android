@@ -32,4 +32,10 @@ public interface UserRepository {
      * @return
      */
     Completable signOut();
+
+    /**
+     * Check if user is currently logged in
+     * @return true if there's an active account
+     */
+    Single<Boolean> isLoggedIn();
 }

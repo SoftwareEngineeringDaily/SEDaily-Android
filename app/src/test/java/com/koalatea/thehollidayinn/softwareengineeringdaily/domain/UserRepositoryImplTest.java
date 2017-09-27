@@ -102,4 +102,16 @@ public class UserRepositoryImplTest extends BaseUnitTest {
         repo.signOut().test().assertComplete();
         verify(preference).clearToken();
     }
+
+    @Test
+    public void isLoggedIn_returns_false_when_auth_source_is_false() throws Exception {
+        doReturn(false).when(preference).isLoggedIn();
+        repo.isLoggedIn().test().assertNoErrors().assertComplete().assertValue(false);
+    }
+
+    @Test
+    public void isLoggedIn_returns_true_when_auth_source_is_true() throws Exception {
+        doReturn(true).when(preference).isLoggedIn();
+        repo.isLoggedIn().test().assertNoErrors().assertComplete().assertValue(true);
+    }
 }

@@ -8,6 +8,8 @@ import com.koalatea.thehollidayinn.softwareengineeringdaily.data.DataModule;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.data.mapper.PostItemMapper;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.data.preference.AuthPreference;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.domain.DomainModule;
+import com.koalatea.thehollidayinn.softwareengineeringdaily.domain.PostRepository;
+import com.koalatea.thehollidayinn.softwareengineeringdaily.domain.UserRepository;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.network.NetworkModule;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.network.api.AuthNetworkService;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.network.api.EpisodePostNetworkService;
@@ -29,4 +31,6 @@ public interface AppComponent {
     PostItemMapper mapper();
     EpisodePostNetworkService episodePostNetworkService();
     AuthNetworkService authNetworkService();
+    PostRepository postRepository();
+    UserRepository userRepository();
 }
