@@ -13,6 +13,7 @@ import com.koalatea.thehollidayinn.softwareengineeringdaily.domain.UserRepositor
 import com.koalatea.thehollidayinn.softwareengineeringdaily.network.NetworkModule;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.network.api.AuthNetworkService;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.network.api.EpisodePostNetworkService;
+import com.koalatea.thehollidayinn.softwareengineeringdaily.presentation.PresenterCache;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.presentation.loginscreen.LoginModule;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.utils.LocalTextUtils;
 
@@ -35,4 +36,5 @@ public interface AppComponent {
     AuthNetworkService authNetworkService();
     PostRepository postRepository();
     UserRepository userRepository();
+    PresenterCache presenterCache();
 }

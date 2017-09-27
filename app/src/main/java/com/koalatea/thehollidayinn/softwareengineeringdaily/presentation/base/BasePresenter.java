@@ -4,6 +4,8 @@ import android.support.annotation.VisibleForTesting;
 
 import java.lang.ref.WeakReference;
 
+import io.reactivex.disposables.CompositeDisposable;
+
 /**
  * Created by Kurian on 27-Sep-17.
  */
@@ -12,6 +14,8 @@ public abstract class BasePresenter<V extends MVPContract.View>
 
     @VisibleForTesting
     WeakReference<V> viewRef;
+    @VisibleForTesting
+    protected final CompositeDisposable subscriptions = new CompositeDisposable();
 
     @Override
     public void bindView(V view) {
@@ -26,6 +30,14 @@ public abstract class BasePresenter<V extends MVPContract.View>
     @Override
     public V getView() {
         return viewRef.get();
+    }
+
+    /**
+     * Perform your clean up
+     */
+    @Override
+    public void destroy() {
+        subscriptions.clear();
     }
 
     /**

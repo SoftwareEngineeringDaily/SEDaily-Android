@@ -24,7 +24,7 @@ class LoginPresenterImpl extends BasePresenter<LoginView> implements LoginPresen
 
     @Override
     public void submitLogin(@NonNull String username, @NonNull String password) {
-        repository.login(username, password)
+        subscriptions.add(repository.login(username, password)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new BiConsumer<Boolean, Throwable>() {
@@ -34,7 +34,7 @@ class LoginPresenterImpl extends BasePresenter<LoginView> implements LoginPresen
                             loginResult(result);
                         }
                     }
-                });
+                }));
     }
 
     @VisibleForTesting

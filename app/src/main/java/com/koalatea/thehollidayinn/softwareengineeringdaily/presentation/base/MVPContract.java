@@ -23,6 +23,11 @@ public interface MVPContract {
         void unbind();
 
         /**
+         * Invoke at the point just before the presenter is destroyed
+         */
+        void destroy();
+
+        /**
          * Get the current view bound to the presenter (if exists)
          * @return a view of type {@link com.koalatea.thehollidayinn.softwareengineeringdaily.presentation.base.MVPContract.View}
          */
