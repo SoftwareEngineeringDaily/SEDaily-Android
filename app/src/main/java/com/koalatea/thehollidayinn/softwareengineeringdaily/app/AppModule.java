@@ -5,8 +5,11 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
+import android.support.v4.util.ArrayMap;
 
 import com.google.firebase.analytics.FirebaseAnalytics;
+import com.koalatea.thehollidayinn.softwareengineeringdaily.presentation.PresenterCache;
+import com.koalatea.thehollidayinn.softwareengineeringdaily.presentation.base.MVPContract;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.utils.LocalTextUtils;
 
 import dagger.Module;
@@ -53,5 +56,11 @@ public class AppModule {
     @AppScope
     LocalTextUtils providesLocalTextUtils() {
         return new LocalTextUtils();
+    }
+
+    @Provides
+    @AppScope
+    PresenterCache providesPresenterCache() {
+        return new PresenterCache(new ArrayMap<String, MVPContract.Presenter>());
     }
 }

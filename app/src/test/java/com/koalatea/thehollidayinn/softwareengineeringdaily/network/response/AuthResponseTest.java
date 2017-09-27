@@ -1,7 +1,7 @@
 package com.koalatea.thehollidayinn.softwareengineeringdaily.network.response;
 
 import com.google.gson.stream.JsonReader;
-import com.koalatea.thehollidayinn.softwareengineeringdaily.test.BaseJsonParseTest;
+import com.koalatea.thehollidayinn.softwareengineeringdaily.test.BaseJsonParseUnitTest;
 
 import org.junit.Test;
 
@@ -10,7 +10,7 @@ import static org.junit.Assert.*;
 /**
  * Created by Kurian on 25-Sep-17.
  */
-public class AuthResponseTest extends BaseJsonParseTest {
+public class AuthResponseTest extends BaseJsonParseUnitTest {
 
     @Test
     public void parsing_AuthResponse_contains_expected_values() throws Exception {

@@ -13,6 +13,8 @@ import com.koalatea.thehollidayinn.softwareengineeringdaily.domain.UserRepositor
 import com.koalatea.thehollidayinn.softwareengineeringdaily.network.NetworkModule;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.network.api.AuthNetworkService;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.network.api.EpisodePostNetworkService;
+import com.koalatea.thehollidayinn.softwareengineeringdaily.presentation.PresenterCache;
+import com.koalatea.thehollidayinn.softwareengineeringdaily.presentation.loginscreen.LoginModule;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.utils.LocalTextUtils;
 
 import dagger.Component;
@@ -21,7 +23,8 @@ import dagger.Component;
  * Created by Kurian on 25-Sep-17.
  */
 @AppScope
-@Component(modules = {AppModule.class, NetworkModule.class, DataModule.class, DomainModule.class})
+@Component(modules = {AppModule.class, NetworkModule.class, DataModule.class, DomainModule.class,
+        LoginModule.class})
 public interface AppComponent {
     Context context();
     SharedPreferences sharedPreferences();
@@ -33,4 +36,5 @@ public interface AppComponent {
     AuthNetworkService authNetworkService();
     PostRepository postRepository();
     UserRepository userRepository();
+    PresenterCache presenterCache();
 }

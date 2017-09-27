@@ -6,8 +6,12 @@ import android.test.mock.MockContext;
 
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.app.AppScope;
+import com.koalatea.thehollidayinn.softwareengineeringdaily.presentation.PresenterCache;
+import com.koalatea.thehollidayinn.softwareengineeringdaily.presentation.base.MVPContract;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.test.mock.TestTextUtils;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.utils.LocalTextUtils;
+
+import java.util.HashMap;
 
 import dagger.Module;
 import dagger.Provides;
@@ -43,5 +47,11 @@ class UnitTestAppModule {
     @AppScope
     LocalTextUtils providesLocalTextUtils() {
         return spy(new TestTextUtils());
+    }
+
+    @Provides
+    @AppScope
+    PresenterCache providesPresenterCache() {
+        return spy(new PresenterCache(new HashMap<String, MVPContract.Presenter>()));
     }
 }
