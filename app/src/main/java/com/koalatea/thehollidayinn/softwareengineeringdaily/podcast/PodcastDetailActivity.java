@@ -21,6 +21,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.google.firebase.analytics.FirebaseAnalytics;
+import com.koalatea.thehollidayinn.softwareengineeringdaily.PlaybackControllerActivity;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.R;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.audio.MediaPlayer;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.audio.MusicProvider;
@@ -34,7 +35,7 @@ import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
-public class PodcastDetailActivity extends AppCompatActivity {
+public class PodcastDetailActivity extends PlaybackControllerActivity {
     private PostRepository postRepository;
     private UserRepository userRepository;
     private TextView scoreText;

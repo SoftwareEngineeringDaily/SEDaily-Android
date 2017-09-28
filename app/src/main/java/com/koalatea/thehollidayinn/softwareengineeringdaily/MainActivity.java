@@ -31,62 +31,10 @@ import com.koalatea.thehollidayinn.softwareengineeringdaily.mediaui.PlaybackCont
 import com.koalatea.thehollidayinn.softwareengineeringdaily.podcast.PodListFragment;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.podcast.RecentPodcastFragment;
 
-public class MainActivity extends AppCompatActivity implements SearchView.OnQueryTextListener {
+public class MainActivity extends PlaybackControllerActivity implements SearchView.OnQueryTextListener {
     private UserRepository userRepository;
     private RecentPodcastFragment firstFragment;
     private FilterRepository filterRepository;
-
-    private MediaBrowserCompat mMediaBrowser;
-    private PlaybackControlsFragment mControlsFragment;
-
-    private final MediaBrowserCompat.ConnectionCallback mConnectionCallbacks =
-            new MediaBrowserCompat.ConnectionCallback() {
-                @Override
-                public void onConnected() {
-
-                    // Get the token for the MediaSession
-                    MediaSessionCompat.Token token = mMediaBrowser.getSessionToken();
-
-                    // Create a MediaControllerCompat
-                    MediaControllerCompat mediaController =
-                            null;
-                    try {
-                        mediaController = new MediaControllerCompat(MainActivity.this, token);
-                    } catch (RemoteException e) {
-                        e.printStackTrace();
-                    }
-
-                    // Save the controller
-                    MediaControllerCompat.setMediaController(MainActivity.this, mediaController);
-
-                    // Finish building the UI
-                    buildTransportControls();
-                }
-
-                @Override
-                public void onConnectionSuspended() {
-                    // The Service has crashed. Disable transport controls until it automatically reconnects
-                }
-
-                @Override
-                public void onConnectionFailed() {
-                    // The Service has refused our connection
-                }
-            };
-    MediaControllerCompat.Callback controllerCallback =
-            new MediaControllerCompat.Callback() {
-                @Override
-                public void onMetadataChanged(MediaMetadataCompat metadata) {}
-
-                @Override
-                public void onPlaybackStateChanged(PlaybackStateCompat state) {
-                    if (shouldShowControls()) {
-                        showPlaybackControls();
-                    } else {
-                        hidePlaybackControls();
-                    }
-                }
-            };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -98,11 +46,6 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
 
         userRepository = UserRepository.getInstance(this);
         filterRepository = FilterRepository.getInstance();
-
-        mMediaBrowser = new MediaBrowserCompat(this,
-                new ComponentName(this, MusicService.class),
-                mConnectionCallbacks,
-                null); // optional Bundle
 
         setUpBottomNavigation();
         showInitialPage();
@@ -208,65 +151,6 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
     }
 
     @Override
-    public void onStart() {
-        super.onStart();
-        mControlsFragment = (PlaybackControlsFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.fragment_playback_controls);
-        mMediaBrowser.connect();
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-        // (see "stay in sync with the MediaSession")
-        if (MediaControllerCompat.getMediaController(this) != null) {
-            MediaControllerCompat.getMediaController(this).unregisterCallback(controllerCallback);
-        }
-        mMediaBrowser.disconnect();
-    }
-
-    void buildTransportControls()
-    {
-        // Grab the view for the play/pause button
-        ImageView mPlayPause = (ImageView) findViewById(R.id.logo);
-
-        // @TODO: Move this to fragment player when we add it
-//        mPlayPause.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                // Since this is a play/pause button, you'll need to test the current state
-//                // and choose the action accordingly
-//
-//                int pbState = MediaControllerCompat.getMediaController(MainActivity.this).getPlaybackState().getState();
-//                if (pbState == PlaybackStateCompat.STATE_PLAYING) {
-//                    MediaControllerCompat.getMediaController(MainActivity.this).getTransportControls().pause();
-//                } else {
-//                    MediaControllerCompat.getMediaController(MainActivity.this).getTransportControls().play();
-//                }
-//            }
-//        });
-
-        MediaControllerCompat mediaController = MediaControllerCompat.getMediaController(MainActivity.this);
-
-        // Display the initial state
-        MediaMetadataCompat metadata = mediaController.getMetadata();
-        PlaybackStateCompat pbState = mediaController.getPlaybackState();
-
-        // Register a Callback to stay in sync
-        mediaController.registerCallback(controllerCallback);
-
-        if (shouldShowControls()) {
-            showPlaybackControls();
-        } else {
-            hidePlaybackControls();
-        }
-
-        if (mControlsFragment != null) {
-            mControlsFragment.onConnected();
-        }
-    }
-
-    @Override
     public boolean onQueryTextSubmit(String query) {
         filterRepository.setSearch(query);
         return false;
@@ -277,43 +161,5 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
         return true;
     }
 
-    protected void showPlaybackControls() {
-//        if (NetworkHelper.isOnline(this)) {
-            getSupportFragmentManager().beginTransaction()
-//                    .setCustomAnimations(
-//                            R.animator.slide_in_from_bottom, R.animator.slide_out_to_bottom,
-//                            R.animator.slide_in_from_bottom, R.animator.slide_out_to_bottom)
-                    .show(mControlsFragment)
-                    .commit();
-//        }
-    }
 
-    protected void hidePlaybackControls() {
-        getSupportFragmentManager().beginTransaction()
-                .hide(mControlsFragment)
-                .commit();
-    }
-
-    /**
-     * Check if the MediaSession is active and in a "playback-able" state
-     * (not NONE and not STOPPED).
-     *
-     * @return true if the MediaSession's state requires playback controls to be visible.
-     */
-    protected boolean shouldShowControls() {
-        MediaControllerCompat mediaController = MediaControllerCompat.getMediaController(this);
-        if (mediaController == null ||
-                mediaController.getMetadata() == null ||
-                mediaController.getPlaybackState() == null) {
-            return false;
-        }
-        switch (mediaController.getPlaybackState().getState()) {
-            case PlaybackStateCompat.STATE_ERROR:
-            case PlaybackStateCompat.STATE_NONE:
-            case PlaybackStateCompat.STATE_STOPPED:
-                return false;
-            default:
-                return true;
-        }
-    }
 }

@@ -51,7 +51,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_gravity="bottom"
-        android:layout_marginBottom="40dp"
+        android:layout_marginBottom="50dp"
         app:cardElevation="8dp">
 
         <fragment android:name="com.koalatea.thehollidayinn.softwareengineeringdaily.mediaui.PlaybackControlsFragment"
