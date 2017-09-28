@@ -23,19 +23,21 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 
-import com.google.firebase.analytics.FirebaseAnalytics;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.auth.LoginRegisterActivity;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.audio.MusicService;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.data.repositories.FilterRepository;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.data.repositories.UserRepository;
+import com.koalatea.thehollidayinn.softwareengineeringdaily.mediaui.PlaybackControlsFragment;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.podcast.PodListFragment;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.podcast.RecentPodcastFragment;
 
 public class MainActivity extends AppCompatActivity implements SearchView.OnQueryTextListener {
     private UserRepository userRepository;
     private RecentPodcastFragment firstFragment;
-    private MediaBrowserCompat mMediaBrowser;
     private FilterRepository filterRepository;
+
+    private MediaBrowserCompat mMediaBrowser;
+    private PlaybackControlsFragment mControlsFragment;
 
     private final MediaBrowserCompat.ConnectionCallback mConnectionCallbacks =
             new MediaBrowserCompat.ConnectionCallback() {
@@ -77,7 +79,13 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
                 public void onMetadataChanged(MediaMetadataCompat metadata) {}
 
                 @Override
-                public void onPlaybackStateChanged(PlaybackStateCompat state) {}
+                public void onPlaybackStateChanged(PlaybackStateCompat state) {
+                    if (shouldShowControls()) {
+                        showPlaybackControls();
+                    } else {
+                        hidePlaybackControls();
+                    }
+                }
             };
 
     @Override
@@ -202,6 +210,8 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
     @Override
     public void onStart() {
         super.onStart();
+        mControlsFragment = (PlaybackControlsFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.fragment_playback_controls);
         mMediaBrowser.connect();
     }
 
@@ -244,6 +254,16 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
 
         // Register a Callback to stay in sync
         mediaController.registerCallback(controllerCallback);
+
+        if (shouldShowControls()) {
+            showPlaybackControls();
+        } else {
+            hidePlaybackControls();
+        }
+
+        if (mControlsFragment != null) {
+            mControlsFragment.onConnected();
+        }
     }
 
     @Override
@@ -255,5 +275,45 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
     @Override
     public boolean onQueryTextChange(String newText) {
         return true;
+    }
+
+    protected void showPlaybackControls() {
+//        if (NetworkHelper.isOnline(this)) {
+            getSupportFragmentManager().beginTransaction()
+//                    .setCustomAnimations(
+//                            R.animator.slide_in_from_bottom, R.animator.slide_out_to_bottom,
+//                            R.animator.slide_in_from_bottom, R.animator.slide_out_to_bottom)
+                    .show(mControlsFragment)
+                    .commit();
+//        }
+    }
+
+    protected void hidePlaybackControls() {
+        getSupportFragmentManager().beginTransaction()
+                .hide(mControlsFragment)
+                .commit();
+    }
+
+    /**
+     * Check if the MediaSession is active and in a "playback-able" state
+     * (not NONE and not STOPPED).
+     *
+     * @return true if the MediaSession's state requires playback controls to be visible.
+     */
+    protected boolean shouldShowControls() {
+        MediaControllerCompat mediaController = MediaControllerCompat.getMediaController(this);
+        if (mediaController == null ||
+                mediaController.getMetadata() == null ||
+                mediaController.getPlaybackState() == null) {
+            return false;
+        }
+        switch (mediaController.getPlaybackState().getState()) {
+            case PlaybackStateCompat.STATE_ERROR:
+            case PlaybackStateCompat.STATE_NONE:
+            case PlaybackStateCompat.STATE_STOPPED:
+                return false;
+            default:
+                return true;
+        }
     }
 }
