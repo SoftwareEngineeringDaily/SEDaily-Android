@@ -147,7 +147,8 @@ public class Playback implements AudioManager.OnAudioFocusChangeListener,
         } else {
             mState = PlaybackStateCompat.STATE_STOPPED;
             relaxResources(false); // release everything except MediaPlayer
-            MediaMetadataCompat track = mMusicProvider.getMusic(item.getDescription().getMediaId());
+            String currentMediaId = item.getDescription().getMediaId();
+            MediaMetadataCompat track = mMusicProvider.getMusic(currentMediaId);
 
             String source = track.getString(MediaMetadataCompat.METADATA_KEY_MEDIA_URI);
             try {
@@ -169,6 +170,21 @@ public class Playback implements AudioManager.OnAudioFocusChangeListener,
                 // Wifi lock, which prevents the Wifi radio from going to
                 // sleep while the song is playing.
                 mWifiLock.acquire();
+
+                // Add the duration since we are streaming
+                long duration = mMediaPlayer.getDuration();
+                String oldSource = item.getDescription().getMediaUri().toString();
+                String title = item.getDescription().getTitle().toString();
+
+                // @TODO: Abstrac this to podcast UseCase
+                MediaMetadataCompat updatedItem = new MediaMetadataCompat.Builder()
+                        .putString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID, currentMediaId)
+                        .putString(MediaMetadataCompat.METADATA_KEY_MEDIA_URI, oldSource)
+                        .putLong(MediaMetadataCompat.METADATA_KEY_DURATION, duration)
+                        .putString(MediaMetadataCompat.METADATA_KEY_TITLE, title)
+                        .build();
+
+                mMusicProvider.updateMusic(currentMediaId, updatedItem);
 
                 if (mCallback != null) {
                     mCallback.onPlaybackStatusChanged(mState);

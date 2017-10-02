@@ -2,6 +2,8 @@ package com.koalatea.thehollidayinn.softwareengineeringdaily.podcast;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.media.MediaMetadataRetriever;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.CollapsingToolbarLayout;
@@ -49,6 +51,8 @@ public class PodcastDetailActivity extends PlaybackControllerActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_podcast_detail);
+
+        this.setUp();
 
         // Obtain the FirebaseAnalytics instance.
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
@@ -268,6 +272,8 @@ public class PodcastDetailActivity extends PlaybackControllerActivity {
                 if (post.mp3 == null || post.mp3.isEmpty()) {
                     return;
                 }
+
+                // @TODO: Download if not downloaded
 
                 String source = post.mp3;
                 String id = String.valueOf(source.hashCode());

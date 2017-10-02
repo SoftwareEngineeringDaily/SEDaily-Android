@@ -41,6 +41,8 @@ public class MainActivity extends PlaybackControllerActivity implements SearchVi
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        this.setUp();
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
