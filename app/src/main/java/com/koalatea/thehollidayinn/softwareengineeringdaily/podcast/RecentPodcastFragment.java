@@ -19,6 +19,8 @@ import com.koalatea.thehollidayinn.softwareengineeringdaily.R;
 public class RecentPodcastFragment extends Fragment {
     RecentPodcatsPageAdapter recentPodcatsPageAdapter;
     ViewPager viewPager;
+    TabLayout tabLayout;
+
     public static RecentPodcastFragment newInstance() {
         RecentPodcastFragment f = new RecentPodcastFragment();
         return f;
@@ -30,7 +32,7 @@ public class RecentPodcastFragment extends Fragment {
         View rootView = (View) inflater.inflate(
                 R.layout.fragment_recent_podcast, container, false);
 
-        final TabLayout tabLayout = (TabLayout) rootView.findViewById(R.id.tabs);
+        tabLayout = (TabLayout) rootView.findViewById(R.id.tabs);
         recentPodcatsPageAdapter = new RecentPodcatsPageAdapter(this.getActivity().getSupportFragmentManager());
         viewPager = (ViewPager) rootView.findViewById(R.id.pager);
         viewPager.setAdapter(recentPodcatsPageAdapter);
@@ -42,5 +44,10 @@ public class RecentPodcastFragment extends Fragment {
         });
 
         return rootView;
+    }
+
+    public void goHome () {
+        TabLayout.Tab tab = tabLayout.getTabAt(0);
+        tab.select();
     }
 }

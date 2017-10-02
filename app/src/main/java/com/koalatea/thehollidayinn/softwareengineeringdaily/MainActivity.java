@@ -154,6 +154,7 @@ public class MainActivity extends PlaybackControllerActivity implements SearchVi
 
     @Override
     public boolean onQueryTextSubmit(String query) {
+        firstFragment.goHome();
         filterRepository.setSearch(query);
         return false;
     }
