@@ -9,7 +9,9 @@ import com.koalatea.thehollidayinn.softwareengineeringdaily.network.response.Aut
 import io.reactivex.Completable;
 import io.reactivex.Single;
 import io.reactivex.functions.Action;
+import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
+import timber.log.Timber;
 
 /**
  * Created by Kurian on 26-Sep-17.
@@ -22,6 +24,7 @@ class UserRepositoryImpl implements UserRepository {
 
     public UserRepositoryImpl(@NonNull AuthNetworkService api,
                               @NonNull AuthPreference preference) {
+        Timber.tag(UserRepositoryImpl.class.getCanonicalName());
         this.api = api;
         this.preference = preference;
     }
@@ -39,14 +42,16 @@ class UserRepositoryImpl implements UserRepository {
                     @Override
                     public Boolean apply(@NonNull String token) throws Exception {
                         preference.saveToken(token);
+                        Timber.d("Token value: %1$s, logged in status %2$b",
+                                preference.getToken(),
+                                preference.isLoggedIn());
                         return preference.isLoggedIn();
                     }
                 })
-                .onErrorReturn(new Function<Throwable, Boolean>() {
+                .doOnError(new Consumer<Throwable>() {
                     @Override
-                    public Boolean apply(@NonNull Throwable throwable) throws Exception {
-                        preference.clearToken();
-                        return Boolean.FALSE;
+                    public void accept(Throwable throwable) throws Exception {
+                        Timber.e(throwable, throwable.getMessage());
                     }
                 });
     }

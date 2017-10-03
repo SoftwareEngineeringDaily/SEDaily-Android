@@ -11,7 +11,13 @@ import dagger.Provides;
  * Created by Kurian on 27-Sep-17.
  */
 @Module
-public class LoginModule {
+class LoginModule {
+
+    private final LoginFragment fragment;
+
+    LoginModule(@NonNull LoginFragment fragment) {
+        this.fragment = fragment;
+    }
 
     @Provides
     @LoginScope

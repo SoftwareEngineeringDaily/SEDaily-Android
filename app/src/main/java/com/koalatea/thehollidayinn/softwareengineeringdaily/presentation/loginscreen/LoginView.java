@@ -13,4 +13,11 @@ public interface LoginView extends MVPContract.View {
     void loginSuccess();
     void showProgressView();
     void hideProgressView();
+    void showUsernameError(@StringRes int errorString);
+    void showPasswordError(@StringRes int errorString);
+    void dismissView();
+    void showRegistrationView();
+    void showLoginView();
+    void disableModeToggle();
+    void enableModeToggle();
 }

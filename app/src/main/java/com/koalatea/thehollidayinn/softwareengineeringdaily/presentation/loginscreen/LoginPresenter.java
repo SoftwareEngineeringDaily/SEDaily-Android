@@ -10,4 +10,8 @@ import com.koalatea.thehollidayinn.softwareengineeringdaily.presentation.base.MV
 
 public interface LoginPresenter extends MVPContract.Presenter<LoginView> {
     void submitLogin(@NonNull String username, @NonNull String password);
+    void submitRegistration(@NonNull String username, @NonNull String password,
+                            @NonNull String confirmPassword);
+    void checkLoginStatus();
+    void onModeChanged(boolean isLogin);
 }
