@@ -18,9 +18,8 @@ import android.widget.EditText;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.R;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.presentation.base.BaseDialogFragment;
 
-import javax.inject.Inject;
-
 import butterknife.BindView;
+import butterknife.OnCheckedChanged;
 
 /**
  * Created by Kurian on 27-Sep-17.
@@ -69,25 +68,26 @@ public class LoginFragment extends BaseDialogFragment<LoginView, LoginPresenter>
     }
 
     private void initMode() {
-        if(modeToggle.isChecked()) {
+        if (modeToggle.isChecked()) {
             confirmPasswordInput.setVisibility(View.GONE);
             //TODO set IME action labels depending on mode
         } else {
             confirmPasswordInput.setVisibility(View.VISIBLE);
         }
-        modeToggle.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                getPresenter().onModeChanged(b);
-            }
-        });
+    }
+
+    @OnCheckedChanged(R.id.sign_in_mode_toggle)
+    void onSignInModeChanged(CompoundButton button, boolean mode) {
+        getPresenter().onModeChanged(mode);
     }
 
     @Override
     public void onStart() {
         super.onStart();
-        //Work-around to prevent auto-dismissal of the dialog when the positive button has been clicked
-        Button save = ((android.support.v7.app.AlertDialog)getDialog())
+        getPresenter().onModeChanged(modeToggle.isChecked());
+        //Work-around to prevent auto-dismissal of the dialog when the positive button has been
+        // clicked
+        Button save = ((android.support.v7.app.AlertDialog) getDialog())
                 .getButton(DialogInterface.BUTTON_POSITIVE);
         save.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -163,6 +163,24 @@ public class LoginFragment extends BaseDialogFragment<LoginView, LoginPresenter>
     public void showPasswordError(@StringRes int errorString) {
         passwordInput.setErrorEnabled(true);
         passwordInput.setError(getString(errorString));
+        passwordField.setText("");
+    }
+
+    @Override
+    public void showConfirmationPasswordError(@StringRes int errorString) {
+        confirmPasswordInput.setErrorEnabled(true);
+        confirmPasswordInput.setError(getString(errorString));
+        confirmPasswordField.setText("");
+    }
+
+    @Override
+    public void showPasswordMismatchError(@StringRes int errorString) {
+        passwordInput.setEnabled(true);
+        confirmPasswordInput.setEnabled(true);
+        passwordInput.setError(getString(errorString));
+        confirmPasswordInput.setError(getString(errorString));
+        passwordField.setText("");
+        confirmPasswordField.setText("");
     }
 
     @Override

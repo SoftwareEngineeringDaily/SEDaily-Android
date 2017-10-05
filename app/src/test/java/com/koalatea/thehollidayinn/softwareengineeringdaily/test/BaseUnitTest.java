@@ -2,6 +2,8 @@ package com.koalatea.thehollidayinn.softwareengineeringdaily.test;
 
 import com.koalatea.thehollidayinn.softwareengineeringdaily.app.SDEApp;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.test.dagger.UnitTestAppComponent;
+import com.koalatea.thehollidayinn.softwareengineeringdaily.test.rule
+        .ImmediateRxSchedulersOverrideRule;
 
 import org.junit.After;
 import org.junit.Before;
@@ -17,6 +19,10 @@ public abstract class BaseUnitTest {
 
     @Rule
     public MockitoRule mockitoRule = MockitoJUnit.rule();
+
+    @Rule
+    public final ImmediateRxSchedulersOverrideRule overrideSchedulersRule =
+            new ImmediateRxSchedulersOverrideRule();
 
     @Before
     public void setUp() {

@@ -9,4 +9,5 @@
     <string name="submit">Submit</string>
     <string name="cancel">@android:string/cancel</string>
     <string name="required_field">Required Field</string>
+    <string name="unable_to_authenticate">Unable to add account</string>
 </resources>

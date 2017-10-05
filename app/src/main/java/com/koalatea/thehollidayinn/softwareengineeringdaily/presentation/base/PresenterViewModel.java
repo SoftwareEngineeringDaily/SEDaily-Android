@@ -6,8 +6,9 @@ import timber.log.Timber;
 
 /**
  * Created by Kurian on 01-Oct-17.
+ * {@link ViewModel} container to preserve {@link com.koalatea.thehollidayinn.softwareengineeringdaily.presentation.base.MVPContract.Presenter
+ * android lifecycle and during configuration changes
  */
-
 public class PresenterViewModel<V extends MVPContract.View,
         P extends MVPContract.Presenter> extends ViewModel {
 

@@ -9,4 +9,5 @@
     <string name="sign_in_screen_submit">@string/submit</string>
     <string name="sign_in_screen_cancel">@string/cancel</string>
     <string name="sign_in_screen_required_field_error">@string/required_field</string>
+    <string name="sign_in_screen_auth_failed">@string/unable_to_authenticate</string>
 </resources>

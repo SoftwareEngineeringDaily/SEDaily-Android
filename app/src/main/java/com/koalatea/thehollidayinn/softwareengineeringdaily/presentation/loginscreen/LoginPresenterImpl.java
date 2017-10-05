@@ -37,7 +37,7 @@ class LoginPresenterImpl extends BasePresenter<LoginView> implements LoginPresen
     @Override
     public void onModeChanged(boolean isLogin) {
         this.isLoginMode = isLogin;
-        if(isViewBound()) {
+        if (isViewBound()) {
             if (isLoginMode) {
                 getView().showLoginView();
             } else {
@@ -48,26 +48,21 @@ class LoginPresenterImpl extends BasePresenter<LoginView> implements LoginPresen
 
     @Override
     public void submitLogin(@NonNull String username, @NonNull String password) {
-        getView().disableModeToggle();
-        Timber.d("Login submitted");
-        if(isLoginInputValid(username, password)) {
+        enableSignInModeToggle(false);
+        if (isLoginInputValid(username, password)) {
             subscriptions.add(getAuthenticationAction(username, password, isLoginMode)
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .doFinally(new Action() {
                         @Override
                         public void run() throws Exception {
-                            if(isViewBound()) {
-                                getView().enableModeToggle();
-                            }
+                            enableSignInModeToggle(true);
                         }
                     })
                     .subscribe(new Consumer<Boolean>() {
                         @Override
                         public void accept(Boolean result) throws Exception {
-                            if (isViewBound()) {
-                                authResult(result);
-                            }
+                            authResult(result);
                         }
                     }, new Consumer<Throwable>() {
                         @Override
@@ -76,18 +71,17 @@ class LoginPresenterImpl extends BasePresenter<LoginView> implements LoginPresen
                         }
                     }));
         } else {
-            if (isViewBound()) {
-                validateUsername(username);
-                validatePassword(password);
-            }
+            enableSignInModeToggle(true);
+            validateUsername(username);
+            validatePassword(password);
         }
     }
 
 
     @VisibleForTesting
     Single<Boolean> getAuthenticationAction(String username, String password,
-                                            boolean isLoginMode) {
-        if(isLoginMode) {
+            boolean isLoginMode) {
+        if (isLoginMode) {
             return repository.login(username, password);
         } else {
             return repository.register(username, password);
@@ -96,23 +90,70 @@ class LoginPresenterImpl extends BasePresenter<LoginView> implements LoginPresen
 
     @Override
     public void submitRegistration(@NonNull String username, @NonNull String password,
-                                   @NonNull String confirmPassword) {
+            @NonNull String confirmPassword) {
+        getView().disableModeToggle();
+        if (!doesConfirmationMatchPassword(password, confirmPassword)) {
+            enableSignInModeToggle(true);
+            if (isViewBound()) {
+                getView().showPasswordMismatchError(R.string.sign_in_screen_confirmation_error);
+            }
+        } else if (!isRegistrationInputValid(username, password, confirmPassword)) {
+            enableSignInModeToggle(true);
+            validateUsername(username);
+            validatePassword(password);
+            validateConfirmation(confirmPassword);
+        } else {
+            registerUser(username, password);
+        }
+    }
 
+    @VisibleForTesting
+    void registerUser(@NonNull String username, @NonNull String password) {
+        repository.register(username, password)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .doFinally(new Action() {
+                    @Override
+                    public void run() throws Exception {
+                        enableSignInModeToggle(true);
+                    }
+                })
+                .subscribe(new Consumer<Boolean>() {
+                    @Override
+                    public void accept(Boolean result) throws Exception {
+                        authResult(result);
+                    }
+                }, new Consumer<Throwable>() {
+                    @Override
+                    public void accept(Throwable throwable) throws Exception {
+                        Timber.e(throwable, throwable.getMessage());
+                    }
+                });
     }
 
     @VisibleForTesting
     void validatePassword(String password) {
-        if(SDEApp.component().textUtils().isEmpty(password)) {
-            if(isViewBound()) {
+        if (!isPasswordValid(password)) {
+            if (isViewBound()) {
                 getView().showPasswordError(R.string.sign_in_screen_required_field_error);
             }
         }
     }
 
     @VisibleForTesting
+    void validateConfirmation(String password) {
+        if (!isPasswordValid(password)) {
+            if (isViewBound()) {
+                getView().showConfirmationPasswordError(
+                        R.string.sign_in_screen_required_field_error);
+            }
+        }
+    }
+
+    @VisibleForTesting
     void validateUsername(String username) {
-        if(SDEApp.component().textUtils().isEmpty(username)) {
-            if(isViewBound()) {
+        if (SDEApp.component().textUtils().isEmpty(username)) {
+            if (isViewBound()) {
                 getView().showUsernameError(R.string.sign_in_screen_required_field_error);
             }
         }
@@ -120,10 +161,12 @@ class LoginPresenterImpl extends BasePresenter<LoginView> implements LoginPresen
 
     @VisibleForTesting
     void authResult(boolean isSuccess) {
-        if(isSuccess) {
-            getView().loginSuccess();
-        } else {
-            getView().showErrorMessage(0);
+        if (isViewBound()) {
+            if (isSuccess) {
+                getView().loginSuccess();
+            } else {
+                getView().showErrorMessage(R.string.sign_in_screen_auth_failed);
+            }
         }
     }
 
@@ -134,17 +177,39 @@ class LoginPresenterImpl extends BasePresenter<LoginView> implements LoginPresen
     }
 
     @VisibleForTesting
+    boolean isPasswordValid(String password) {
+        return !SDEApp.component().textUtils().isEmpty(password);
+    }
+
+    @VisibleForTesting
+    boolean isUsernameValid(String username) {
+        return !SDEApp.component().textUtils().isEmpty(username);
+    }
+
+    @VisibleForTesting
     boolean doesConfirmationMatchPassword(String password, String confirmation) {
-        return SDEApp.component().textUtils().equals(password, confirmation);    }
+        return SDEApp.component().textUtils().equals(password, confirmation);
+    }
 
     @VisibleForTesting
     boolean isRegistrationInputValid(String username, String password,
-                                     String confirmationPassword) {
+            String confirmationPassword) {
         LocalTextUtils textUtils = SDEApp.component().textUtils();
         return !textUtils.isEmpty(username)
                 && !textUtils.isEmpty(password)
                 && !textUtils.isEmpty(confirmationPassword)
                 && doesConfirmationMatchPassword(password, confirmationPassword);
+    }
+
+    @VisibleForTesting
+    void enableSignInModeToggle(boolean enable) {
+        if (isViewBound()) {
+            if (enable) {
+                getView().enableModeToggle();
+            } else {
+                getView().disableModeToggle();
+            }
+        }
     }
 
     @Override
@@ -155,7 +220,7 @@ class LoginPresenterImpl extends BasePresenter<LoginView> implements LoginPresen
                 .subscribe(new BiConsumer<Boolean, Throwable>() {
                     @Override
                     public void accept(Boolean isLoggedIn, Throwable throwable) throws Exception {
-                        if(isLoggedIn && isViewBound()) {
+                        if (isLoggedIn && isViewBound()) {
                             getView().dismissView();
                         }
                     }

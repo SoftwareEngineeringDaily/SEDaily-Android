@@ -6,15 +6,17 @@ import com.koalatea.thehollidayinn.softwareengineeringdaily.R;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.domain.UserRepository;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.test.BasePresenterUnitTest;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mock;
+
+import io.reactivex.Single;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
@@ -43,12 +45,11 @@ public class LoginPresenterImplTest extends BasePresenterUnitTest<LoginView, Log
         verify(view).loginSuccess();
     }
 
-    @Ignore
     @Test
     public void loginResult_shows_error_message_when_result_false() throws Exception {
         initPresenter();
         presenter.authResult(false);
-        verify(view).showErrorMessage(anyInt());
+        verify(view).showErrorMessage(eq(R.string.sign_in_screen_auth_failed));
     }
 
     @Test
@@ -98,13 +99,30 @@ public class LoginPresenterImplTest extends BasePresenterUnitTest<LoginView, Log
     }
 
     @Test
+    public void validateConfirmation_shows_error_to_view_when_invalid() throws Exception {
+        initPresenter();
+        presenter.validateConfirmation(null);
+        verify(view).showConfirmationPasswordError(
+                eq(R.string.sign_in_screen_required_field_error));
+    }
+
+    @Test
+    public void validateConfirmation_does_not_show_error_when_valid_password() throws Exception {
+        initPresenter();
+        presenter.validateConfirmation("password");
+        verify(view, never()).showConfirmationPasswordError(
+                eq(R.string.sign_in_screen_required_field_error));
+    }
+
+    @Test
     public void doesConfirmationMatchPassword_returns_true_when_passwords_match() throws Exception {
         initPresenter();
         assertTrue(presenter.doesConfirmationMatchPassword("password", "password"));
     }
 
     @Test
-    public void doesConfirmationMatchPassword_returns_false_when_passwords_match() throws Exception {
+    public void doesConfirmationMatchPassword_returns_false_when_passwords_match()
+            throws Exception {
         initPresenter();
         assertFalse(presenter.doesConfirmationMatchPassword("password", "confirmation"));
     }
@@ -133,7 +151,8 @@ public class LoginPresenterImplTest extends BasePresenterUnitTest<LoginView, Log
     public void isRegistrationInputValid_returns_false_when_password_and_confirmation_mismatch()
             throws Exception {
         initPresenter();
-        final boolean result = presenter.isRegistrationInputValid("user", "password", "confirmation");
+        final boolean result = presenter.isRegistrationInputValid("user", "password",
+                "confirmation");
         assertFalse(result);
     }
 
@@ -159,6 +178,94 @@ public class LoginPresenterImplTest extends BasePresenterUnitTest<LoginView, Log
         initPresenter();
         final boolean result = presenter.isRegistrationInputValid("user", "password", "");
         assertFalse(result);
+    }
+
+    @Test
+    public void isPasswordValid_returns_false_with_empty_input() throws Exception {
+        initPresenter();
+        assertFalse(presenter.isPasswordValid(""));
+    }
+
+    @Test
+    public void isPasswordValid_returns_true_with_valid_input() throws Exception {
+        initPresenter();
+        assertTrue(presenter.isPasswordValid("password"));
+    }
+
+    @Test
+    public void isUsernameValid_returns_false_with_valid_input() throws Exception {
+        initPresenter();
+        assertFalse(presenter.isUsernameValid(""));
+    }
+
+    @Test
+    public void isUsernameValid_returns_true_with_valid_input() throws Exception {
+        initPresenter();
+        assertTrue(presenter.isUsernameValid("username"));
+    }
+
+    @Test
+    public void enableSignInModeToggle_enables_sign_in_mode_when_true() throws Exception {
+        initPresenter();
+        presenter.enableSignInModeToggle(true);
+        verify(view).enableModeToggle();
+    }
+
+    @Test
+    public void enableSignInModeToggle_disables_sign_in_mode_when_false() throws Exception {
+        initPresenter();
+        presenter.enableSignInModeToggle(false);
+        verify(view).disableModeToggle();
+    }
+
+    @Test
+    public void onModeChanged_shows_login_view_when_true() throws Exception {
+        initPresenter();
+        presenter.onModeChanged(true);
+        verify(view).showLoginView();
+    }
+
+    @Test
+    public void onModeChanged_shows_registration_view_when_true() throws Exception {
+        initPresenter();
+        presenter.onModeChanged(false);
+        verify(view).showRegistrationView();
+    }
+
+    @Test
+    public void submitLogin_disables_loginToggle() throws Exception {
+        initPresenter();
+        presenter.submitLogin("", "");
+        verify(view).disableModeToggle();
+    }
+
+    @Test
+    public void submitLogin_enable_loginToggle() throws Exception {
+        initPresenter();
+        presenter.submitLogin("", "");
+        verify(view).enableModeToggle();
+    }
+
+    @Test
+    public void getAuthenticationAction_invokes_login_observable() throws Exception {
+        initPresenter();
+        presenter.getAuthenticationAction("user", "pass", true);
+        verify(userRepository).login(eq("user"), eq("pass"));
+    }
+
+    @Test
+    public void getAuthenticationAction_invokes_register_observable() throws Exception {
+        initPresenter();
+        presenter.getAuthenticationAction("user", "pass", false);
+        verify(userRepository).register(eq("user"), eq("pass"));
+    }
+
+    @Test
+    public void submitLogin_sends_authResult_when_success() throws Exception {
+        initPresenter();
+        doReturn(Single.just(true)).when(userRepository).login(anyString(), anyString());
+        presenter.submitLogin("user", "password");
+        verify(view).loginSuccess();
     }
 
     @NonNull
