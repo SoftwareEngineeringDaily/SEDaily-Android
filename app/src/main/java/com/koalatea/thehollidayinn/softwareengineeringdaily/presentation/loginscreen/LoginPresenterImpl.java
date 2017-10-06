@@ -107,6 +107,12 @@ class LoginPresenterImpl extends BasePresenter<LoginView> implements LoginPresen
         subscriptions.add(repository.login(username, password)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
+                .doFinally(new Action() {
+                    @Override
+                    public void run() throws Exception {
+                        enableSignInModeToggle(true);
+                    }
+                })
                 .subscribe(new Consumer<Boolean>() {
                     @Override
                     public void accept(Boolean success) throws Exception {
