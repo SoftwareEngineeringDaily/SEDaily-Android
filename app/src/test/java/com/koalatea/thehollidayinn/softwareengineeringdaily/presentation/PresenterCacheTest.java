@@ -1,14 +1,12 @@
 package com.koalatea.thehollidayinn.softwareengineeringdaily.presentation;
 
 import com.koalatea.thehollidayinn.softwareengineeringdaily.presentation.base.MVPContract;
-import com.koalatea.thehollidayinn.softwareengineeringdaily.presentation.loginscreen.LoginPresenter;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.test.BaseUnitTest;
 
 import org.junit.Test;
 
-import java.util.HashMap;
-
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 
@@ -52,7 +50,7 @@ public class PresenterCacheTest extends BaseUnitTest {
         cache.cachePresenter("test", mockPresenter);
         cache.cachePresenter("test1", mock(MVPContract.Presenter.class));
         assertEquals(2, cache.size());
-        cache.removePresenter(mockPresenter);
+        cache.removePresenter("test");
         assertEquals(1, cache.size());
     }
 

@@ -49,10 +49,10 @@ public class PresenterCache {
 
     /**
      * Remove presenter from cache
-     * @param presenter to remove
+     * @param tag identifier to remove
      */
-    public void removePresenter(@NonNull MVPContract.Presenter presenter) {
-        MVPContract.Presenter p = presenterMap.remove(presenter.presenterTag());
+    public void removePresenter(@NonNull String tag) {
+        MVPContract.Presenter p = presenterMap.remove(tag);
         if(p != null) {
             Timber.d("removePresenter: %1$s", p.presenterTag());
         } else {

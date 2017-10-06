@@ -27,6 +27,7 @@ import com.koalatea.thehollidayinn.softwareengineeringdaily.data.repositories.Fi
 import com.koalatea.thehollidayinn.softwareengineeringdaily.data.repositories.UserRepository;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.podcast.PodListFragment;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.podcast.RecentPodcastFragment;
+import com.koalatea.thehollidayinn.softwareengineeringdaily.presentation.loginscreen.LoginFragment;
 
 public class MainActivity extends AppCompatActivity implements SearchView.OnQueryTextListener {
     private UserRepository userRepository;
@@ -82,7 +83,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         userRepository = UserRepository.getInstance(this);
@@ -94,7 +95,6 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
                 null); // optional Bundle
 
         setUpBottomNavigation();
-        showInitialPage();
     }
 
     private void showInitialPage () {
@@ -184,8 +184,9 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
         int id = item.getItemId();
 
         if (id == R.id.action_toggle_login_register) {
-            Intent intent = new Intent(this, LoginRegisterActivity.class);
-            startActivity(intent);
+            //Intent intent = new Intent(this, LoginRegisterActivity.class);
+            //startActivity(intent);
+            LoginFragment.show(getSupportFragmentManager());
             return true;
         } else if (id == R.id.action_logout) {
             userRepository.setToken("");

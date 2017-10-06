@@ -11,6 +11,7 @@ import com.koalatea.thehollidayinn.softwareengineeringdaily.data.preference.Auth
 import com.koalatea.thehollidayinn.softwareengineeringdaily.data.remote.APIInterface;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.network.api.AuthNetworkService;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.network.api.EpisodePostNetworkService;
+import com.koalatea.thehollidayinn.softwareengineeringdaily.network.response.ResponseAdapterFactory;
 
 import java.io.IOException;
 
@@ -40,6 +41,7 @@ public class NetworkModule {
     @AppScope
     Gson providesGson() {
         return new GsonBuilder()
+                .registerTypeAdapterFactory(ResponseAdapterFactory.create())
                 .setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
                 .create();
     }

@@ -10,7 +10,30 @@ import com.koalatea.thehollidayinn.softwareengineeringdaily.presentation.base.MV
 
 public interface LoginView extends MVPContract.View {
     void showErrorMessage(@StringRes int errorString);
+
     void loginSuccess();
+
     void showProgressView();
+
     void hideProgressView();
+
+    void showUsernameError(@StringRes int errorString);
+
+    void showPasswordError(@StringRes int errorString);
+
+    void showConfirmationPasswordError(@StringRes int errorString);
+
+    void dismissView();
+
+    void showRegistrationView();
+
+    void showLoginView();
+
+    void disableModeToggle();
+
+    void enableModeToggle();
+
+    void showPasswordMismatchError(@StringRes int errorString);
+
+    void showErrorMessage(String message);
 }

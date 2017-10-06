@@ -5,6 +5,8 @@ import android.support.annotation.VisibleForTesting;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.app.SDEApp;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.data.preference.base.BasePreferences;
 
+import timber.log.Timber;
+
 /**
  * Created by Kurian on 25-Sep-17.
  */
@@ -15,6 +17,7 @@ public class AuthPreferenceImpl extends BasePreferences implements AuthPreferenc
 
     @Override
     public void saveToken(String token) {
+        Timber.tag(AuthPreferenceImpl.class.getCanonicalName()).d("Saving token: %1$s", token);
         getEditor().putString(AUTH_TOKEN, token).apply();
     }
 
