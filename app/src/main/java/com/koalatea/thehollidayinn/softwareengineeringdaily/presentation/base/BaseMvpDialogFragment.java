@@ -19,7 +19,7 @@ import timber.log.Timber;
  * Created by Kurian on 27-Sep-17.
  */
 
-public abstract class BaseDialogFragment<V extends MVPContract.View,
+public abstract class BaseMvpDialogFragment<V extends MVPContract.View,
         P extends MVPContract.Presenter>
         extends DialogFragment
         implements MVPContract.View {
@@ -53,23 +53,19 @@ public abstract class BaseDialogFragment<V extends MVPContract.View,
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         Timber.d("onViewCreated");
-
-        V lol = (V) this;
-        Timber.d("View of type: %1$s", lol.getClass().getSimpleName());
-
-        viewModel.bindView(getMvpView());
     }
 
     @Override
     public void onStart() {
         super.onStart();
         Timber.d("onStart");
-        getViewModel().bindView(getMvpView());
+        viewModel.bindView(getMvpView());
     }
 
     @Override
     public void onStop() {
         Timber.d("onStop");
+        viewModel.unbindView();
         super.onStop();
     }
 
@@ -80,7 +76,6 @@ public abstract class BaseDialogFragment<V extends MVPContract.View,
             unbinder.unbind();
             unbinder = null;
         }
-        getViewModel().unbindView();
         super.onDestroyView();
     }
 

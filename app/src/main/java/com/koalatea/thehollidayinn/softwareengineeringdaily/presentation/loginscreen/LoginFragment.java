@@ -17,7 +17,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.koalatea.thehollidayinn.softwareengineeringdaily.R;
-import com.koalatea.thehollidayinn.softwareengineeringdaily.presentation.base.BaseDialogFragment;
+import com.koalatea.thehollidayinn.softwareengineeringdaily.presentation.base.BaseMvpDialogFragment;
 
 import butterknife.BindView;
 import butterknife.OnCheckedChanged;
@@ -26,7 +26,7 @@ import butterknife.OnCheckedChanged;
  * Created by Kurian on 27-Sep-17.
  */
 
-public class LoginFragment extends BaseDialogFragment<LoginView, LoginPresenter>
+public class LoginFragment extends BaseMvpDialogFragment<LoginView, LoginPresenter>
         implements LoginView {
 
     public static final String TAG = LoginFragment.class.getCanonicalName();
