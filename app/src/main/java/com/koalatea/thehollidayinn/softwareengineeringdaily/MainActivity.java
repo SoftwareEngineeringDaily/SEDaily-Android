@@ -184,9 +184,10 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
         int id = item.getItemId();
 
         if (id == R.id.action_toggle_login_register) {
-            //Intent intent = new Intent(this, LoginRegisterActivity.class);
-            //startActivity(intent);
-            LoginFragment.show(getSupportFragmentManager());
+            Intent intent = new Intent(this, LoginRegisterActivity.class);
+            startActivity(intent);
+            //TODO clean up with MVP
+            //LoginFragment.show(getSupportFragmentManager());
             return true;
         } else if (id == R.id.action_logout) {
             userRepository.setToken("");
