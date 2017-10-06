@@ -263,6 +263,20 @@ public class LoginPresenterImplTest extends BasePresenterUnitTest<LoginView, Log
     }
 
     @Test
+    public void submitLogin_showPasswordError_when_username_empty() throws Exception {
+        initPresenter();
+        presenter.submitLogin("", "password");
+        verify(view).showUsernameError(eq(R.string.sign_in_screen_required_field_error));
+    }
+
+    @Test
+    public void submitLogin_showUsernameError_when_password_empty() throws Exception {
+        initPresenter();
+        presenter.submitLogin("user", "");
+        verify(view).showPasswordError(eq(R.string.sign_in_screen_required_field_error));
+    }
+
+    @Test
     public void submitRegistration_sends_authResult_when_result_true() throws Exception {
         initPresenter();
         doReturn(Single.just(true)).when(userRepository).register(anyString(), anyString());
@@ -276,6 +290,45 @@ public class LoginPresenterImplTest extends BasePresenterUnitTest<LoginView, Log
         doReturn(Single.just(false)).when(userRepository).register(anyString(), anyString());
         presenter.submitRegistration("user", "password", "password");
         verify(view).showErrorMessage(eq(R.string.sign_in_screen_auth_failed));
+    }
+
+    @Test
+    public void submitRegistration_showUsernameError_when_password_empty() throws Exception {
+        initPresenter();
+        presenter.submitRegistration("", "password", "password");
+        verify(view).showUsernameError(eq(R.string.sign_in_screen_required_field_error));
+    }
+
+    @Test
+    public void submitRegistration_showPasswordError_when_password_empty() throws Exception {
+        initPresenter();
+        presenter.submitRegistration("username", "", "");
+        verify(view).showPasswordError(eq(R.string.sign_in_screen_required_field_error));
+    }
+
+    @Test
+    public void submitRegistration_showConfirmationPasswordError_when_confirmation_empty()
+            throws Exception {
+        initPresenter();
+        presenter.submitRegistration("username", "", "");
+        verify(view).showConfirmationPasswordError(
+                eq(R.string.sign_in_screen_required_field_error));
+    }
+
+    @Test
+    public void submitRegistration_showPasswordMismatchError_when_password_empty()
+            throws Exception {
+        initPresenter();
+        presenter.submitRegistration("user", "", "password");
+        verify(view).showPasswordMismatchError(eq(R.string.sign_in_screen_confirmation_error));
+    }
+
+    @Test
+    public void submitRegistration_showPasswordMismatchError_when_confirmation_empty()
+            throws Exception {
+        initPresenter();
+        presenter.submitRegistration("user", "password", "");
+        verify(view).showPasswordMismatchError(eq(R.string.sign_in_screen_confirmation_error));
     }
 
     @NonNull
