@@ -247,25 +247,35 @@ public class LoginPresenterImplTest extends BasePresenterUnitTest<LoginView, Log
     }
 
     @Test
-    public void getAuthenticationAction_invokes_login_observable() throws Exception {
-        initPresenter();
-        presenter.getAuthenticationAction("user", "pass", true);
-        verify(userRepository).login(eq("user"), eq("pass"));
-    }
-
-    @Test
-    public void getAuthenticationAction_invokes_register_observable() throws Exception {
-        initPresenter();
-        presenter.getAuthenticationAction("user", "pass", false);
-        verify(userRepository).register(eq("user"), eq("pass"));
-    }
-
-    @Test
-    public void submitLogin_sends_authResult_when_success() throws Exception {
+    public void submitLogin_sends_authResult_when_result_true() throws Exception {
         initPresenter();
         doReturn(Single.just(true)).when(userRepository).login(anyString(), anyString());
         presenter.submitLogin("user", "password");
         verify(view).loginSuccess();
+    }
+
+    @Test
+    public void submitLogin_sends_authResult_when_result_false() throws Exception {
+        initPresenter();
+        doReturn(Single.just(false)).when(userRepository).login(anyString(), anyString());
+        presenter.submitLogin("user", "password");
+        verify(view).showErrorMessage(eq(R.string.sign_in_screen_auth_failed));
+    }
+
+    @Test
+    public void submitRegistration_sends_authResult_when_result_true() throws Exception {
+        initPresenter();
+        doReturn(Single.just(true)).when(userRepository).register(anyString(), anyString());
+        presenter.submitRegistration("user", "password", "password");
+        verify(view).loginSuccess();
+    }
+
+    @Test
+    public void submitRegistration_sends_authResult_when_result_false() throws Exception {
+        initPresenter();
+        doReturn(Single.just(false)).when(userRepository).register(anyString(), anyString());
+        presenter.submitRegistration("user", "password", "password");
+        verify(view).showErrorMessage(eq(R.string.sign_in_screen_auth_failed));
     }
 
     @NonNull

@@ -10,4 +10,5 @@
     <string name="cancel">@android:string/cancel</string>
     <string name="required_field">Required Field</string>
     <string name="unable_to_authenticate">Unable to add account</string>
+    <string name="unable_to_connect_to_server">Unable to connect to server</string>
 </resources>

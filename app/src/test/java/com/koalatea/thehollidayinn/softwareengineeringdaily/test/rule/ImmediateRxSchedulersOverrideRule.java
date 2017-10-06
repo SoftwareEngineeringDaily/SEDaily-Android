@@ -6,10 +6,12 @@ import org.junit.runners.model.Statement;
 
 import java.util.concurrent.Callable;
 import java.util.concurrent.Executor;
+import java.util.concurrent.TimeUnit;
 
 import io.reactivex.Scheduler;
 import io.reactivex.android.plugins.RxAndroidPlugins;
 import io.reactivex.annotations.NonNull;
+import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Function;
 import io.reactivex.internal.schedulers.ExecutorScheduler;
 import io.reactivex.plugins.RxJavaPlugins;
@@ -72,11 +74,18 @@ public class ImmediateRxSchedulersOverrideRule implements TestRule {
                             }
                         });
 
+                RxAndroidPlugins.setInitMainThreadSchedulerHandler(
+                        new Function<Callable<Scheduler>, Scheduler>() {
+                            @Override
+                            public Scheduler apply(@NonNull Callable<Scheduler> schedulerCallable)
+                                    throws Exception {
+                                return immediate;
+                            }
+                        });
+
         /*
         If we add
-
         RxJavaPlugins.setInitSingleSchedulerHandler(scheduler -> immediate);
-
         any test depending on debounce/timer/interval will fail with StackOverflowException
          */
                 try {
@@ -89,6 +98,28 @@ public class ImmediateRxSchedulersOverrideRule implements TestRule {
         };
     }
 
+    /*
+    private Scheduler immediate = new Scheduler() {
+        @Override
+        public Disposable scheduleDirect(@NonNull Runnable run, long delay, @NonNull TimeUnit unit) {
+            // this prevents StackOverflowErrors when scheduling with a delay
+            return super.scheduleDirect(run, 0, unit);
+        }
+
+        @Override
+        public Worker createWorker() {
+            return new ExecutorScheduler.ExecutorWorker(new Executor() {
+                @Override
+                public void execute(@android.support.annotation.NonNull Runnable runnable) {
+                    runnable.run();
+                }
+            });
+        }
+    };
+    */
+
+
+
     private final Scheduler immediate = new Scheduler() {
         @Override
         public Worker createWorker() {
@@ -100,4 +131,5 @@ public class ImmediateRxSchedulersOverrideRule implements TestRule {
             });
         }
     };
+
 }

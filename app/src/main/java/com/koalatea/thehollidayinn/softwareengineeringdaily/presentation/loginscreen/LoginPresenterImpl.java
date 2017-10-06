@@ -6,17 +6,20 @@ import android.support.annotation.VisibleForTesting;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.R;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.app.SDEApp;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.domain.UserRepository;
+import com.koalatea.thehollidayinn.softwareengineeringdaily.network.response.ErrorResponse;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.presentation.base.BasePresenter;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.utils.LocalTextUtils;
 
+import java.io.IOException;
+
 import javax.inject.Inject;
 
-import io.reactivex.Single;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.functions.Action;
 import io.reactivex.functions.BiConsumer;
 import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
+import retrofit2.HttpException;
 import timber.log.Timber;
 
 /**
@@ -26,7 +29,6 @@ import timber.log.Timber;
 class LoginPresenterImpl extends BasePresenter<LoginView> implements LoginPresenter {
 
     private final UserRepository repository;
-    private boolean isLoginMode = false;
 
     @Inject
     LoginPresenterImpl(@NonNull UserRepository repository) {
@@ -36,9 +38,8 @@ class LoginPresenterImpl extends BasePresenter<LoginView> implements LoginPresen
 
     @Override
     public void onModeChanged(boolean isLogin) {
-        this.isLoginMode = isLogin;
         if (isViewBound()) {
-            if (isLoginMode) {
+            if (isLogin) {
                 getView().showLoginView();
             } else {
                 getView().showRegistrationView();
@@ -50,41 +51,11 @@ class LoginPresenterImpl extends BasePresenter<LoginView> implements LoginPresen
     public void submitLogin(@NonNull String username, @NonNull String password) {
         enableSignInModeToggle(false);
         if (isLoginInputValid(username, password)) {
-            subscriptions.add(getAuthenticationAction(username, password, isLoginMode)
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .doFinally(new Action() {
-                        @Override
-                        public void run() throws Exception {
-                            enableSignInModeToggle(true);
-                        }
-                    })
-                    .subscribe(new Consumer<Boolean>() {
-                        @Override
-                        public void accept(Boolean result) throws Exception {
-                            authResult(result);
-                        }
-                    }, new Consumer<Throwable>() {
-                        @Override
-                        public void accept(Throwable throwable) throws Exception {
-                            Timber.e(throwable, throwable.getMessage());
-                        }
-                    }));
+            login(username, password);
         } else {
             enableSignInModeToggle(true);
             validateUsername(username);
             validatePassword(password);
-        }
-    }
-
-
-    @VisibleForTesting
-    Single<Boolean> getAuthenticationAction(String username, String password,
-            boolean isLoginMode) {
-        if (isLoginMode) {
-            return repository.login(username, password);
-        } else {
-            return repository.register(username, password);
         }
     }
 
@@ -120,8 +91,8 @@ class LoginPresenterImpl extends BasePresenter<LoginView> implements LoginPresen
                 })
                 .subscribe(new Consumer<Boolean>() {
                     @Override
-                    public void accept(Boolean result) throws Exception {
-                        authResult(result);
+                    public void accept(Boolean success) throws Exception {
+                        authResult(success);
                     }
                 }, new Consumer<Throwable>() {
                     @Override
@@ -129,6 +100,19 @@ class LoginPresenterImpl extends BasePresenter<LoginView> implements LoginPresen
                         Timber.e(throwable, throwable.getMessage());
                     }
                 });
+    }
+
+    @VisibleForTesting
+    void login(@NonNull String username, @NonNull String password) {
+        subscriptions.add(repository.login(username, password)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Consumer<Boolean>() {
+                    @Override
+                    public void accept(Boolean success) throws Exception {
+                        authResult(success);
+                    }
+                }, authErrorConsumer));
     }
 
     @VisibleForTesting
@@ -161,7 +145,7 @@ class LoginPresenterImpl extends BasePresenter<LoginView> implements LoginPresen
 
     @VisibleForTesting
     void authResult(boolean isSuccess) {
-        if (isViewBound()) {
+        if(isViewBound()) {
             if (isSuccess) {
                 getView().loginSuccess();
             } else {
@@ -226,6 +210,33 @@ class LoginPresenterImpl extends BasePresenter<LoginView> implements LoginPresen
                     }
                 });
     }
+
+    @VisibleForTesting
+    void showNetworkError(String error) {
+        if(isViewBound()) {
+            getView().showErrorMessage(error);
+        }
+    }
+
+    @VisibleForTesting
+    Consumer<Throwable> authErrorConsumer = new Consumer<Throwable>() {
+        @Override
+        public void accept(Throwable throwable) throws Exception {
+            Timber.e(throwable, throwable.getMessage());
+            if (throwable instanceof HttpException) {
+                HttpException e = (HttpException) throwable;
+                //TODO standardize deserialize error response and extract message
+                ErrorResponse error = SDEApp.component().gson().fromJson(
+                        e.response().errorBody().charStream(),
+                        ErrorResponse.class);
+                showNetworkError(error.message());
+            } else if (throwable instanceof IOException) {
+                if (isViewBound()) {
+                    getView().showErrorMessage(R.string.sign_in_screen_unable_to_connect_error);
+                }
+            }
+        }
+    };
 
     @Override
     public String presenterTag() {

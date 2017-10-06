@@ -34,4 +34,6 @@ public interface LoginView extends MVPContract.View {
     void enableModeToggle();
 
     void showPasswordMismatchError(@StringRes int errorString);
+
+    void showErrorMessage(String message);
 }

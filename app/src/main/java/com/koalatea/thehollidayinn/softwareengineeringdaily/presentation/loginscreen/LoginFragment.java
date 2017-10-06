@@ -14,6 +14,7 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.koalatea.thehollidayinn.softwareengineeringdaily.R;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.presentation.base.BaseDialogFragment;
@@ -112,7 +113,7 @@ public class LoginFragment extends BaseDialogFragment<LoginView, LoginPresenter>
 
     @Override
     public void showErrorMessage(@StringRes int errorString) {
-        passwordField.setText("");
+        showErrorMessage(getString(errorString));
     }
 
     @Override
@@ -181,6 +182,13 @@ public class LoginFragment extends BaseDialogFragment<LoginView, LoginPresenter>
         confirmPasswordInput.setError(getString(errorString));
         passwordField.setText("");
         confirmPasswordField.setText("");
+    }
+
+    @Override
+    public void showErrorMessage(String message) {
+        passwordField.setText("");
+        confirmPasswordField.setText("");
+        Toast.makeText(getActivity(), message, Toast.LENGTH_LONG).show();
     }
 
     @Override

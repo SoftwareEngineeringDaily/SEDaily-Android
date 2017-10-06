@@ -10,8 +10,9 @@ import static org.mockito.Mockito.spy;
 /**
  * Created by Kurian on 27-Sep-17.
  */
-public abstract class BasePresenterUnitTest<V extends MVPContract.View, P extends MVPContract.Presenter<V>>
-        extends BaseUnitTest {
+public abstract class BasePresenterUnitTest<V extends MVPContract.View, P extends MVPContract
+        .Presenter<V>> extends
+        BaseUnitTest {
 
     protected P presenter;
     protected final V view;

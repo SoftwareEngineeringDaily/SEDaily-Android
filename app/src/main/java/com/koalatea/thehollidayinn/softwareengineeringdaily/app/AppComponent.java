@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 
 import com.google.firebase.analytics.FirebaseAnalytics;
+import com.google.gson.Gson;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.data.DataModule;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.data.mapper.PostItemMapper;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.data.preference.AuthPreference;
@@ -35,4 +36,5 @@ public interface AppComponent {
     PostRepository postRepository();
     UserRepository userRepository();
     PresenterCache presenterCache();
+    Gson gson();
 }
