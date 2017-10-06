@@ -10,4 +10,5 @@
     <color name="button_grey">#757575</color>
 
     <color name="error_red">@color/material_color_red_800</color>
+    <color name="bt_accent">#00B8D4</color>
 </resources>

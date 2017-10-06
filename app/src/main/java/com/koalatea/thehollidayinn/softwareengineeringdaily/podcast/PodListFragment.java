@@ -94,9 +94,9 @@ public class PodListFragment extends Fragment {
         UserRepository userRepository = UserRepository.getInstance(this.getContext());
         final PostRepository postRepository = PostRepository.getInstance();
 
-        if (this.title.equals("Greatest Hits")) {
+        if (this.title != null && this.title.equals("Greatest Hits")) {
             data.put("type", "top");
-        } else if (this.title.equals("Just For You") && !userRepository.getToken().isEmpty()) {
+        } else if (this.title != null && this.title.equals("Just For You") && !userRepository.getToken().isEmpty()) {
             query = mService.getRecommendations(data);
         } else if (tagId != null && !tagId.isEmpty()) {
             data.put("categories", tagId);

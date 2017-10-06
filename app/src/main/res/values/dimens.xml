@@ -19,4 +19,9 @@
     <dimen name="list_body">14sp</dimen>
     <dimen name="navheader_height">222dp</dimen>
     <dimen name="fab_margin">16dp</dimen>
+
+    <!-- playback controls -->
+    <dimen name="playback_controls_albumart_horizontal_margin">8dp</dimen>
+    <dimen name="playback_controls_albumart_size">64dp</dimen>
+    <dimen name="playback_controls_padding">8dp</dimen>
 </resources>

@@ -201,7 +201,7 @@ public class MusicService extends MediaBrowserServiceCompat {
         }
     }
 
-    /**
+    /**MediaButtonReceiver
      * Actual implementation of onLoadChildren that assumes that MusicProvider is already
      * initialized.
      */

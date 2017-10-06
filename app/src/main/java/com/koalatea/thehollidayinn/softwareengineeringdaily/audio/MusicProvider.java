@@ -119,7 +119,6 @@ public class MusicProvider {
      * for future reference, keying tracks by musicId and grouping by genre.
      */
     public void retrieveMediaAsync(final Callback callback) {
-        Log.d(TAG, "retrieveMediaAsync called");
         if (mCurrentState == State.INITIALIZED) {
             // Already initialized, so call back immediately.
             callback.onMusicCatalogReady(true);

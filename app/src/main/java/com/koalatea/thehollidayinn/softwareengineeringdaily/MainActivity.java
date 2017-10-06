@@ -21,78 +21,32 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ImageView;
 
+import com.koalatea.thehollidayinn.softwareengineeringdaily.auth.LoginRegisterActivity;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.audio.MusicService;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.auth.LoginRegisterActivity;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.data.repositories.FilterRepository;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.data.repositories.UserRepository;
+import com.koalatea.thehollidayinn.softwareengineeringdaily.mediaui.PlaybackControlsFragment;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.podcast.PodListFragment;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.podcast.RecentPodcastFragment;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.presentation.loginscreen.LoginFragment;
 
-public class MainActivity extends AppCompatActivity implements SearchView.OnQueryTextListener {
+public class MainActivity extends PlaybackControllerActivity implements SearchView.OnQueryTextListener {
     private UserRepository userRepository;
     private RecentPodcastFragment firstFragment;
-    private MediaBrowserCompat mMediaBrowser;
     private FilterRepository filterRepository;
-
-    private final MediaBrowserCompat.ConnectionCallback mConnectionCallbacks =
-            new MediaBrowserCompat.ConnectionCallback() {
-                @Override
-                public void onConnected() {
-
-                    // Get the token for the MediaSession
-                    MediaSessionCompat.Token token = mMediaBrowser.getSessionToken();
-
-                    // Create a MediaControllerCompat
-                    MediaControllerCompat mediaController =
-                            null;
-                    try {
-                        mediaController = new MediaControllerCompat(MainActivity.this, token);
-                    } catch (RemoteException e) {
-                        e.printStackTrace();
-                    }
-
-                    // Save the controller
-                    MediaControllerCompat.setMediaController(MainActivity.this, mediaController);
-
-                    // Finish building the UI
-                    buildTransportControls();
-                }
-
-                @Override
-                public void onConnectionSuspended() {
-                    // The Service has crashed. Disable transport controls until it automatically reconnects
-                }
-
-                @Override
-                public void onConnectionFailed() {
-                    // The Service has refused our connection
-                }
-            };
-    MediaControllerCompat.Callback controllerCallback =
-            new MediaControllerCompat.Callback() {
-                @Override
-                public void onMetadataChanged(MediaMetadataCompat metadata) {}
-
-                @Override
-                public void onPlaybackStateChanged(PlaybackStateCompat state) {}
-            };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        this.setUp();
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         userRepository = UserRepository.getInstance(this);
         filterRepository = FilterRepository.getInstance();
-
-        mMediaBrowser = new MediaBrowserCompat(this,
-                new ComponentName(this, MusicService.class),
-                mConnectionCallbacks,
-                null); // optional Bundle
 
         setUpBottomNavigation();
     }
@@ -144,7 +98,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_main, menu);
-        if (!userRepository.getToken().isEmpty()) {
+        if (userRepository.getToken() != null && !userRepository.getToken().isEmpty()) {
             menu.findItem(R.id.action_toggle_login_register).setVisible(false);
             menu.findItem(R.id.action_logout).setVisible(true);
         } else {
@@ -199,54 +153,8 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
     }
 
     @Override
-    public void onStart() {
-        super.onStart();
-        mMediaBrowser.connect();
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-        // (see "stay in sync with the MediaSession")
-        if (MediaControllerCompat.getMediaController(this) != null) {
-            MediaControllerCompat.getMediaController(this).unregisterCallback(controllerCallback);
-        }
-        mMediaBrowser.disconnect();
-    }
-
-    void buildTransportControls()
-    {
-        // Grab the view for the play/pause button
-        ImageView mPlayPause = (ImageView) findViewById(R.id.logo);
-
-        // @TODO: Move this to fragment player when we add it
-//        mPlayPause.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                // Since this is a play/pause button, you'll need to test the current state
-//                // and choose the action accordingly
-//
-//                int pbState = MediaControllerCompat.getMediaController(MainActivity.this).getPlaybackState().getState();
-//                if (pbState == PlaybackStateCompat.STATE_PLAYING) {
-//                    MediaControllerCompat.getMediaController(MainActivity.this).getTransportControls().pause();
-//                } else {
-//                    MediaControllerCompat.getMediaController(MainActivity.this).getTransportControls().play();
-//                }
-//            }
-//        });
-
-        MediaControllerCompat mediaController = MediaControllerCompat.getMediaController(MainActivity.this);
-
-        // Display the initial state
-        MediaMetadataCompat metadata = mediaController.getMetadata();
-        PlaybackStateCompat pbState = mediaController.getPlaybackState();
-
-        // Register a Callback to stay in sync
-        mediaController.registerCallback(controllerCallback);
-    }
-
-    @Override
     public boolean onQueryTextSubmit(String query) {
+        firstFragment.goHome();
         filterRepository.setSearch(query);
         return false;
     }
@@ -255,4 +163,6 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
     public boolean onQueryTextChange(String newText) {
         return true;
     }
+
+
 }

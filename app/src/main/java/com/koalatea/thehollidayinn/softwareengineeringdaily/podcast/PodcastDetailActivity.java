@@ -2,6 +2,8 @@ package com.koalatea.thehollidayinn.softwareengineeringdaily.podcast;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.media.MediaMetadataRetriever;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.CollapsingToolbarLayout;
@@ -21,6 +23,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.google.firebase.analytics.FirebaseAnalytics;
+import com.koalatea.thehollidayinn.softwareengineeringdaily.PlaybackControllerActivity;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.R;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.audio.MediaPlayer;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.audio.MusicProvider;
@@ -34,7 +37,7 @@ import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
-public class PodcastDetailActivity extends AppCompatActivity {
+public class PodcastDetailActivity extends PlaybackControllerActivity {
     private PostRepository postRepository;
     private UserRepository userRepository;
     private TextView scoreText;
@@ -48,6 +51,8 @@ public class PodcastDetailActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_podcast_detail);
+
+        this.setUp();
 
         // Obtain the FirebaseAnalytics instance.
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
@@ -94,6 +99,11 @@ public class PodcastDetailActivity extends AppCompatActivity {
 
     private void loadPost (final String postId) {
         post = postRepository.getPostById(postId);
+
+        // @TODO: Why would this be null?
+        if (post == null) {
+            return;
+        }
 
         CollapsingToolbarLayout collapsingToolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
         collapsingToolbarLayout.setTitle(post.title.rendered);
@@ -262,6 +272,8 @@ public class PodcastDetailActivity extends AppCompatActivity {
                 if (post.mp3 == null || post.mp3.isEmpty()) {
                     return;
                 }
+
+                // @TODO: Download if not downloaded
 
                 String source = post.mp3;
                 String id = String.valueOf(source.hashCode());
