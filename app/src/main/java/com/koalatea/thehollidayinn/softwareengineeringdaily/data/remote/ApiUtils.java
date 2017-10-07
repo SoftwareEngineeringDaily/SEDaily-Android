@@ -43,7 +43,7 @@ public class ApiUtils {
     public static APIInterface getKibbleService(Context context) {
         HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
 //        if (BuildConfig.DEBUG) {
-        logging.setLevel(HttpLoggingInterceptor.Level.BODY);
+        //logging.setLevel(HttpLoggingInterceptor.Level.BODY);
 //        }
 
         final UserRepository userLogin = UserRepository.getInstance(context);
@@ -54,8 +54,6 @@ public class ApiUtils {
                     public Response intercept(Interceptor.Chain chain) throws IOException {
                         Request.Builder ongoing = chain.request().newBuilder();
                         ongoing.addHeader("Accept", "application/json;versions=1");
-
-                        Log.v("keithtest", userLogin.getToken());
                         if (!userLogin.getToken().isEmpty()) {
                             ongoing.addHeader("Authorization", "Bearer " + userLogin.getToken());
                         }
@@ -63,7 +61,7 @@ public class ApiUtils {
                         return chain.proceed(ongoing.build());
                     }
                 })
-                .addInterceptor(logging)
+//                .addInterceptor(logging)
                 .build();
 
         retrofitAdapter = builder
