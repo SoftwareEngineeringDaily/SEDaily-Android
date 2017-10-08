@@ -15,7 +15,8 @@
             android:id="@+id/card_image"
             android:layout_width="80dp"
             android:layout_height="80dp"
-            android:scaleType="centerCrop" />
+            android:scaleType="centerCrop"
+            android:contentDescription="@string/podcast_image" />
 
         <TextView
             android:id="@+id/card_title"

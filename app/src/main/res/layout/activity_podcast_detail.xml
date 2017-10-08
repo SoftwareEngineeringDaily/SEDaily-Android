@@ -26,13 +26,15 @@
                 android:orientation="horizontal"
                 android:paddingTop="7dp"
                 android:paddingBottom="10dp"
-                android:paddingLeft="24dp" >
+                android:paddingLeft="24dp"
+                android:paddingRight="24dp">
 
                 <ImageView
                     android:id="@+id/up_button"
                     android:layout_width="40dp"
                     android:layout_height="40dp"
-                    android:src="@drawable/ic_up_arrow" />
+                    android:src="@drawable/ic_up_arrow"
+                    android:contentDescription="@string/up_vote" />
 
                 <TextView
                     android:id="@+id/scoreTextView"
@@ -48,7 +50,9 @@
                     android:layout_width="40dp"
                     android:layout_height="40dp"
                     android:src="@drawable/ic_down_arrow"
-                    android:layout_toRightOf="@+id/scoreTextView"/>
+                    android:layout_toRightOf="@+id/scoreTextView"
+                    android:layout_toEndOf="@+id/scoreTextView"
+                    android:contentDescription="@string/down_vote" />
 
                 <Button
                     android:id="@+id/playButton"
@@ -102,6 +106,7 @@
 
             <ImageView
                 android:id="@+id/image"
+                android:contentDescription="@string/podcast_image"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:background="@color/colorPrimary"
@@ -133,6 +138,7 @@
                     android:layout_height="wrap_content"
                     android:layout_alignBottom="@+id/secondayTextView"
                     android:layout_alignStart="@+id/secondayTextView"
+                    android:layout_alignLeft="@+id/secondayTextView"
                     android:layout_marginBottom="35dp"
                     android:text="Pets n More Adoption Drive"
                     android:textSize="24sp" />
@@ -142,8 +148,10 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentStart="true"
+                    android:layout_alignParentLeft="true"
                     android:layout_alignParentTop="true"
                     android:layout_marginStart="27dp"
+                    android:layout_marginLeft="27dp"
                     android:layout_marginTop="77dp"
                     android:text="March 28—31 "
                     android:textSize="14sp"

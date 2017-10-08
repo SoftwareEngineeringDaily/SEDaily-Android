@@ -31,7 +31,8 @@
                     android:id="@+id/logo"
                     android:layout_width="28dp"
                     android:layout_height="28dp"
-                    android:src="@drawable/sedaily_logo" />
+                    android:src="@drawable/sedaily_logo"
+                    android:contentDescription="@string/logo" />
             </LinearLayout>
         </android.support.v7.widget.Toolbar>
     </android.support.design.widget.AppBarLayout>

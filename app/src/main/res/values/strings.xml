@@ -1,20 +1,27 @@
 <resources>
-    <string name="app_name">SoftwareEngineeringDaily</string>
-    <string name="item_title">SoftwareEngineeringDaily</string>
-    <string name="item_desc">SoftwareEngineeringDaily</string>
-    <string name="title_activity_podcast_detail">PodcastDetailActivity</string>
-    <string name="title_activity_login_register">LoginRegisterActivity</string>
-    <string name="search_hint">Search</string>
+  <string name="app_name">SoftwareEngineeringDaily</string>
+  <string name="item_title">SoftwareEngineeringDaily</string>
+  <string name="item_desc">SoftwareEngineeringDaily</string>
+  <string name="title_activity_podcast_detail">PodcastDetailActivity</string>
+  <string name="title_activity_login_register">LoginRegisterActivity</string>
+  <string name="search_hint">Search</string>
 
-    <string name="label_pause">Pause</string>
-    <string name="label_play">Play</string>
+  <string name="label_pause">Pause</string>
+  <string name="label_play">Play</string>
 
-    <string name="just_for_you">Just For You</string>
-    <string name="greatest_hits">Greatest Hits</string>
-    <string name="latest">Latest</string>
+  <string name="just_for_you">Just For You</string>
+  <string name="greatest_hits">Greatest Hits</string>
+  <string name="latest">Latest</string>
 
-    <string name="currently_playing_song">Song currently playing</string>
-    <string name="currently_playing_artist">Artist of currently playing song</string>
-    <string name="currently_playing_extra_info">Extra info for currently playing song</string>
-    <string name="play_pause">play or pause</string>
+  <string name="currently_playing_song">Song currently playing</string>
+  <string name="currently_playing_artist">Artist of currently playing song</string>
+  <string name="currently_playing_extra_info">Extra info for currently playing song</string>
+  <string name="play_pause">play or pause</string>
+
+  // Accessabiltiy
+  <string name="logo">Logo</string>
+  <string name="up_vote">Up Vote</string>
+  <string name="down_vote">Down Vote</string>
+  <string name="podcast_image">Main Podcast Image</string>
+
 </resources>
