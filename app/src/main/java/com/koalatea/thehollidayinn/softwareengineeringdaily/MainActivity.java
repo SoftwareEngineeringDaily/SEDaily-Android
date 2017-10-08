@@ -33,8 +33,12 @@ import com.koalatea.thehollidayinn.softwareengineeringdaily.podcast.RecentPodcas
 
 public class MainActivity extends PlaybackControllerActivity implements SearchView.OnQueryTextListener {
     private UserRepository userRepository;
-    private RecentPodcastFragment firstFragment;
     private FilterRepository filterRepository;
+
+    private RecentPodcastFragment firstFragment;
+    private PodListFragment secondPage;
+    private PodListFragment thirdPage;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,7 +58,9 @@ public class MainActivity extends PlaybackControllerActivity implements SearchVi
     }
 
     private void showInitialPage () {
-        firstFragment = RecentPodcastFragment.newInstance();
+        if (firstFragment == null) {
+            firstFragment = RecentPodcastFragment.newInstance();
+        }
         this.getSupportFragmentManager()
                 .beginTransaction()
                 .replace(R.id.fragment_container, firstFragment)
@@ -80,17 +86,21 @@ public class MainActivity extends PlaybackControllerActivity implements SearchVi
                 showInitialPage();
                 break;
             case R.id.action_schedules:
-                PodListFragment second = PodListFragment.newInstance("Greatest Hits", "");
+                if (secondPage == null) {
+                    secondPage = PodListFragment.newInstance("Greatest Hits", "");
+                }
                 this.getSupportFragmentManager()
                         .beginTransaction()
-                        .replace(R.id.fragment_container, second)
+                        .replace(R.id.fragment_container, secondPage)
                         .commit();
                 break;
             case R.id.action_music:
-                PodListFragment third = PodListFragment.newInstance("Just For You", "");
+                if (thirdPage == null) {
+                    thirdPage = PodListFragment.newInstance("Just For You", "");
+                }
                 this.getSupportFragmentManager()
                         .beginTransaction()
-                        .replace(R.id.fragment_container, third)
+                        .replace(R.id.fragment_container, thirdPage)
                         .commit();
                 break;
         }

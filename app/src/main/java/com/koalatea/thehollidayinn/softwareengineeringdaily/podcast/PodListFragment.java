@@ -50,7 +50,7 @@ public class PodListFragment extends Fragment {
                              ViewGroup container, Bundle savedInstanceState) {
         View rootView =  (View) inflater.inflate(
                 R.layout.fragment_podcast_horizontal, container, false);
-
+        Log.v("keithtest", "onCreateView");
         RecyclerView recyclerView = (RecyclerView) rootView.findViewById(R.id.my_recycler_view);
 
         recyclerView.setHasFixedSize(true);

@@ -3,18 +3,14 @@ package com.koalatea.thehollidayinn.softwareengineeringdaily.podcast;
 import android.content.Intent;
 import android.support.v4.app.Fragment;
 import android.support.v4.media.MediaBrowserCompat;
-import android.support.v4.media.MediaMetadataCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.koalatea.thehollidayinn.softwareengineeringdaily.R;
-import com.koalatea.thehollidayinn.softwareengineeringdaily.audio.MediaPlayer;
-import com.koalatea.thehollidayinn.softwareengineeringdaily.audio.MusicProvider;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.data.models.Post;
 import com.squareup.picasso.Picasso;
 

@@ -1,14 +1,11 @@
 package com.koalatea.thehollidayinn.softwareengineeringdaily.podcast;
 
+import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.media.MediaMetadataRetriever;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.CollapsingToolbarLayout;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.MediaMetadataCompat;
@@ -25,7 +22,6 @@ import android.widget.TextView;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.PlaybackControllerActivity;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.R;
-import com.koalatea.thehollidayinn.softwareengineeringdaily.audio.MediaPlayer;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.audio.MusicProvider;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.data.models.Post;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.data.remote.APIInterface;
@@ -43,7 +39,6 @@ public class PodcastDetailActivity extends PlaybackControllerActivity {
     private TextView scoreText;
     private Post post;
     private APIInterface mService;
-    private MediaPlayer mediaPlayer;
     private String postId;
     private FirebaseAnalytics mFirebaseAnalytics;
 
@@ -52,10 +47,10 @@ public class PodcastDetailActivity extends PlaybackControllerActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_podcast_detail);
 
-        this.setUp();
+        setUp();
 
         // Obtain the FirebaseAnalytics instance.
-        mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
+        mFirebaseAnalytics = FirebaseAnalytics.getInstance(getApplicationContext());
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -65,8 +60,6 @@ public class PodcastDetailActivity extends PlaybackControllerActivity {
 
         Intent intent = getIntent(); // gets the previously created intent
         postId = intent.getStringExtra("POST_ID");
-
-        mediaPlayer = MediaPlayer.getInstance(this);
 
         postRepository = PostRepository.getInstance();
         loadPost(postId);
@@ -269,43 +262,39 @@ public class PodcastDetailActivity extends PlaybackControllerActivity {
         playButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (post.mp3 == null || post.mp3.isEmpty()) {
-                    return;
-                }
-
-                // @TODO: Download if not downloaded
-
-                String source = post.mp3;
-                String id = String.valueOf(source.hashCode());
-
-                MusicProvider mMusicProvider = MusicProvider.getInstance();
-                MediaMetadataCompat item = mMusicProvider.getMusic(id);
-
-                if (item == null) {
-                    item = new MediaMetadataCompat.Builder()
-                            .putString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID, id)
-                            .putString(MediaMetadataCompat.METADATA_KEY_MEDIA_URI, source)
-//                        .putString(MediaMetadataCompat.METADATA_KEY_ALBUM, album)
-//                        .putString(MediaMetadataCompat.METADATA_KEY_ARTIST, artist)
-//                        .putLong(MediaMetadataCompat.METADATA_KEY_DURATION, duration)
-//                        .putString(MediaMetadataCompat.METADATA_KEY_GENRE, genre)
-//                        .putString(MediaMetadataCompat.METADATA_KEY_ALBUM_ART_URI, iconUrl)
-                        .putString(MediaMetadataCompat.METADATA_KEY_TITLE, post.title.rendered)
-//                        .putLong(MediaMetadataCompat.METADATA_KEY_TRACK_NUMBER, trackNumber)
-//                        .putLong(MediaMetadataCompat.METADATA_KEY_NUM_TRACKS, totalTrackCount)
-                            .build();
-
-
-                    mMusicProvider.updateMusic(id, item);
-                }
-
-                MediaBrowserCompat.MediaItem bItem =
-                        new MediaBrowserCompat.MediaItem(item.getDescription(),
-                                MediaBrowserCompat.MediaItem.FLAG_PLAYABLE);
-
-                boolean isPlaying = id.equals(mediaPlayer.getPlayingMediaId());
-                mediaPlayer.onMediaItemSelected(bItem, isPlaying);
+                playClick(post, PodcastDetailActivity.this);
             }
         });
+    }
+
+    private void playClick (Post post, Activity context) {
+        if (post.mp3 == null || post.mp3.isEmpty()) {
+            return;
+        }
+
+        // @TODO: Download if not downloaded
+
+        String source = post.mp3;
+        String id = String.valueOf(source.hashCode());
+
+        MusicProvider mMusicProvider = MusicProvider.getInstance();
+        MediaMetadataCompat item = mMusicProvider.getMusic(id);
+
+        if (item == null) {
+            item = new MediaMetadataCompat.Builder()
+                    .putString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID, id)
+                    .putString(MediaMetadataCompat.METADATA_KEY_MEDIA_URI, source)
+                    .putString(MediaMetadataCompat.METADATA_KEY_TITLE, post.title.rendered)
+                    .build();
+
+            mMusicProvider.updateMusic(id, item);
+        }
+
+        MediaBrowserCompat.MediaItem bItem =
+                new MediaBrowserCompat.MediaItem(item.getDescription(),
+                        MediaBrowserCompat.MediaItem.FLAG_PLAYABLE);
+
+        boolean isPlaying = id.equals(getPlayingMediaId());
+        onMediaItemSelected(bItem, isPlaying);
     }
 }

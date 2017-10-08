@@ -3,6 +3,7 @@ package com.koalatea.thehollidayinn.softwareengineeringdaily;
 import android.content.ComponentName;
 import android.os.Bundle;
 import android.os.RemoteException;
+import android.support.annotation.Nullable;
 import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaControllerCompat;
@@ -24,6 +25,9 @@ import com.koalatea.thehollidayinn.softwareengineeringdaily.mediaui.PlaybackCont
 public class PlaybackControllerActivity extends AppCompatActivity {
     private MediaBrowserCompat mMediaBrowser;
     private PlaybackControlsFragment mControlsFragment;
+
+    private PlaybackStateCompat state;
+    private String mCurrentMediaId;
 
     private final MediaBrowserCompat.ConnectionCallback mConnectionCallbacks =
             new MediaBrowserCompat.ConnectionCallback() {
@@ -47,12 +51,10 @@ public class PlaybackControllerActivity extends AppCompatActivity {
                 }
             };
 
-    MediaControllerCompat.Callback controllerCallback =
+    private MediaControllerCompat.Callback controllerCallback =
             new MediaControllerCompat.Callback() {
                 @Override
                 public void onMetadataChanged(MediaMetadataCompat metadata) {
-                    if (metadata != null) {
-                    }
                 }
 
                 @Override
@@ -72,26 +74,37 @@ public class PlaybackControllerActivity extends AppCompatActivity {
     }
 
     protected void setUp() {
-        mMediaBrowser = new MediaBrowserCompat(this,
-                new ComponentName(this, MusicService.class),
-                mConnectionCallbacks,
-                null); // optional Bundle
+        if (mMediaBrowser == null) {
+            mMediaBrowser = new MediaBrowserCompat(this,
+                    new ComponentName(this, MusicService.class),
+                    mConnectionCallbacks,
+                    null); // optional Bundle
+        }
     }
 
     @Override
     public void onStart() {
         super.onStart();
-        mControlsFragment = (PlaybackControlsFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.fragment_playback_controls);
+        if (mControlsFragment == null) {
+            mControlsFragment = (PlaybackControlsFragment) getSupportFragmentManager()
+                    .findFragmentById(R.id.fragment_playback_controls);
+        }
         mMediaBrowser.connect();
 
     }
 
     @Override
+    public void onPause() {
+        super.onPause();
+        if (MediaControllerCompat.getMediaController(this) != null) {
+            MediaControllerCompat.getMediaController(this).unregisterCallback(controllerCallback);
+        }
+        mMediaBrowser.disconnect();
+    }
+
+    @Override
     public void onResume() {
         super.onResume();
-
-
     }
 
     @Override
@@ -105,20 +118,17 @@ public class PlaybackControllerActivity extends AppCompatActivity {
     }
 
     protected void showPlaybackControls() {
-//        if (NetworkHelper.isOnline(this)) {
+        // @TODO: check for network
         getSupportFragmentManager().beginTransaction()
-//                    .setCustomAnimations(
-//                            R.animator.slide_in_from_bottom, R.animator.slide_out_to_bottom,
-//                            R.animator.slide_in_from_bottom, R.animator.slide_out_to_bottom)
                 .show(mControlsFragment)
-                .commit();
-//        }
+                .commitAllowingStateLoss();
+
     }
 
     protected void hidePlaybackControls() {
         getSupportFragmentManager().beginTransaction()
                 .hide(mControlsFragment)
-                .commit();
+                .commitAllowingStateLoss();
     }
 
     /**
@@ -144,7 +154,7 @@ public class PlaybackControllerActivity extends AppCompatActivity {
         }
     }
 
-        private void connectToSession(MediaSessionCompat.Token token) throws RemoteException {
+    private void connectToSession(MediaSessionCompat.Token token) throws RemoteException {
         MediaControllerCompat mediaController = new MediaControllerCompat(
                 this, token);
 
@@ -160,5 +170,25 @@ public class PlaybackControllerActivity extends AppCompatActivity {
         if (mControlsFragment != null) {
             mControlsFragment.onConnected();
         }
+    }
+
+    public void onMediaItemSelected(MediaBrowserCompat.MediaItem item, boolean isPlaying) {
+        if (item.isPlayable()) {
+            MediaControllerCompat controller = MediaControllerCompat.getMediaController(this);
+            MediaControllerCompat.TransportControls controls = controller.getTransportControls();
+
+            if (isPlaying) {
+                controls.pause();
+            } else {
+                controls.playFromMediaId(item.getMediaId(), null);
+            }
+        }
+    }
+
+    @Nullable
+    public String getPlayingMediaId() {
+        boolean isPlaying = state != null
+                && state.getState() == PlaybackStateCompat.STATE_PLAYING;
+        return isPlaying ? mCurrentMediaId : null;
     }
 }
