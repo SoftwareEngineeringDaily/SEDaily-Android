@@ -35,6 +35,7 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
 public class PodcastDetailActivity extends PlaybackControllerActivity {
+  private static String TAG = "PodcastDetail";
   private PostRepository postRepository;
   private UserRepository userRepository;
   private TextView scoreText;
@@ -184,7 +185,7 @@ public class PodcastDetailActivity extends PlaybackControllerActivity {
 
                         @Override
                         public void onError(Throwable e) {
-                            Log.v("keithtest", e.toString());
+                            Log.v(TAG, e.toString());
                         }
 
                         @Override
@@ -253,7 +254,7 @@ public class PodcastDetailActivity extends PlaybackControllerActivity {
 
                             @Override
                             public void onError(Throwable e) {
-                                Log.v("keithtest", e.toString());
+                                Log.v(TAG, e.toString());
                             }
 
                             @Override

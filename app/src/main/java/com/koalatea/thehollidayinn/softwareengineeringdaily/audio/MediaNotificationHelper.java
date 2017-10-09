@@ -45,7 +45,7 @@ public class MediaNotificationHelper extends BroadcastReceiver {
     private static final String ACTION_STOP = "com.koalatea.thehollidayinn.softwareengineeringdaily.stop";
     private final PendingIntent mPauseIntent;
     private final PendingIntent mPlayIntent;
-    private final PendingIntent mStopInent;
+    private final PendingIntent mStopIntent;
 
     private final NotificationManagerCompat mNotificationManager;
 
@@ -60,7 +60,7 @@ public class MediaNotificationHelper extends BroadcastReceiver {
                 new Intent(ACTION_PAUSE).setPackage(pkg), PendingIntent.FLAG_CANCEL_CURRENT);
         mPlayIntent = PendingIntent.getBroadcast(mService, REQUEST_CODE,
                 new Intent(ACTION_PLAY).setPackage(pkg), PendingIntent.FLAG_CANCEL_CURRENT);
-        mStopInent = PendingIntent.getBroadcast(mService, REQUEST_CODE,
+        mStopIntent = PendingIntent.getBroadcast(mService, REQUEST_CODE,
                 new Intent(ACTION_STOP).setPackage(pkg), PendingIntent.FLAG_CANCEL_CURRENT);
 
 
@@ -132,12 +132,12 @@ public class MediaNotificationHelper extends BroadcastReceiver {
             art = BitmapFactory.decodeResource(mService.getResources(),
                     R.drawable.sedaily_logo);
         }
-        Log.v("keithtest", String.valueOf(description.getTitle()));
+
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(mService);
         notificationBuilder
                 .setLargeIcon(art)
                 .setContentIntent(controller.getSessionActivity())
-                .setDeleteIntent(mStopInent)
+                .setDeleteIntent(mStopIntent)
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
                 .setSmallIcon(R.drawable.sedaily_logo)
                 .setColor(ContextCompat.getColor(mService, R.color.colorPrimaryDark))

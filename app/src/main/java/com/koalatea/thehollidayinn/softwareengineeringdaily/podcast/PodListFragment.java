@@ -30,6 +30,7 @@ import rx.schedulers.Schedulers;
  */
 
 public class PodListFragment extends Fragment {
+    private static String TAG = "PodList";
     private String title;
     private String tagId;
     private PodcastAdapter podcastAdapter;
@@ -117,7 +118,7 @@ public class PodListFragment extends Fragment {
 
                 @Override
                 public void onError(Throwable e) {
-                    Log.v("keithtest", e.toString());
+                    Log.v(TAG, e.toString());
                 }
 
                 @Override

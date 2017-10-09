@@ -31,7 +31,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 public class MusicService extends MediaBrowserServiceCompat {
-    private static final String TAG = "keithtest";
+    private static final String TAG = "MusicService";
 
     // ID for our MediaNotification.
     private static final int NOTIFICATION_ID = 412;

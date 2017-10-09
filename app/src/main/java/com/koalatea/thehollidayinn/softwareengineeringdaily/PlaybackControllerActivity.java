@@ -23,9 +23,9 @@ import com.koalatea.thehollidayinn.softwareengineeringdaily.mediaui.PlaybackCont
 // @TODO: Abstract the business logic for Clean Architecture
 
 public class PlaybackControllerActivity extends AppCompatActivity {
+    private static String TAG = "PlaybackController";
     private MediaBrowserCompat mMediaBrowser;
     private PlaybackControlsFragment mControlsFragment;
-
     private String mCurrentMediaId = "";
 
     private final MediaBrowserCompat.ConnectionCallback mConnectionCallbacks =
@@ -35,7 +35,7 @@ public class PlaybackControllerActivity extends AppCompatActivity {
                     try {
                         connectToSession(mMediaBrowser.getSessionToken());
                     } catch (RemoteException e) {
-                        Log.v("keithtesttest", e.toString());
+                        Log.v(TAG, e.toString());
                     }
                 }
 
