@@ -27,7 +27,7 @@
   <string name="currently_playing_extra_info">Extra info for currently playing song</string>
   <string name="play_pause">play or pause</string>
 
-  // Accessabiltiy
+  // Accessibility
   <string name="logo">Logo</string>
   <string name="up_vote">Up Vote</string>
   <string name="down_vote">Down Vote</string>
