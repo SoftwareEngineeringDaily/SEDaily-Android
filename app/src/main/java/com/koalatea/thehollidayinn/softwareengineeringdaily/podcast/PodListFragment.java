@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.koalatea.thehollidayinn.softwareengineeringdaily.R;
+import com.koalatea.thehollidayinn.softwareengineeringdaily.SEDailyApplication;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.data.models.Post;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.data.remote.APIInterface;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.data.remote.ApiUtils;
@@ -21,6 +22,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.inject.Inject;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
@@ -35,6 +37,8 @@ public class PodListFragment extends Fragment {
     private String tagId;
     private PodcastAdapter podcastAdapter;
 
+    @Inject FilterRepository filterRepository;
+
     public static PodListFragment newInstance(String title, String tagId) {
         PodListFragment f = new PodListFragment();
         Bundle args = new Bundle();
@@ -47,35 +51,36 @@ public class PodListFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        View rootView = inflater.inflate(
-                R.layout.fragment_podcast_horizontal, container, false);
 
-        RecyclerView recyclerView = (RecyclerView) rootView.findViewById(R.id.my_recycler_view);
+      ((SEDailyApplication) getActivity().getApplication()).getAppComponent().inject(this);
 
-        recyclerView.setHasFixedSize(true);
+      View rootView = inflater.inflate(
+              R.layout.fragment_podcast_horizontal, container, false);
 
-        LinearLayoutManager mLayoutManager = new LinearLayoutManager(this.getContext());
-        recyclerView.setLayoutManager(mLayoutManager);
+      RecyclerView recyclerView = (RecyclerView) rootView.findViewById(R.id.my_recycler_view);
+      recyclerView.setHasFixedSize(true);
 
-        podcastAdapter = new PodcastAdapter(this);
-        recyclerView.setAdapter(podcastAdapter);
+      LinearLayoutManager mLayoutManager = new LinearLayoutManager(this.getContext());
+      recyclerView.setLayoutManager(mLayoutManager);
 
-        FilterRepository filterRepository = FilterRepository.getInstance();
-        Subscriber<String> mySubscriber = new Subscriber<String>() {
-            @Override
-            public void onNext(String s) {
-                getPosts(s);
-            }
+      podcastAdapter = new PodcastAdapter(this);
+      recyclerView.setAdapter(podcastAdapter);
 
-            @Override
-            public void onCompleted() { }
+      Subscriber<String> mySubscriber = new Subscriber<String>() {
+        @Override
+        public void onNext(String s) {
+            getPosts(s);
+        }
 
-            @Override
-            public void onError(Throwable e) { }
-        };
-        filterRepository.getModelChanges().subscribe(mySubscriber);
+        @Override
+        public void onCompleted() { }
 
-        return rootView;
+        @Override
+        public void onError(Throwable e) { }
+      };
+      filterRepository.getModelChanges().subscribe(mySubscriber);
+
+      return rootView;
     }
 
     @Override

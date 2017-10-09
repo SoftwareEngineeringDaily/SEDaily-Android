@@ -109,7 +109,7 @@ public class PodcastDetailActivity extends PlaybackControllerActivity {
         titleTextView.setText(postTile.getRendered());
 
         String dayString = android.text.format.DateFormat.format("MMMM dd, yyyy", postDate.getTime()).toString();
-        TextView secondaryTextView = (TextView) findViewById(R.id.secondayTextView);
+        TextView secondaryTextView = (TextView) findViewById(R.id.secondaryTextView);
         secondaryTextView.setText(dayString);
 
         TextView descriptionTextView = (TextView) findViewById(R.id.description);
