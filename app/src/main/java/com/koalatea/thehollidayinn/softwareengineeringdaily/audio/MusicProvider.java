@@ -1,7 +1,7 @@
 package com.koalatea.thehollidayinn.softwareengineeringdaily.audio;
 
-/**
- * Created by krh12 on 6/16/2017.
+/*
+  Created by krh12 on 6/16/2017.
  */
 
 import android.os.AsyncTask;
@@ -104,10 +104,12 @@ public class MusicProvider {
      * @param metadata New Metadata to associate with it
      */
     public synchronized void updateMusic(String musicId, MediaMetadataCompat metadata) {
-        MediaMetadataCompat track = mMusicListById.get(musicId);
-//        if (track != null) {
-            mMusicListById.put(musicId, metadata);
-//        }
+        // @TODO: Do we need to check this?
+        //MediaMetadataCompat track = mMusicListById.get(musicId);
+        //if (track != null) {
+        //
+        //}
+        mMusicListById.put(musicId, metadata);
     }
 
     public boolean isInitialized() {

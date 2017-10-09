@@ -6,17 +6,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import rx.Observable;
-
-/**
+/*
  * Created by krh12 on 6/21/2017.
  */
 
 public class PostRepository {
     private static PostRepository instance = null;
 
-    List<Post> posts;
-    Map<String, Post> postsById;
+    private List<Post> posts;
+    private Map<String, Post> postsById;
 
     private PostRepository() {
     }
@@ -32,11 +30,11 @@ public class PostRepository {
         this.posts = posts;
 
         if (postsById == null) {
-            postsById = new HashMap<String, Post>();
+            postsById = new HashMap<>();
         }
 
         for (Post post : posts) {
-            postsById.put(post._id, post);
+            postsById.put(post.get_id(), post);
         }
     }
 

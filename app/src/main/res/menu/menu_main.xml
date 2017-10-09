@@ -4,18 +4,18 @@
     <item
         android:id="@+id/action_toggle_login_register"
         android:orderInCategory="100"
-        android:title="Login"
+        android:title="@string/login"
         app:showAsAction="never" />
 
     <item
         android:id="@+id/action_logout"
         android:orderInCategory="101"
-        android:title="Logout"
+        android:title="@string/logout"
         app:showAsAction="never" />
 
     <item android:id="@+id/search"
         android:orderInCategory="102"
-        android:title="Search"
+        android:title="@string/search"
         android:icon="@android:drawable/ic_menu_search"
         app:showAsAction="collapseActionView|ifRoom"
         app:actionViewClass="android.support.v7.widget.SearchView" />

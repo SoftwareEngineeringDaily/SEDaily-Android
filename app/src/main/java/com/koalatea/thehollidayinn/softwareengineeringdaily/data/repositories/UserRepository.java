@@ -1,33 +1,23 @@
 package com.koalatea.thehollidayinn.softwareengineeringdaily.data.repositories;
 
-/**
- * Created by krh12 on 6/21/2017.
- */
-
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
-import android.content.Context;
-import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
-import android.util.Log;
 
-/**
- * Created by krh12 on 6/11/2017.
+/*
+  Created by krh12 on 6/11/2017.
  */
 
 public class UserRepository {
     private static UserRepository instance = null;
 
-    private String TOKEN_KEY = "token-key";
-    private String SUBSCRIBED_KEY = "subscribe-key";
-    private Context context;
+    private final String TOKEN_KEY = "token-key";
+    private final String SUBSCRIBED_KEY = "subscribe-key";
     private boolean isSubscribedToNotifications = false;
     private String token = "";
-    private SharedPreferences preferences;
+    private final SharedPreferences preferences;
 
-    protected UserRepository(Context context) {
-        this.context = context;
+    private UserRepository(Context context) {
         preferences = PreferenceManager.getDefaultSharedPreferences(context);
         this.token = preferences.getString(TOKEN_KEY, "");
         this.isSubscribedToNotifications = preferences.getBoolean(SUBSCRIBED_KEY, false);

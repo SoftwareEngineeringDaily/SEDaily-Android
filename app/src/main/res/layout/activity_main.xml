@@ -21,17 +21,16 @@
             app:popupTheme="@style/AppTheme.PopupOverlay">
 
             <LinearLayout
-                android:id="@+id/back_menu_ll"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:paddingTop="8dp">
 
                 <ImageView
-                    android:id="@+id/logo"
                     android:layout_width="28dp"
                     android:layout_height="28dp"
-                    android:src="@drawable/sedaily_logo" />
+                    android:src="@drawable/sedaily_logo"
+                    android:contentDescription="@string/logo" />
             </LinearLayout>
         </android.support.v7.widget.Toolbar>
     </android.support.design.widget.AppBarLayout>
@@ -46,7 +45,6 @@
     </FrameLayout>
 
     <android.support.v7.widget.CardView
-        android:id="@+id/controls_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
