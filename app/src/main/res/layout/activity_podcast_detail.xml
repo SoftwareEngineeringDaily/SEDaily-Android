@@ -2,7 +2,6 @@
 <android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/detail_content"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true">
@@ -41,9 +40,10 @@
                     android:layout_width="40dp"
                     android:layout_height="40dp"
                     android:textAlignment="center"
-                    android:text="0"
+                    android:text="@string/zero"
                     style="@style/TextAppearance.AppCompat.Large"
-                    android:layout_toRightOf="@+id/up_button"/>
+                    android:layout_toRightOf="@+id/up_button"
+                    android:layout_toEndOf="@+id/up_button"/>
 
                 <ImageView
                     android:id="@+id/down_button"
@@ -59,9 +59,11 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginRight="10dp"
+                    android:layout_marginEnd="10dp"
                     android:textAlignment="center"
-                    android:text="Play"
+                    android:text="@string/label_play"
                     android:layout_alignParentRight="true"
+                    android:layout_alignParentEnd="true"
                     style="@style/Widget.AppCompat.Button.Colored"/>
 
             </RelativeLayout>
@@ -87,7 +89,6 @@
     </android.support.v4.widget.NestedScrollView>
 
     <android.support.design.widget.AppBarLayout
-        android:id="@+id/appbar"
         android:layout_width="match_parent"
         android:layout_height="@dimen/app_bar_height"
         android:layout_marginTop="0dp"
@@ -120,16 +121,18 @@
                 android:layout_height="40dp"
                 android:layout_alignParentBottom="true"
                 android:layout_alignParentRight="true"
+                android:layout_alignParentEnd="true"
                 app:layout_collapseMode="pin"
                 app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
 
             <RelativeLayout
-                android:id="@+id/details_top"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_marginTop="100dp"
                 android:orientation="vertical"
+                android:paddingStart="12dp"
                 android:paddingLeft="12dp"
+                android:paddingEnd="24dp"
                 android:paddingRight="24dp">
 
                 <TextView
@@ -140,7 +143,7 @@
                     android:layout_alignStart="@+id/secondayTextView"
                     android:layout_alignLeft="@+id/secondayTextView"
                     android:layout_marginBottom="35dp"
-                    android:text="Pets n More Adoption Drive"
+                    android:text="@string/titlePlaceHolder"
                     android:textSize="24sp" />
 
                 <TextView
@@ -153,33 +156,14 @@
                     android:layout_marginStart="27dp"
                     android:layout_marginLeft="27dp"
                     android:layout_marginTop="77dp"
-                    android:text="March 28—31 "
+                    android:text="@string/datePlaceHolder"
                     android:textSize="14sp"
                     android:textStyle="bold" />
-
-                <!--<TextView-->
-                    <!--android:id="@+id/turnaryTextView"-->
-                    <!--android:layout_width="wrap_content"-->
-                    <!--android:layout_height="wrap_content"-->
-                    <!--android:layout_alignStart="@+id/secondayTextView"-->
-                    <!--android:layout_below="@+id/secondayTextView"-->
-                    <!--android:layout_marginTop="10dp"-->
-                    <!--android:text="10:00 AM—5:00 PM" />-->
-
-                <!--<Button-->
-                    <!--android:id="@+id/subscribeButton"-->
-                    <!--style="@style/Widget.AppCompat.Button.Borderless"-->
-                    <!--android:layout_width="wrap_content"-->
-                    <!--android:layout_height="wrap_content"-->
-                    <!--android:layout_alignEnd="@+id/titleTextView"-->
-                    <!--android:layout_below="@+id/secondayTextView"-->
-                    <!--android:text="Follow" />-->
             </RelativeLayout>
         </android.support.design.widget.CollapsingToolbarLayout>
     </android.support.design.widget.AppBarLayout>
 
     <android.support.v7.widget.CardView
-        android:id="@+id/controls_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"

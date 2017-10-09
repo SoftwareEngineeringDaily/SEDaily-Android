@@ -1,10 +1,19 @@
 <resources>
   <string name="app_name">SoftwareEngineeringDaily</string>
   <string name="item_title">SoftwareEngineeringDaily</string>
-  <string name="item_desc">SoftwareEngineeringDaily</string>
   <string name="title_activity_podcast_detail">PodcastDetailActivity</string>
   <string name="title_activity_login_register">LoginRegisterActivity</string>
+  <string name="playback_controller">PlaybackController</string>
   <string name="search_hint">Search</string>
+  <string name="zero">0</string>
+  <string name="titlePlaceHolder">Pets n More Adoption Drive</string>
+  <string name="datePlaceHolder">March 28—31</string>
+  <string name="login">Login</string>
+  <string name="logout">Logout</string>
+  <string name="search">Search</string>
+  <string name="username">Username</string>
+  <string name="password">Password</string>
+  <string name="register">Register</string>
 
   <string name="label_pause">Pause</string>
   <string name="label_play">Play</string>

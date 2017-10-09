@@ -14,7 +14,7 @@
         android:layout_height="wrap_content"
         android:id="@+id/title"
         style="@style/TextAppearance.AppCompat.Large"
-        android:text="Login"
+        android:text="@string/login"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="100dp"
         android:layout_marginBottom="20dp"
@@ -24,7 +24,7 @@
         android:layout_width="260dp"
         android:layout_height="wrap_content"
         android:id="@+id/username"
-        android:hint="Username"
+        android:hint="@string/username"
         android:layout_centerHorizontal="true"
         android:layout_below="@+id/title"
         />
@@ -33,7 +33,7 @@
         android:layout_width="260dp"
         android:layout_height="wrap_content"
         android:id="@+id/password"
-        android:hint="Password"
+        android:hint="@string/password"
         android:inputType="textPassword"
         android:layout_centerHorizontal="true"
         android:layout_below="@+id/username"
@@ -43,17 +43,16 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/loginRegButton"
-        android:text="Login"
+        android:text="@string/login"
         android:layout_centerHorizontal="true"
         android:layout_below="@+id/password"
         style="@style/Widget.AppCompat.Button.Colored" />
-
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/toggleButton"
-        android:text="Register"
+        android:text="@string/register"
         android:layout_centerHorizontal="true"
         android:layout_below="@+id/loginRegButton"
         style="@style/Widget.AppCompat.Button.Borderless.Colored"

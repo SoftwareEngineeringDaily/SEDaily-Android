@@ -8,13 +8,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-/**
+/*
  * Created by keithholliday on 9/16/17.
  */
 
-public class RecentPodcatsPageAdapter extends FragmentPagerAdapter {
-    List<Fragment> fragmentList = new ArrayList<>();
-    List<String> titles;
+class RecentPodcatsPageAdapter extends FragmentPagerAdapter {
+    private List<Fragment> fragmentList = new ArrayList<>();
+    private List<String> titles;
 
     public RecentPodcatsPageAdapter(FragmentManager fm) {
         super(fm);

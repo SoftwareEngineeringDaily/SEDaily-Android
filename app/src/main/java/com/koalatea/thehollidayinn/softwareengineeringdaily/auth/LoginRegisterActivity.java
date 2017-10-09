@@ -71,14 +71,14 @@ public class LoginRegisterActivity extends AppCompatActivity {
             public void onClick(View v) {
                 if (register) {
                     register = false;
-                    title.setText("Login");
-                    toggleButton.setText("Register");
-                    loginRegButton.setText("Login");
+                    title.setText(getString(R.string.login));
+                    toggleButton.setText(getString(R.string.register));
+                    loginRegButton.setText(getString(R.string.login));
                 } else {
                     register = true;
-                    title.setText("Register");
-                    toggleButton.setText("Login");
-                    loginRegButton.setText("Register");
+                    title.setText(getString(R.string.register));
+                    toggleButton.setText(getString(R.string.login));
+                    loginRegButton.setText(getString(R.string.register));
                 }
             }
         });
@@ -112,25 +112,10 @@ public class LoginRegisterActivity extends AppCompatActivity {
     private void loginReg(String username, String password) {
         loginRegButton.setEnabled(false);
 
-        APIInterface mService = ApiUtils.getKibbleService(this);
-        rx.Observable query;
+        String type = getType();
+        logLoginRegAnalytics(username, type);
 
-        String type = "";
-
-        if (register) {
-            type = "Register";
-            query = mService.register(username, password);
-        } else {
-            type = "Login";
-            query = mService.login(username, password);
-        }
-
-        Bundle bundle = new Bundle();
-        bundle.putString(FirebaseAnalytics.Param.ITEM_ID, username);
-        bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, type);
-        mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
-
-        query
+        getQuery(username, password)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(new Subscriber<User>() {
@@ -146,19 +131,41 @@ public class LoginRegisterActivity extends AppCompatActivity {
                     try {
                         JSONObject jsonResponse = new JSONObject(response.errorBody().string());
                         displayMessage(jsonResponse.getString("message"));
-                    } catch (IOException e1) {
-                        e1.printStackTrace();
-                    } catch (JSONException e1) {
+                    } catch (IOException | JSONException e1) {
                         e1.printStackTrace();
                     }
                 }
 
                 @Override
                 public void onNext(User user) {
-                    userRepository.setToken(user.token);
+                    userRepository.setToken(user.getToken());
                     Intent intent = new Intent(LoginRegisterActivity.this, MainActivity.class);
                     startActivity(intent);
                 }
             });
+    }
+
+    private void logLoginRegAnalytics(String username, String type) {
+      Bundle bundle = new Bundle();
+      bundle.putString(FirebaseAnalytics.Param.ITEM_ID, username);
+      bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, type);
+      mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
+    }
+
+    private String getType () {
+        if (register) {
+            return getString(R.string.register);
+        }
+
+        return getString(R.string.login);
+    }
+
+    private rx.Observable<User> getQuery (String username, String password) {
+      APIInterface mService = ApiUtils.getKibbleService(this);
+      if (register) {
+        return mService.register(username, password);
+      }
+
+      return mService.login(username, password);
     }
 }

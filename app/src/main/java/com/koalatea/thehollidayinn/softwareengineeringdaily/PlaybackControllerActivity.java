@@ -15,7 +15,7 @@ import android.util.Log;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.audio.MusicService;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.mediaui.PlaybackControlsFragment;
 
-/**
+/*
  * Created by keithholliday on 9/27/17.
  */
 
@@ -26,8 +26,7 @@ public class PlaybackControllerActivity extends AppCompatActivity {
     private MediaBrowserCompat mMediaBrowser;
     private PlaybackControlsFragment mControlsFragment;
 
-    private PlaybackStateCompat state;
-    private String mCurrentMediaId;
+    private String mCurrentMediaId = "";
 
     private final MediaBrowserCompat.ConnectionCallback mConnectionCallbacks =
             new MediaBrowserCompat.ConnectionCallback() {
@@ -51,7 +50,7 @@ public class PlaybackControllerActivity extends AppCompatActivity {
                 }
             };
 
-    private MediaControllerCompat.Callback controllerCallback =
+    private final MediaControllerCompat.Callback controllerCallback =
             new MediaControllerCompat.Callback() {
                 @Override
                 public void onMetadataChanged(MediaMetadataCompat metadata) {
@@ -66,12 +65,6 @@ public class PlaybackControllerActivity extends AppCompatActivity {
                     }
                 }
             };
-
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-    }
 
     protected void setUp() {
         if (mMediaBrowser == null) {
@@ -117,7 +110,7 @@ public class PlaybackControllerActivity extends AppCompatActivity {
         mMediaBrowser.disconnect();
     }
 
-    protected void showPlaybackControls() {
+    private void showPlaybackControls() {
         // @TODO: check for network
         getSupportFragmentManager().beginTransaction()
                 .show(mControlsFragment)
@@ -125,7 +118,7 @@ public class PlaybackControllerActivity extends AppCompatActivity {
 
     }
 
-    protected void hidePlaybackControls() {
+    private void hidePlaybackControls() {
         getSupportFragmentManager().beginTransaction()
                 .hide(mControlsFragment)
                 .commitAllowingStateLoss();
@@ -137,7 +130,7 @@ public class PlaybackControllerActivity extends AppCompatActivity {
      *
      * @return true if the MediaSession's state requires playback controls to be visible.
      */
-    protected boolean shouldShowControls() {
+    private boolean shouldShowControls() {
         MediaControllerCompat mediaController = MediaControllerCompat.getMediaController(this);
         if (mediaController == null ||
                 mediaController.getMetadata() == null ||
@@ -172,7 +165,7 @@ public class PlaybackControllerActivity extends AppCompatActivity {
         }
     }
 
-    public void onMediaItemSelected(MediaBrowserCompat.MediaItem item, boolean isPlaying) {
+    protected void onMediaItemSelected(MediaBrowserCompat.MediaItem item, boolean isPlaying) {
         if (item.isPlayable()) {
             MediaControllerCompat controller = MediaControllerCompat.getMediaController(this);
             MediaControllerCompat.TransportControls controls = controller.getTransportControls();
@@ -185,10 +178,11 @@ public class PlaybackControllerActivity extends AppCompatActivity {
         }
     }
 
-    @Nullable
-    public String getPlayingMediaId() {
-        boolean isPlaying = state != null
-                && state.getState() == PlaybackStateCompat.STATE_PLAYING;
-        return isPlaying ? mCurrentMediaId : null;
+    @Nullable protected String getPlayingMediaId() {
+      // @TODO this class need to watch set and media
+        //boolean isPlaying = state != null
+        //        && state.getState() == PlaybackStateCompat.STATE_PLAYING;
+        //return isPlaying ? mCurrentMediaId : null;
+        return mCurrentMediaId;
     }
 }

@@ -25,16 +25,14 @@ import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
-/**
+/*
  * Created by krh12 on 5/22/2017.
  */
 
 public class PodListFragment extends Fragment {
-
     private String title;
     private String tagId;
     private PodcastAdapter podcastAdapter;
-    private FilterRepository filterRepository;
 
     public static PodListFragment newInstance(String title, String tagId) {
         PodListFragment f = new PodListFragment();
@@ -48,9 +46,9 @@ public class PodListFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        View rootView =  (View) inflater.inflate(
+        View rootView = inflater.inflate(
                 R.layout.fragment_podcast_horizontal, container, false);
-        Log.v("keithtest", "onCreateView");
+
         RecyclerView recyclerView = (RecyclerView) rootView.findViewById(R.id.my_recycler_view);
 
         recyclerView.setHasFixedSize(true);
@@ -61,7 +59,7 @@ public class PodListFragment extends Fragment {
         podcastAdapter = new PodcastAdapter(this);
         recyclerView.setAdapter(podcastAdapter);
 
-        filterRepository = FilterRepository.getInstance();
+        FilterRepository filterRepository = FilterRepository.getInstance();
         Subscriber<String> mySubscriber = new Subscriber<String>() {
             @Override
             public void onNext(String s) {
@@ -85,11 +83,13 @@ public class PodListFragment extends Fragment {
         getPosts("");
     }
 
-    public void getPosts(String search) {
+    private void getPosts(String search) {
         APIInterface mService = ApiUtils.getKibbleService(getActivity());
 
+        // @TODO: Replace tmp with query
+
         Map<String, String> data = new HashMap<>();
-        rx.Observable query = mService.getPosts(data);
+        rx.Observable<List<Post>> query = mService.getPosts(data);
 
         UserRepository userRepository = UserRepository.getInstance(this.getContext());
         final PostRepository postRepository = PostRepository.getInstance();
