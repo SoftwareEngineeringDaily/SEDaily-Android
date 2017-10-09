@@ -23,7 +23,7 @@ import com.koalatea.thehollidayinn.softwareengineeringdaily.mediaui.PlaybackCont
 // @TODO: Abstract the business logic for Clean Architecture
 
 public class PlaybackControllerActivity extends AppCompatActivity {
-    private static String TAG = "PlaybackController";
+    private static final String TAG = "PlaybackController";
     private MediaBrowserCompat mMediaBrowser;
     private PlaybackControlsFragment mControlsFragment;
     private String mCurrentMediaId = "";
