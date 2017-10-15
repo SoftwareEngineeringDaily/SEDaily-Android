@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:foreground="?attr/selectableItemBackground">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="5dp" >
+
+        <ImageView
+            android:id="@+id/card_image"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:scaleType="centerCrop"
+            android:contentDescription="@string/podcast_image" />
+
+        <TextView
+            android:id="@+id/card_title"
+            android:layout_marginStart="10dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="5dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentTop="true"
+            android:layout_toEndOf="@+id/card_image"
+            android:layout_toRightOf="@+id/card_image"
+            android:text="@string/item_title"
+            android:textColor="@color/dark_grey"
+            android:textSize="22sp" />
+
+        <!--<TextView-->
+            <!--android:id="@+id/score"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="30dp"-->
+            <!--android:layout_below="@+id/card_title"-->
+            <!--android:text="0"-->
+            <!--android:textAlignment="center"-->
+            <!--android:textColor="@color/dark_grey"-->
+            <!--android:textSize="20dp" />-->
+
+    </RelativeLayout>
+</android.support.v7.widget.CardView>
