@@ -22,6 +22,7 @@ package com.koalatea.thehollidayinn.softwareengineeringdaily.audio;
 
 import android.content.Context;
 import android.media.AudioManager;
+import android.media.MediaMetadataRetriever;
 import android.media.MediaPlayer;
 import android.net.wifi.WifiManager;
 import android.os.PowerManager;
@@ -172,7 +173,13 @@ class Playback implements AudioManager.OnAudioFocusChangeListener,
                 mWifiLock.acquire();
 
                 // Add the duration since we are streaming
-                long duration = mMediaPlayer.getDuration();
+                //long duration = mMediaPlayer.getDuration();
+                MediaMetadataRetriever metaRetriever = new MediaMetadataRetriever();
+                metaRetriever.setDataSource(source);
+                String duration =
+                  metaRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
+                long dur = Long.parseLong(duration);
+
 
                 String oldSource = "";
                 if (item.getDescription() != null && item.getDescription().getMediaUri() != null) {
@@ -190,7 +197,7 @@ class Playback implements AudioManager.OnAudioFocusChangeListener,
                 MediaMetadataCompat updatedItem = new MediaMetadataCompat.Builder()
                         .putString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID, currentMediaId)
                         .putString(MediaMetadataCompat.METADATA_KEY_MEDIA_URI, oldSource)
-                        .putLong(MediaMetadataCompat.METADATA_KEY_DURATION, duration)
+                        .putLong(MediaMetadataCompat.METADATA_KEY_DURATION, dur)
                         .putString(MediaMetadataCompat.METADATA_KEY_TITLE, title)
                         .build();
 

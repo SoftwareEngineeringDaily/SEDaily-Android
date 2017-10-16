@@ -317,7 +317,7 @@ public class PodcastDetailActivity extends PlaybackControllerActivity {
       if (item == null) {
         item = new MediaMetadataCompat.Builder()
           .putString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID, id)
-          .putString(MediaMetadataCompat.METADATA_KEY_MEDIA_URI, source)
+          .putString(MediaMetadataCompat.METADATA_KEY_MEDIA_URI, file.getAbsolutePath())
           .putString(MediaMetadataCompat.METADATA_KEY_TITLE, post.getTitle().getRendered())
           .build();
 
