@@ -17,37 +17,37 @@ import com.koalatea.thehollidayinn.softwareengineeringdaily.R;
  */
 
 public class RecentPodcastFragment extends Fragment {
-    RecentPodcatsPageAdapter recentPodcatsPageAdapter;
-    ViewPager viewPager;
-    TabLayout tabLayout;
+  RecentPodcastsPageAdapter recentPodcatsPageAdapter;
+  ViewPager viewPager;
+  TabLayout tabLayout;
 
-    public static RecentPodcastFragment newInstance() {
-        RecentPodcastFragment f = new RecentPodcastFragment();
-        return f;
-    }
+  public static RecentPodcastFragment newInstance() {
+    RecentPodcastFragment f = new RecentPodcastFragment();
+    return f;
+  }
 
-    @Override
-    public View onCreateView(LayoutInflater inflater,
-                             ViewGroup container, Bundle savedInstanceState) {
-        View rootView = (View) inflater.inflate(
-                R.layout.fragment_recent_podcast, container, false);
+  @Override
+  public View onCreateView(LayoutInflater inflater,
+      ViewGroup container, Bundle savedInstanceState) {
+    View rootView = (View) inflater.inflate(
+        R.layout.fragment_recent_podcast, container, false);
 
-        tabLayout = (TabLayout) rootView.findViewById(R.id.tabs);
-        recentPodcatsPageAdapter = new RecentPodcatsPageAdapter(this.getActivity().getSupportFragmentManager());
-        viewPager = (ViewPager) rootView.findViewById(R.id.pager);
-        viewPager.setAdapter(recentPodcatsPageAdapter);
-        tabLayout.post(new Runnable() {
-            @Override
-            public void run() {
-                tabLayout.setupWithViewPager(viewPager);
-            }
-        });
+    tabLayout = (TabLayout) rootView.findViewById(R.id.tabs);
+    recentPodcatsPageAdapter = new RecentPodcastsPageAdapter(this.getActivity().getSupportFragmentManager());
+    viewPager = (ViewPager) rootView.findViewById(R.id.pager);
+    viewPager.setAdapter(recentPodcatsPageAdapter);
+    tabLayout.post(new Runnable() {
+      @Override
+      public void run() {
+        tabLayout.setupWithViewPager(viewPager);
+      }
+    });
 
-        return rootView;
-    }
+    return rootView;
+  }
 
-    public void goHome () {
-        TabLayout.Tab tab = tabLayout.getTabAt(0);
-        tab.select();
-    }
+  public void goHome () {
+    TabLayout.Tab tab = tabLayout.getTabAt(0);
+    tab.select();
+  }
 }

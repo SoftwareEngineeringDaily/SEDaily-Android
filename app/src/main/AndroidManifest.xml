@@ -12,7 +12,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:name=".app.SDEApp"
-        android:theme="@style/AppTheme">
+        android:theme="@style/AppTheme"
+        android:fullBackupContent="@xml/backup_descriptor">
 
         <activity android:name=".MainActivity">
             <intent-filter>
@@ -24,7 +25,8 @@
                 android:resource="@xml/searchable" />
         </activity>
 
-        <service android:name=".audio.MusicService">
+        <service android:name=".audio.MusicService"
+            android:exported="false" >
             <intent-filter>
                 <action android:name="android.media.browse.MediaBrowserService" />
             </intent-filter>
@@ -38,6 +40,11 @@
         <activity
             android:name=".auth.LoginRegisterActivity"
             android:label="@string/title_activity_login_register"
+            android:theme="@style/AppTheme" />
+
+        <activity
+            android:name=".PlaybackControllerActivity"
+            android:label="@string/playback_controller"
             android:theme="@style/AppTheme" />
     </application>
 

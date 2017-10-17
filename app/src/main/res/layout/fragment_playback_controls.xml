@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Copyright (C) 2014 The Android Open Source Project
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+  -->
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:padding="@dimen/playback_controls_padding">
+
+    <LinearLayout
+        android:id="@+id/content"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/playback_controls_albumart_horizontal_margin"
+        android:layout_marginStart="@dimen/playback_controls_albumart_horizontal_margin"
+        android:orientation="vertical"
+        android:layout_toStartOf="@+id/play_pause"
+        android:layout_toLeftOf="@+id/play_pause"
+        android:layout_centerVertical="true">
+        <TextView
+            android:id="@+id/title"
+            tools:text="The Best Music EVAH1111 THE BEST"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:contentDescription="@string/currently_playing_song"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textColor="?android:attr/textColorPrimary"/>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="48dp">
+
+            <TextView
+                android:id="@+id/startText"
+                android:layout_width="wrap_content"
+                android:layout_height="fill_parent"
+                android:layout_marginStart="5dp"
+                android:layout_marginLeft="5dp"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentLeft="true"
+                android:gravity="center_vertical"
+                android:maxLines="1"
+                android:textColor="@color/colorPrimary" />
+
+            <SeekBar
+                android:id="@+id/seekBar1"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_gravity="center"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp"
+                android:layout_toStartOf="@+id/endText"
+                android:layout_toLeftOf="@+id/endText"
+                android:layout_toEndOf="@+id/startText"
+                android:layout_toRightOf="@+id/startText"/>
+
+            <TextView
+                android:id="@+id/endText"
+                android:layout_width="wrap_content"
+                android:layout_height="fill_parent"
+                android:layout_marginEnd="5dp"
+                android:layout_marginRight="5dp"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:gravity="center_vertical"
+                android:layout_alignWithParentIfMissing="true"
+                android:maxLines="1"
+                android:textColor="@color/colorPrimary" />
+
+        </RelativeLayout>
+
+        <TextView
+            tools:text="John Doe and Band"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:contentDescription="@string/currently_playing_artist"
+            android:textAppearance="?android:attr/textAppearanceSmall"/>
+
+        <TextView
+            tools:text="casting to MyCast"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            android:contentDescription="@string/currently_playing_extra_info"
+            android:textAppearance="?android:attr/textAppearanceSmall"/>
+    </LinearLayout>
+
+    <ImageButton
+        android:id="@+id/play_pause"
+        android:layout_centerVertical="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="8dp"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:background="?selectableItemBackgroundBorderless"
+        android:src="@drawable/ic_play_arrow_black_36dp"
+        android:contentDescription="@string/play_pause"
+        android:tint="@color/bt_accent"/>
+</RelativeLayout>
