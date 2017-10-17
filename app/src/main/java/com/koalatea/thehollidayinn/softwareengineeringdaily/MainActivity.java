@@ -39,6 +39,8 @@ public class MainActivity extends PlaybackControllerActivity implements SearchVi
         filterRepository = FilterRepository.getInstance();
 
         setUpBottomNavigation();
+
+        showInitialPage();
     }
 
     private void showInitialPage () {
