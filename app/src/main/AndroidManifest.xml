@@ -7,12 +7,12 @@
 
     <application
         android:allowBackup="true"
-        android:icon="@drawable/sedaily_logo"
+        android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
-        android:roundIcon="@drawable/sedaily_logo"
+        android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
+        android:name=".app.SDEApp"
         android:theme="@style/AppTheme"
-        android:name=".SEDailyApplication"
         android:fullBackupContent="@xml/backup_descriptor">
 
         <activity android:name=".MainActivity">

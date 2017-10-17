@@ -3,15 +3,14 @@ package com.koalatea.thehollidayinn.softwareengineeringdaily;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.view.MenuItemCompat;
-import android.os.Bundle;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-
 import com.koalatea.thehollidayinn.softwareengineeringdaily.auth.LoginRegisterActivity;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.data.repositories.FilterRepository;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.data.repositories.UserRepository;
@@ -33,15 +32,13 @@ public class MainActivity extends PlaybackControllerActivity implements SearchVi
         setContentView(R.layout.activity_main);
 
         this.setUp();
-
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         userRepository = UserRepository.getInstance(this);
         filterRepository = FilterRepository.getInstance();
 
         setUpBottomNavigation();
-        showInitialPage();
     }
 
     private void showInitialPage () {
@@ -140,6 +137,8 @@ public class MainActivity extends PlaybackControllerActivity implements SearchVi
         if (id == R.id.action_toggle_login_register) {
             Intent intent = new Intent(this, LoginRegisterActivity.class);
             startActivity(intent);
+            //TODO clean up with MVP
+            //LoginFragment.show(getSupportFragmentManager());
             return true;
         } else if (id == R.id.action_logout) {
             userRepository.setToken("");

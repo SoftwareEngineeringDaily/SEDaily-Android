@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="sign_in">Sign In</string>
+    <string name="password">Password</string>
+    <string name="username">Username</string>
+    <string name="confirm_password">Confirm Password</string>
+    <string name="passwords_must_match">Passwords must match</string>
+    <string name="register">Register</string>
+    <string name="submit">Submit</string>
+    <string name="cancel">@android:string/cancel</string>
+    <string name="required_field">Required Field</string>
+    <string name="unable_to_authenticate">Unable to add account</string>
+    <string name="unable_to_connect_to_server">Unable to connect to server</string>
+</resources>

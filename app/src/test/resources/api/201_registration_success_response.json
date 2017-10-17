@@ -1,0 +1,10 @@
+{
+  "user": {
+    "__v": 0,
+    "password": "$2a$08$Omxiq4YbBaY8UVq.Fn1.ze0S81znnyZpy2FtYloUWQ0bsbYjBvKTq",
+    "username": "testkv1",
+    "_id": "59cac987f5f63e0028908235",
+    "createdAt": "2017-09-26T21:41:27.780Z"
+  },
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfX3YiOjAsInBhc3N3b3JkIjoiJDJhJDA4JE9teGlxNFliQmFZOFVWcS5GbjEuemUwUzgxem5ueVpweTJGdFlsb1VXUTBic2JZakJ2S1RxIiwidXNlcm5hbWUiOiJ0ZXN0a3YxIiwiX2lkIjoiNTljYWM5ODdmNWY2M2UwMDI4OTA4MjM1IiwiY3JlYXRlZEF0IjoiMjAxNy0wOS0yNlQyMTo0MToyNy43ODBaIiwiaWF0IjoxNTA2NDYyMDg3LCJleHAiOjE2NTA0NjIwODd9.wLA4u4B_oNx-SUsZd5rfouzCsJdQObaLoTbJwhEtSe0"
+}
