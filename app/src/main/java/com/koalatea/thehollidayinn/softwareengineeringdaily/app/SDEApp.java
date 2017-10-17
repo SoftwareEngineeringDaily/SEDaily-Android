@@ -15,42 +15,42 @@ import timber.log.Timber;
 
 public class SDEApp extends Application {
 
-    @VisibleForTesting
-    public static AppComponent component;
+  @VisibleForTesting
+  public static AppComponent component;
 
-    @Override
-    public void onCreate() {
-        super.onCreate();
-        initDependencies();
-        createLogger();
-        // Enable RxJava assembly stack collection, to make RxJava crash reports clear and unique
-        // Make sure this is called AFTER setting up any Crash reporting mechanism as Crashlytics
-        RxJava2Debug.enableRxJava2AssemblyTracking(new String[]{BuildConfig.APPLICATION_ID});
+  @Override
+  public void onCreate() {
+    super.onCreate();
+    initLeakCanary();
+    initDependencies();
+    createLogger();
+    // Enable RxJava assembly stack collection, to make RxJava crash reports clear and unique
+    // Make sure this is called AFTER setting up any Crash reporting mechanism as Crashlytics
+    RxJava2Debug.enableRxJava2AssemblyTracking(new String[] { BuildConfig.APPLICATION_ID });
+  }
 
-
-        if (LeakCanary.isInAnalyzerProcess(this)) {
-            // This process is dedicated to LeakCanary for heap analysis.
-            // You should not init your app in this process.
-            return;
-        }
-        LeakCanary.install(this);
+  private void initLeakCanary() {
+    if (LeakCanary.isInAnalyzerProcess(this)) {
+      // This process is dedicated to LeakCanary for heap analysis.
+      // You should not init your app in this process.
+      return;
     }
+    LeakCanary.install(this);
+  }
 
-    private void createLogger() {
-        if(BuildConfig.DEBUG) {
-            Timber.plant(new Timber.DebugTree());
-        }
+  private void createLogger() {
+    if (BuildConfig.DEBUG) {
+      Timber.plant(new Timber.DebugTree());
     }
+  }
 
-    private void initDependencies() {
-        if(component == null) {
-            component = DaggerAppComponent.builder()
-                    .appModule(new AppModule(this))
-                    .build();
-        }
+  private void initDependencies() {
+    if (component == null) {
+      component = DaggerAppComponent.builder().appModule(new AppModule(this)).build();
     }
+  }
 
-    public static AppComponent component() {
-        return component;
-    }
+  public static AppComponent component() {
+    return component;
+  }
 }
