@@ -6,6 +6,7 @@ import android.support.annotation.VisibleForTesting;
 import com.akaita.java.rxjava2debug.RxJava2Debug;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.BuildConfig;
 
+import com.squareup.leakcanary.LeakCanary;
 import timber.log.Timber;
 
 /**
@@ -25,6 +26,14 @@ public class SDEApp extends Application {
         // Enable RxJava assembly stack collection, to make RxJava crash reports clear and unique
         // Make sure this is called AFTER setting up any Crash reporting mechanism as Crashlytics
         RxJava2Debug.enableRxJava2AssemblyTracking(new String[]{BuildConfig.APPLICATION_ID});
+
+
+        if (LeakCanary.isInAnalyzerProcess(this)) {
+            // This process is dedicated to LeakCanary for heap analysis.
+            // You should not init your app in this process.
+            return;
+        }
+        LeakCanary.install(this);
     }
 
     private void createLogger() {
