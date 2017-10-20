@@ -328,7 +328,7 @@ public class PodcastDetailActivity extends PlaybackControllerActivity {
         new MediaBrowserCompat.MediaItem(item.getDescription(),
           MediaBrowserCompat.MediaItem.FLAG_PLAYABLE);
 
-      boolean isPlaying = id.equals(getPlayingMediaId());
-      onMediaItemSelected(bItem, isPlaying);
+      boolean isSameMedia = id.equals(getPlayingMediaId());
+      onMediaItemSelected(bItem, isSameMedia);
     }
 }

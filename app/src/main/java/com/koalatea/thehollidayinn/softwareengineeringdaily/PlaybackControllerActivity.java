@@ -165,15 +165,20 @@ public class PlaybackControllerActivity extends AppCompatActivity {
         }
     }
 
-    protected void onMediaItemSelected(MediaBrowserCompat.MediaItem item, boolean isPlaying) {
+    protected void onMediaItemSelected(MediaBrowserCompat.MediaItem item, boolean isSameMedia) {
         if (item.isPlayable()) {
             MediaControllerCompat controller = MediaControllerCompat.getMediaController(this);
             MediaControllerCompat.TransportControls controls = controller.getTransportControls();
 
-            if (isPlaying) {
-                controls.pause();
+            if (isSameMedia) {
+                if (controller.getPlaybackState().getState() == PlaybackStateCompat.STATE_PLAYING) {
+                    controls.pause();
+                } else if (controller.getPlaybackState().getState() == PlaybackStateCompat.STATE_PAUSED) {
+                    controls.play();
+                }
             } else {
                 controls.playFromMediaId(item.getMediaId(), null);
+                mCurrentMediaId = item.getMediaId();
             }
         }
     }
