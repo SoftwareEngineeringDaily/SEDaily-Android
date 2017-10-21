@@ -5,18 +5,16 @@ import com.koalatea.thehollidayinn.softwareengineeringdaily.data.models.PostItem
 import com.koalatea.thehollidayinn.softwareengineeringdaily.network.api.EpisodePostNetworkService;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.network.response.PostResponse;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.test.BaseUnitTest;
-
-import org.junit.Test;
-import org.mockito.Mock;
-import org.mockito.Spy;
-
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
+import io.reactivex.Completable;
 import io.reactivex.Observable;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.functions.Predicate;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import org.junit.Test;
+import org.mockito.Mock;
+import org.mockito.Spy;
 
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -85,20 +83,6 @@ public class PostRepositoryImplTest extends BaseUnitTest {
     }
 
     @Test
-    public void upVote_returns_void_observable() throws Exception {
-        doReturn(Observable.just(Void.TYPE)).when(api).upVote(anyString());
-        api.upVote("post id").test().assertNoErrors();
-        verify(api).upVote(eq("post id"));
-    }
-
-    @Test
-    public void downVote_returns_void_observable() throws Exception {
-        doReturn(Observable.just(Void.TYPE)).when(api).downVote(anyString());
-        api.downVote("post id").test().assertNoErrors();
-        verify(api).downVote(eq("post id"));
-    }
-
-    @Test
     public void getTopPosts_returns_list_of_post_items_with_expected_count() throws Exception {
         final List<PostResponse> inputs = createPostResponseList(4);
         doReturn(Observable.just(inputs)).when(api).getTopPosts();
@@ -124,6 +108,20 @@ public class PostRepositoryImplTest extends BaseUnitTest {
             }
         });
         verify(api).getRecommendations();
+    }
+
+    @Test
+    public void upvote_invokes_analytics_upvote_event() throws Exception {
+        doReturn(Completable.complete()).when(api).upVote(anyString());
+        repo.upVote("post id").test().assertNoErrors();
+        verify(appComponent().analyticsFacade()).trackUpVote(eq("post id"));
+    }
+
+    @Test
+    public void downvote_invokes_analytics_downvote_event() throws Exception {
+        doReturn(Completable.complete()).when(api).downVote(anyString());
+        repo.downVote("post id").test().assertNoErrors();
+        verify(appComponent().analyticsFacade()).trackDownVote(eq("post id"));
     }
 
     private List<PostResponse> createPostResponseList(int count) {

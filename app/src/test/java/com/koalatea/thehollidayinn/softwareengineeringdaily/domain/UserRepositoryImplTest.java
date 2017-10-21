@@ -4,17 +4,15 @@ import com.koalatea.thehollidayinn.softwareengineeringdaily.data.preference.Auth
 import com.koalatea.thehollidayinn.softwareengineeringdaily.network.api.AuthNetworkService;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.network.response.AuthResponse;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.test.BaseUnitTest;
-
+import io.reactivex.Single;
 import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
-import io.reactivex.Completable;
-import io.reactivex.Single;
-
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
 /**
@@ -60,6 +58,22 @@ public class UserRepositoryImplTest extends BaseUnitTest {
         verify(preference).saveToken(eq("token"));
     }
 
+    @Test
+    public void login_invokes_analytics_login_event_when_login_true() throws Exception {
+        doReturn(Single.just(AuthResponse.create("token")))
+            .when(api).login(anyString(), anyString());
+        doReturn(true).when(preference).isLoggedIn();
+        repo.login("test", "pass").test().assertNoErrors();
+        verify(appComponent().analyticsFacade()).trackLogin(eq("test"));
+    }
+
+    @Test
+    public void login_invokes_analytics_login_event_when_login_false() throws Exception {
+        doReturn(Single.just(AuthResponse.create("token")))
+            .when(api).login(anyString(), anyString());
+        repo.login("test", "pass").test().assertNoErrors();
+        verify(appComponent().analyticsFacade(), never()).trackLogin(eq("test"));
+    }
 
     /*
         REGISTRATION
@@ -89,6 +103,23 @@ public class UserRepositoryImplTest extends BaseUnitTest {
                 .when(api).register(anyString(), anyString());
         repo.register("test", "pass").test().assertNoErrors();
         verify(preference).saveToken(eq("token"));
+    }
+
+    @Test
+    public void register_invokes_analytics_registration_event_when_login_true() throws Exception {
+        doReturn(Single.just(AuthResponse.create("token")))
+            .when(api).register(anyString(), anyString());
+        doReturn(true).when(preference).isLoggedIn();
+        repo.register("test", "pass").test().assertNoErrors();
+        verify(appComponent().analyticsFacade()).trackRegistration(eq("test"));
+    }
+
+    @Test
+    public void register_invokes_analytics_registration_event_when_login_false() throws Exception {
+        doReturn(Single.just(AuthResponse.create("token")))
+            .when(api).register(anyString(), anyString());
+        repo.register("test", "pass").test().assertNoErrors();
+        verify(appComponent().analyticsFacade(), never()).trackRegistration(eq("test"));
     }
 
     //TODO test error-handling from responses

@@ -1,12 +1,10 @@
 package com.koalatea.thehollidayinn.softwareengineeringdaily.domain;
 
 import android.support.annotation.NonNull;
-
 import com.koalatea.thehollidayinn.softwareengineeringdaily.data.models.PostItem;
-
-import java.util.List;
-
+import io.reactivex.Completable;
 import io.reactivex.Observable;
+import java.util.List;
 
 /**
  * Created by Kurian on 26-Sep-17.
@@ -39,14 +37,14 @@ public interface PostRepository {
      * @param postId id of post to upvote
      * @return
      */
-    Observable<Void> upVote(@NonNull String postId);
+    Completable upVote(@NonNull String postId);
 
     /**
      * Add an upvote to a post
      * @param postId id of post to upvote
      * @return
      */
-    Observable<Void> downVote(@NonNull String postId);
+    Completable downVote(@NonNull String postId);
 
     /**
      * Get a list of the most popular posts
