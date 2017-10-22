@@ -4,12 +4,21 @@ sudo: false
 
 android:
   components:
-    - platform-tools
     - tools
-    - build-tools-24.0.2
-    - android-22
-    - android-24
-    - sys-img-armeabi-v7a-android-22
-    - extra-android-m2repository
+        - build-tools-26.1.0
+        - platform-tools
+        - extra-android-m2repository
+        - extra-google-android-support
+        # The BuildTools version used by your project
+        #- build-tools-19.1.0
+
+        # The SDK version used to compile your project
+        - android-26
+
+        # Additional components
+
+        # Specify at least one system image,
+        # if you need to run emulator(s) during your tests
+        - sys-img-armeabi-v7a-android-26
 
 script: ./gradlew connectedAndroidTest
