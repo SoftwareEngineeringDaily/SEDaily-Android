@@ -4,7 +4,7 @@ sudo: false
 
 android:
   components:
-    - build-tools-26.1.0
+    - build-tools-26.0.0-preview
     - platform-tools
     - extra-android-m2repository
     - extra-google-android-support
