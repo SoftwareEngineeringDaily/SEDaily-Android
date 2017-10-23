@@ -1,12 +1,12 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 26
-    buildToolsVersion '26.0.2'
+    compileSdkVersion rootProject.compileSdkVersion
+    buildToolsVersion rootProject.buildToolsVersion
     defaultConfig {
         applicationId "com.koalatea.thehollidayinn.softwareengineeringdaily"
-        minSdkVersion 16
-        targetSdkVersion 26
+        minSdkVersion rootProject.minSdkVersion
+        targetSdkVersion rootProject.targetSdkVersion
         versionCode 4
         versionName "1.1"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
@@ -47,60 +47,59 @@ android {
 
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
-    androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
-        exclude group: 'com.android.support', module: 'support-annotations'
-    })
 
     // Android
-    compile 'com.android.support:design:26.1.0'
-    compile 'com.android.support:design:26.1.0'
-    compile 'com.android.support:appcompat-v7:26.1.0'
-    compile 'com.android.support.constraint:constraint-layout:1.0.2'
-    compile 'com.android.support:cardview-v7:26.1.0'
-    compile 'com.android.support:recyclerview-v7:26.1.0'
-    compile "android.arch.lifecycle:extensions:1.0.0-beta1"
-    annotationProcessor "android.arch.lifecycle:compiler:1.0.0-beta1"
+    compile "com.android.support:design:$rootProject.supportLibraryVersion"
+    compile "com.android.support:design:$rootProject.supportLibraryVersion"
+    compile "com.android.support:appcompat-v7:$rootProject.supportLibraryVersion"
+    compile "com.android.support.constraint:constraint-layout:$rootProject.constraintlayoutVersion"
+    compile "com.android.support:cardview-v7:$rootProject.supportLibraryVersion"
+    compile "com.android.support:recyclerview-v7:$rootProject.supportLibraryVersion"
+    compile "android.arch.lifecycle:extensions:$rootProject.architectureComponents"
+    annotationProcessor "android.arch.lifecycle:compiler:$rootProject.architectureComponents"
     //Rx Java
-    compile 'io.reactivex:rxandroid:1.2.1'
-    compile 'io.reactivex:rxjava:1.1.6'
-    compile 'io.reactivex.rxjava2:rxjava:2.1.4'
-    compile 'io.reactivex.rxjava2:rxandroid:2.0.1'
+    compile "io.reactivex:rxandroid:1.2.1"
+    compile "io.reactivex:rxjava:1.1.6"
+    compile "io.reactivex.rxjava2:rxjava:$rootProject.rxjava2Version"
+    compile "io.reactivex.rxjava2:rxandroid:$rootProject.rxAndroid2Version"
     //Network
-    compile 'com.squareup.retrofit2:retrofit:2.3.0'
-    compile 'com.squareup.retrofit2:adapter-rxjava:2.3.0'
-    compile 'com.squareup.okhttp3:okhttp:3.9.0'
-    compile 'com.squareup.okhttp3:logging-interceptor:3.9.0'
-    compile 'com.google.code.gson:gson:2.8.0'
-    compile 'com.squareup.retrofit2:converter-gson:2.3.0'
-    compile 'com.squareup.retrofit2:adapter-rxjava2:2.3.0'
+    compile "com.squareup.retrofit2:retrofit:$rootProject.retrofit2Version"
+    compile "com.squareup.retrofit2:adapter-rxjava:$rootProject.retrofit2Version"
+    compile "com.squareup.okhttp3:okhttp:$rootProject.okhttp3Version"
+    compile "com.squareup.okhttp3:logging-interceptor:$rootProject.okhttp3Version"
+    compile "com.squareup.retrofit2:converter-gson:$rootProject.retrofit2Version"
+    compile "com.squareup.retrofit2:adapter-rxjava2:$rootProject.retrofit2Version"
     //Presentation
-    compile 'com.squareup.picasso:picasso:2.5.2'
+    compile "com.squareup.picasso:picasso:$rootProject.picassoVersion"
     //UI
-    compile 'com.github.pchmn:MaterialChipsInput:1.0.8'
-    compile 'com.jakewharton:butterknife:8.8.1'
-    annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.1'
-    compile 'blue.aodev:material-values:1.1.1'
+    compile "com.github.pchmn:MaterialChipsInput:$rootProject.materialChipsVersion"
+    compile "com.jakewharton:butterknife:$rootProject.butterknifeVersion"
+    annotationProcessor "com.jakewharton:butterknife-compiler:$rootProject.butterknifeVersion"
+    compile "blue.aodev:material-values:$rootProject.materialValuesVersion"
     //Firebase
-    compile 'com.google.firebase:firebase-core:10.0.1'
-    compile 'com.google.firebase:firebase-crash:10.0.1'
+    compile "com.google.firebase:firebase-core:$rootProject.firebaseServicesVersion"
+    compile "com.google.firebase:firebase-crash:$rootProject.firebaseServicesVersion"
     //Architecture
-    compile 'com.google.dagger:dagger:2.11'
-    annotationProcessor 'com.google.dagger:dagger-compiler:2.11'
-    testAnnotationProcessor 'com.google.dagger:dagger-compiler:2.11'
+    compile "com.google.dagger:dagger:$rootProject.daggerVersion"
+    annotationProcessor "com.google.dagger:dagger-compiler:$rootProject.daggerVersion"
+    testAnnotationProcessor "com.google.dagger:dagger-compiler:$rootProject.daggerVersion"
     //Logging
-    compile 'com.jakewharton.timber:timber:4.5.1'
-    compile 'com.akaita.java:rxjava2-debug:1.2.0'
-    debugCompile 'com.squareup.leakcanary:leakcanary-android:1.5.4'
-    releaseCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.5.4'
+    compile "com.jakewharton.timber:timber:$rootProject.timberVersion"
+    compile "com.akaita.java:rxjava2-debug:$rootProject.rxjava2Debug"
+    debugCompile "com.squareup.leakcanary:leakcanary-android:$rootProject.leakCanaryVersion"
+    releaseCompile "com.squareup.leakcanary:leakcanary-android-no-op:$rootProject.leakCanaryVersion"
     //Data
-    provided 'com.google.auto.value:auto-value:1.5.1'
-    annotationProcessor 'com.google.auto.value:auto-value:1.5.1'
-    provided 'com.ryanharter.auto.value:auto-value-gson:0.5.0'
-    annotationProcessor 'com.ryanharter.auto.value:auto-value-gson:0.5.0'
+    compile "com.google.code.gson:gson:$rootProject.gsonVersion"
+    provided "com.google.auto.value:auto-value:$rootProject.autoValueVersion"
+    annotationProcessor "com.google.auto.value:auto-value:$rootProject.autoValueVersion"
+    provided "com.ryanharter.auto.value:auto-value-gson:$rootProject.autoValueGsonVersion"
+    annotationProcessor "com.ryanharter.auto.value:auto-value-gson:$rootProject.autoValueGsonVersion"
     //Testing
-    testCompile 'junit:junit:4.12'
-    testCompile 'org.mockito:mockito-core:2.10.0'
-    testCompile "android.arch.core:core-testing:1.0.0-beta1"
-
+    testCompile "junit:junit:$rootProject.junitVersion"
+    testCompile "org.mockito:mockito-core:$rootProject.mockitoVersion"
+    testCompile "android.arch.core:core-testing:$rootProject.architectureComponents"
+    androidTestCompile("com.android.support.test.espresso:espresso-core:$rootProject.espressoVersion", {
+    exclude group: 'com.android.support', module: 'support-annotations'
+  })
 }
 apply plugin: 'com.google.gms.google-services'
