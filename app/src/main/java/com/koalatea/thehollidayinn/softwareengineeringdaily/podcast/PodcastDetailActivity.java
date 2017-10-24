@@ -34,6 +34,9 @@ import com.koalatea.thehollidayinn.softwareengineeringdaily.downloads.DownloadTa
 import com.koalatea.thehollidayinn.softwareengineeringdaily.downloads.MP3FileManager;
 import java.io.File;
 import java.util.Date;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
@@ -42,7 +45,10 @@ public class PodcastDetailActivity extends PlaybackControllerActivity {
   private static String TAG = "PodcastDetail";
   private PostRepository postRepository;
   private UserRepository userRepository;
-  private TextView scoreText;
+
+  @BindView(R.id.scoreTextView)
+  TextView scoreText;
+
   private Post post;
   private APIInterface mService;
   private FirebaseAnalytics mFirebaseAnalytics;
@@ -67,6 +73,8 @@ public class PodcastDetailActivity extends PlaybackControllerActivity {
 
     postRepository = PostRepository.getInstance();
     loadPost(postId);
+
+    ButterKnife.bind(this);
   }
 
   private void displayMessage (String message) {
@@ -125,7 +133,6 @@ public class PodcastDetailActivity extends PlaybackControllerActivity {
         }
 
 
-        scoreText = (TextView) findViewById(R.id.scoreTextView);
         scoreText.setText(String.valueOf(post.getScore()));
 
         final ImageView upButton = (ImageView) findViewById(R.id.up_button);

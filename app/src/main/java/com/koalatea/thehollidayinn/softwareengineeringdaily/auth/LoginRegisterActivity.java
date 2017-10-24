@@ -25,6 +25,9 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
 import retrofit2.Response;
 import retrofit2.adapter.rxjava.HttpException;
 import rx.Subscriber;
@@ -33,11 +36,22 @@ import rx.schedulers.Schedulers;
 
 public class LoginRegisterActivity extends AppCompatActivity {
     private Boolean register = false;
-    private TextView title;
-    private EditText usernameEditText;
-    private EditText passwordEditText;
-    private Button loginRegButton;
-    private Button toggleButton;
+
+    @BindView(R.id.title)
+    TextView title;
+
+    @BindView(R.id.username)
+    EditText usernameEditText;
+
+    @BindView(R.id.password)
+    EditText passwordEditText;
+
+    @BindView(R.id.loginRegButton)
+    Button loginRegButton;
+
+    @BindView(R.id.toggleButton)
+    Button toggleButton;
+
     private UserRepository userRepository;
     private FirebaseAnalytics mFirebaseAnalytics;
 
@@ -50,11 +64,6 @@ public class LoginRegisterActivity extends AppCompatActivity {
 
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
         userRepository = UserRepository.getInstance(this);
-        title = (TextView) findViewById(R.id.title);
-        usernameEditText = (EditText) findViewById(R.id.username);
-        passwordEditText = (EditText) findViewById(R.id.password);
-        loginRegButton = (Button) findViewById(R.id.loginRegButton);
-        toggleButton = (Button) findViewById(R.id.toggleButton);
 
         loginRegButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -82,6 +91,8 @@ public class LoginRegisterActivity extends AppCompatActivity {
                 }
             }
         });
+
+        ButterKnife.bind(this);
     }
 
     private void displayMessage (String message) {
