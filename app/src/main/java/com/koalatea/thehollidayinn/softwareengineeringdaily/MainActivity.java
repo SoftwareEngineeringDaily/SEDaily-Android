@@ -11,6 +11,7 @@ import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import com.google.android.gms.oss.licenses.OssLicensesMenuActivity;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.auth.LoginRegisterActivity;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.data.repositories.FilterRepository;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.data.repositories.UserRepository;
@@ -145,6 +146,11 @@ public class MainActivity extends PlaybackControllerActivity implements SearchVi
         } else if (id == R.id.action_logout) {
             userRepository.setToken("");
             Intent intent = new Intent(this, MainActivity.class);
+            startActivity(intent);
+        } else if (id == R.id.opensource) {
+            Intent intent = new Intent(this, OssLicensesMenuActivity.class);
+            String title = getString(R.string.open_source_info);
+            intent.putExtra("title", title);
             startActivity(intent);
         }
 

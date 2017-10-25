@@ -12,6 +12,7 @@ import android.support.v4.media.MediaMetadataCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
 import android.text.Html;
+import android.text.method.LinkMovementMethod;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -57,6 +58,7 @@ public class PodcastDetailActivity extends PlaybackControllerActivity {
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_podcast_detail);
+    ButterKnife.bind(this);
 
     setUp();
 
@@ -73,8 +75,6 @@ public class PodcastDetailActivity extends PlaybackControllerActivity {
 
     postRepository = PostRepository.getInstance();
     loadPost(postId);
-
-    ButterKnife.bind(this);
   }
 
   private void displayMessage (String message) {
@@ -103,46 +103,48 @@ public class PodcastDetailActivity extends PlaybackControllerActivity {
   }
 
     private void loadPost (final String postId) {
-        post = postRepository.getPostById(postId);
+      post = postRepository.getPostById(postId);
 
-        // @TODO: Why would this be null?
-        if (post == null) {
-            return;
-        }
+      // @TODO: Why would this be null?
+      if (post == null) {
+          return;
+      }
 
-        Title postTile = post.getTitle();
-        Date postDate = post.getDate();
-        Content postContent = post.getContent();
+      Title postTile = post.getTitle();
+      Date postDate = post.getDate();
+      Content postContent = post.getContent();
 
-        CollapsingToolbarLayout collapsingToolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
-        collapsingToolbarLayout.setTitle(postTile.getRendered());
+      CollapsingToolbarLayout collapsingToolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
+      collapsingToolbarLayout.setTitle(postTile.getRendered());
 
-        TextView titleTextView = (TextView) findViewById(R.id.titleTextView);
-        titleTextView.setText(postTile.getRendered());
+      TextView titleTextView = (TextView) findViewById(R.id.titleTextView);
+      titleTextView.setText(postTile.getRendered());
 
-        String dayString = android.text.format.DateFormat.format("MMMM dd, yyyy", postDate.getTime()).toString();
-        TextView secondaryTextView = (TextView) findViewById(R.id.secondaryTextView);
-        secondaryTextView.setText(dayString);
+      String dayString = android.text.format.DateFormat.format("MMMM dd, yyyy", postDate.getTime()).toString();
+      TextView secondaryTextView = (TextView) findViewById(R.id.secondaryTextView);
+      secondaryTextView.setText(dayString);
 
-        TextView descriptionTextView = (TextView) findViewById(R.id.description);
-        if (Build.VERSION.SDK_INT > 24) {
-            descriptionTextView.setText(Html.fromHtml(postContent.getRendered(), Html.FROM_HTML_MODE_COMPACT));
-        } else {
-          //noinspection deprecation
-          descriptionTextView.setText(Html.fromHtml(postContent.getRendered()));
-        }
+      TextView descriptionTextView = (TextView) findViewById(R.id.description);
+      if (Build.VERSION.SDK_INT > 24) {
+          descriptionTextView.setText(Html.fromHtml(postContent.getRendered(), Html.FROM_HTML_MODE_COMPACT));
+      } else {
+        //noinspection deprecation
+        descriptionTextView.setText(Html.fromHtml(postContent.getRendered()));
+      }
+
+      descriptionTextView.setMovementMethod(LinkMovementMethod.getInstance());
 
 
-        scoreText.setText(String.valueOf(post.getScore()));
+      scoreText.setText(String.valueOf(post.getScore()));
 
-        final ImageView upButton = (ImageView) findViewById(R.id.up_button);
-        final ImageView downButton = (ImageView) findViewById(R.id.down_button);
+      final ImageView upButton = (ImageView) findViewById(R.id.up_button);
+      final ImageView downButton = (ImageView) findViewById(R.id.down_button);
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            if (post.getUpvoted() != null && post.getUpvoted()) {
-                upButton.getDrawable().setTint(ContextCompat.getColor(this, R.color.colorAccent));
-            }
-        }
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+          if (post.getUpvoted() != null && post.getUpvoted()) {
+              upButton.getDrawable().setTint(ContextCompat.getColor(this, R.color.colorAccent));
+          }
+      }
 
         upButton.setOnClickListener(new View.OnClickListener() {
             @Override

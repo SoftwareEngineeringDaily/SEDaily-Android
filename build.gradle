@@ -2,64 +2,67 @@
 
 buildscript {
     repositories {
-        jcenter()
+      jcenter()
+      maven { url 'https://maven.google.com' }
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.0.0-rc2'
+      classpath 'com.android.tools.build:gradle:3.0.0-rc2'
 
-        // NOTE: Do not place your application dependencies here; they belong
-        // in the individual module build.gradle files
-        classpath 'com.google.gms:google-services:3.0.0'
+      // NOTE: Do not place your application dependencies here; they belong
+      // in the individual module build.gradle files
+      classpath 'com.google.gms:google-services:3.0.0'
+      classpath 'com.google.gms:oss-licenses:0.9.1'
     }
 }
 
 allprojects {
-    repositories {
-        jcenter()
-        maven { url "https://jitpack.io" }
-        maven { url 'https://maven.google.com' }
-    }
+  repositories {
+    jcenter()
+    maven { url "https://jitpack.io" }
+    maven { url 'https://maven.google.com' }
+  }
 }
 
 ext {
-    //SDK and Tools
-    minSdkVersion = 16
-    targetSdkVersion = 26
-    compileSdkVersion = 26
-    buildToolsVersion = '26.0.2'
-    //Android
-    supportLibraryVersion = '26.1.0'
-    architectureComponents = '1.0.0-beta2'
-    constraintlayoutVersion = '1.0.2'
-    //Firebase
-    firebaseServicesVersion = '11.4.2'
-    //Architecture
-    daggerVersion = '2.11'
-    //UI
-    butterknifeVersion = '8.8.1'
-    materialChipsVersion = '1.0.8'
-    materialValuesVersion = '1.1.1'
-    picassoVersion = '2.5.2'
-    //RxJava
-    rxjava2Version = '2.1.4'
-    rxAndroid2Version = '2.0.1'
-    //Networking
-    retrofit2Version = '2.3.0'
-    okhttp3Version = '3.9.0'
-    //Data
-    gsonVersion = '2.8.0'
-    autoValueVersion = '1.5.1'
-    autoValueGsonVersion = '0.5.0'
-    //Debugging & Logging
-    timberVersion = '4.5.1'
-    leakCanaryVersion = '1.5.4'
-    rxjava2Debug = '1.2.0'
-    //Testing
-    espressoVersion = '2.2.2'
-    junitVersion = '4.12'
-    mockitoVersion = '2.10.0'
+  //SDK and Tools
+  minSdkVersion = 16
+  targetSdkVersion = 26
+  compileSdkVersion = 26
+  buildToolsVersion = '26.0.2'
+  //Android
+  supportLibraryVersion = '26.1.0'
+  architectureComponents = '1.0.0-beta2'
+  constraintlayoutVersion = '1.0.2'
+  //Firebase
+  firebaseServicesVersion = '11.4.2'
+  //Architecture
+  daggerVersion = '2.11'
+  playVersion = '11.4.2'
+  //UI
+  butterknifeVersion = '8.8.1'
+  materialChipsVersion = '1.0.8'
+  materialValuesVersion = '1.1.1'
+  picassoVersion = '2.5.2'
+  //RxJava
+  rxjava2Version = '2.1.4'
+  rxAndroid2Version = '2.0.1'
+  //Networking
+  retrofit2Version = '2.3.0'
+  okhttp3Version = '3.9.0'
+  //Data
+  gsonVersion = '2.8.0'
+  autoValueVersion = '1.5.1'
+  autoValueGsonVersion = '0.5.0'
+  //Debugging & Logging
+  timberVersion = '4.5.1'
+  leakCanaryVersion = '1.5.4'
+  rxjava2Debug = '1.2.0'
+  //Testing
+  espressoVersion = '2.2.2'
+  junitVersion = '4.12'
+  mockitoVersion = '2.10.0'
 }
 
 task clean(type: Delete) {
-    delete rootProject.buildDir
+  delete rootProject.buildDir
 }

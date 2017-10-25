@@ -1,4 +1,5 @@
 apply plugin: 'com.android.application'
+apply plugin: 'com.google.gms.oss.licenses.plugin'
 
 android {
     compileSdkVersion rootProject.compileSdkVersion
@@ -71,6 +72,7 @@ dependencies {
     compile "com.squareup.retrofit2:adapter-rxjava2:$rootProject.retrofit2Version"
     //Presentation
     compile "com.squareup.picasso:picasso:$rootProject.picassoVersion"
+    compile "com.google.android.gms:play-services-oss-licenses:$rootProject.playVersion"
     //UI
     compile "com.github.pchmn:MaterialChipsInput:$rootProject.materialChipsVersion"
     compile "com.jakewharton:butterknife:$rootProject.butterknifeVersion"
