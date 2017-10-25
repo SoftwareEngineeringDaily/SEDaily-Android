@@ -26,16 +26,27 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 /*
  * Created by keithholliday on 9/26/17.
  */
 
 public class PlaybackControlsFragment extends Fragment {
-    private ImageButton playPause;
-    private TextView title;
-    private SeekBar mSeekbar;
-    private TextView mStart;
-    private TextView mEnd;
+    @BindView(R.id.play_pause)
+    ImageButton playPause;
+
+    @BindView(R.id.title)
+    TextView title;
+
+    @BindView(R.id.seekBar1)
+    SeekBar mSeekbar;
+
+    @BindView(R.id.startText)
+    TextView mStart;
+
+    @BindView(R.id.endText)
+    TextView mEnd;
 
     private PlaybackStateCompat mLastPlaybackState;
     private static final long PROGRESS_UPDATE_INTERNAL = 1000;
@@ -87,15 +98,8 @@ public class PlaybackControlsFragment extends Fragment {
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_playback_controls, container, false);
 
-        playPause = (ImageButton) rootView.findViewById(R.id.play_pause);
         playPause.setEnabled(true);
         playPause.setOnClickListener(buttonListener);
-
-        title = (TextView) rootView.findViewById(R.id.title);
-
-        mStart = (TextView) rootView.findViewById(R.id.startText);
-        mEnd = (TextView) rootView.findViewById(R.id.endText);
-        mSeekbar = (SeekBar) rootView.findViewById(R.id.seekBar1);
 
         mSeekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
@@ -115,6 +119,7 @@ public class PlaybackControlsFragment extends Fragment {
             }
         });
 
+        ButterKnife.bind(this, rootView);
         return rootView;
     }
 
