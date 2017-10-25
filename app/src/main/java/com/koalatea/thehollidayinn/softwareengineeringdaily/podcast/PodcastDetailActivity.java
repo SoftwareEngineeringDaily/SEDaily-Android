@@ -57,6 +57,7 @@ public class PodcastDetailActivity extends PlaybackControllerActivity {
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_podcast_detail);
+    ButterKnife.bind(this);
 
     setUp();
 
@@ -73,8 +74,6 @@ public class PodcastDetailActivity extends PlaybackControllerActivity {
 
     postRepository = PostRepository.getInstance();
     loadPost(postId);
-
-    ButterKnife.bind(this);
   }
 
   private void displayMessage (String message) {
