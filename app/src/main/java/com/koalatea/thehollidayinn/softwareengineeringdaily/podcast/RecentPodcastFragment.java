@@ -39,6 +39,8 @@ public class RecentPodcastFragment extends Fragment {
     View rootView = (View) inflater.inflate(
         R.layout.fragment_recent_podcast, container, false);
 
+    ButterKnife.bind(this, rootView);
+
     recentPodcatsPageAdapter = new RecentPodcastsPageAdapter(this.getActivity().getSupportFragmentManager());
     viewPager.setAdapter(recentPodcatsPageAdapter);
     tabLayout.post(new Runnable() {
@@ -48,7 +50,6 @@ public class RecentPodcastFragment extends Fragment {
       }
     });
 
-    ButterKnife.bind(this, rootView);
     return rootView;
   }
 

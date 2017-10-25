@@ -98,6 +98,8 @@ public class PlaybackControlsFragment extends Fragment {
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_playback_controls, container, false);
 
+        ButterKnife.bind(this, rootView);
+
         playPause.setEnabled(true);
         playPause.setOnClickListener(buttonListener);
 
@@ -119,7 +121,7 @@ public class PlaybackControlsFragment extends Fragment {
             }
         });
 
-        ButterKnife.bind(this, rootView);
+
         return rootView;
     }
 

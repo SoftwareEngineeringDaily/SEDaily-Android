@@ -57,42 +57,42 @@ public class LoginRegisterActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_login_register);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+      super.onCreate(savedInstanceState);
+      setContentView(R.layout.activity_login_register);
+      Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+      setSupportActionBar(toolbar);
 
-        mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
-        userRepository = UserRepository.getInstance(this);
+      ButterKnife.bind(this);
 
-        loginRegButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String username = usernameEditText.getText().toString();
-                String password = passwordEditText.getText().toString();
+      mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
+      userRepository = UserRepository.getInstance(this);
 
-                loginReg(username, password);
-            }
-        });
+      loginRegButton.setOnClickListener(new View.OnClickListener() {
+          @Override
+          public void onClick(View v) {
+              String username = usernameEditText.getText().toString();
+              String password = passwordEditText.getText().toString();
 
-        toggleButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (register) {
-                    register = false;
-                    title.setText(getString(R.string.login));
-                    toggleButton.setText(getString(R.string.register));
-                    loginRegButton.setText(getString(R.string.login));
-                } else {
-                    register = true;
-                    title.setText(getString(R.string.register));
-                    toggleButton.setText(getString(R.string.login));
-                    loginRegButton.setText(getString(R.string.register));
-                }
-            }
-        });
+              loginReg(username, password);
+          }
+      });
 
-        ButterKnife.bind(this);
+      toggleButton.setOnClickListener(new View.OnClickListener() {
+          @Override
+          public void onClick(View v) {
+        if (register) {
+          register = false;
+          title.setText(getString(R.string.login));
+          toggleButton.setText(getString(R.string.register));
+          loginRegButton.setText(getString(R.string.login));
+        } else {
+          register = true;
+          title.setText(getString(R.string.register));
+          toggleButton.setText(getString(R.string.login));
+          loginRegButton.setText(getString(R.string.register));
+        }
+          }
+      });
     }
 
     private void displayMessage (String message) {
@@ -104,20 +104,22 @@ public class LoginRegisterActivity extends AppCompatActivity {
             builder = new AlertDialog.Builder(this);
         }
 
+        loginRegButton.setEnabled(true);
+
         builder.setTitle("Error")
-                .setMessage(message)
-                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        // continue with delete
-                    }
-                })
-                .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        // do nothing
-                    }
-                })
-                .setIcon(android.R.drawable.ic_dialog_alert)
-                .show();
+          .setMessage(message)
+          .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+              public void onClick(DialogInterface dialog, int which) {
+            // continue with delete
+              }
+          })
+          .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+              public void onClick(DialogInterface dialog, int which) {
+            // do nothing
+              }
+          })
+          .setIcon(android.R.drawable.ic_dialog_alert)
+          .show();
     }
 
     private void loginReg(String username, String password) {
