@@ -3,11 +3,15 @@ package com.koalatea.thehollidayinn.softwareengineeringdaily.domain;
 import android.support.annotation.NonNull;
 import android.support.annotation.VisibleForTesting;
 
+import com.koalatea.thehollidayinn.softwareengineeringdaily.app.SDEApp;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.data.mapper.PostItemMapper;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.data.models.PostItem;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.network.api.EpisodePostNetworkService;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.network.response.PostResponse;
 
+import io.reactivex.Completable;
+import io.reactivex.functions.Action;
+import io.reactivex.functions.Consumer;
 import java.util.List;
 
 import io.reactivex.Observable;
@@ -25,8 +29,7 @@ class PostRepositoryImpl implements PostRepository {
     @VisibleForTesting
     private final PostItemMapper mapper;
 
-    PostRepositoryImpl(@NonNull EpisodePostNetworkService api,
-                              @NonNull PostItemMapper mapper) {
+  PostRepositoryImpl(@NonNull EpisodePostNetworkService api, @NonNull PostItemMapper mapper) {
         this.api = api;
         this.mapper = mapper;
     }
@@ -67,15 +70,25 @@ class PostRepositoryImpl implements PostRepository {
                 });
     }
 
-    @Override
-    public Observable<Void> upVote(@NonNull String postId) {
-        return api.upVote(postId);
-    }
+  @Override
+  public Completable upVote(@NonNull final String postId) {
+    return api.upVote(postId).doOnComplete(new Action() {
+      @Override
+      public void run() throws Exception {
+        SDEApp.component().analyticsFacade().trackUpVote(postId);
+      }
+    });
+  }
 
-    @Override
-    public Observable<Void> downVote(@NonNull String postId) {
-        return api.downVote(postId);
-    }
+  @Override
+  public Completable downVote(@NonNull final String postId) {
+    return api.downVote(postId).doOnComplete(new Action() {
+      @Override
+      public void run() throws Exception {
+        SDEApp.component().analyticsFacade().trackDownVote(postId);
+      }
+    });
+  }
 
     @Override
     public Observable<List<PostItem>> getTopPosts() {
