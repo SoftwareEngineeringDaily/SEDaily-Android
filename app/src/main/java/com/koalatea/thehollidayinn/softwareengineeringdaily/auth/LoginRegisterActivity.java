@@ -104,20 +104,22 @@ public class LoginRegisterActivity extends AppCompatActivity {
             builder = new AlertDialog.Builder(this);
         }
 
+        loginRegButton.setEnabled(true);
+
         builder.setTitle("Error")
-                .setMessage(message)
-                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        // continue with delete
-                    }
-                })
-                .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        // do nothing
-                    }
-                })
-                .setIcon(android.R.drawable.ic_dialog_alert)
-                .show();
+          .setMessage(message)
+          .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+              public void onClick(DialogInterface dialog, int which) {
+            // continue with delete
+              }
+          })
+          .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+              public void onClick(DialogInterface dialog, int which) {
+            // do nothing
+              }
+          })
+          .setIcon(android.R.drawable.ic_dialog_alert)
+          .show();
     }
 
     private void loginReg(String username, String password) {
