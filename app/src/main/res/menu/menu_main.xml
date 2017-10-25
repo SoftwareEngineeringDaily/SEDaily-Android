@@ -19,4 +19,9 @@
         android:icon="@android:drawable/ic_menu_search"
         app:showAsAction="collapseActionView|ifRoom"
         app:actionViewClass="android.support.v7.widget.SearchView" />
+
+    <item android:id="@+id/opensource"
+        android:orderInCategory="103"
+        android:title="@string/open_source_info"
+        app:showAsAction="never" />
 </menu>
