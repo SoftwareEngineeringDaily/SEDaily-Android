@@ -26,12 +26,12 @@ allprojects {
 ext {
   //SDK and Tools
   minSdkVersion = 16
-  targetSdkVersion = 26
-  compileSdkVersion = 26
-  buildToolsVersion = '26.0.2'
+  targetSdkVersion = 27
+  compileSdkVersion = 27
+  buildToolsVersion = '27.0.0'
   //Android
   supportLibraryVersion = '26.1.0'
-  architectureComponents = '1.0.0-beta2'
+  architectureComponents = '1.0.0-rc1'
   constraintlayoutVersion = '1.0.2'
   //Firebase
   firebaseServicesVersion = '11.4.2'
