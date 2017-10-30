@@ -65,7 +65,10 @@ public class PodcastDetailActivity extends PlaybackControllerActivity {
     mFirebaseAnalytics = FirebaseAnalytics.getInstance(getApplicationContext());
 
     Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+    toolbar.setTitle("");
     setSupportActionBar(toolbar);
+
+    // @TODO: This doesn't seem to work
     getSupportActionBar().setDisplayShowTitleEnabled(false);
 
     mService = ApiUtils.getKibbleService(this);
