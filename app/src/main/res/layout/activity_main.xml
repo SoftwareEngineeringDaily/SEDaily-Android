@@ -27,8 +27,8 @@
                 android:paddingTop="8dp">
 
                 <ImageView
-                    android:layout_width="28dp"
-                    android:layout_height="28dp"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
                     android:src="@drawable/sedaily_logo"
                     android:contentDescription="@string/logo" />
             </LinearLayout>

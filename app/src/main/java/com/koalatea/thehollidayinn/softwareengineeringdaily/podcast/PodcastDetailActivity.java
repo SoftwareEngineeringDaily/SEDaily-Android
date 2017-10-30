@@ -66,6 +66,7 @@ public class PodcastDetailActivity extends PlaybackControllerActivity {
 
     Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
     setSupportActionBar(toolbar);
+    getSupportActionBar().setDisplayShowTitleEnabled(false);
 
     mService = ApiUtils.getKibbleService(this);
     userRepository = UserRepository.getInstance(this);

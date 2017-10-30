@@ -7,9 +7,9 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
 
-        <item name="android:icon">@drawable/sedaily_logo</item>
-        <item name="logo">@drawable/sedaily_logo</item>
-        <item name="displayOptions">useLogo|showHome|showTitle</item>
+        <!--<item name="android:icon">@drawable/sedaily_logo</item>-->
+        <!--<item name="logo">@drawable/sedaily_logo</item>-->
+        <item name="displayOptions">showHome</item>
     </style>
 
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />

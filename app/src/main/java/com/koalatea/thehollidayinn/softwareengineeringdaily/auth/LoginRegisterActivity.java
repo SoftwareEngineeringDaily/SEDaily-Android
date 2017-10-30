@@ -61,6 +61,7 @@ public class LoginRegisterActivity extends AppCompatActivity {
       setContentView(R.layout.activity_login_register);
       Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
       setSupportActionBar(toolbar);
+      getSupportActionBar().setDisplayShowTitleEnabled(false);
 
       ButterKnife.bind(this);
 
