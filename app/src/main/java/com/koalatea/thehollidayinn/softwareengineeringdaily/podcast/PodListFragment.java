@@ -34,6 +34,7 @@ public class PodListFragment extends Fragment {
     private String title;
     private String tagId;
     private PodcastAdapter podcastAdapter;
+    private Subscriber<String> mySubscriber;
 
     public static PodListFragment newInstance(String title, String tagId) {
         PodListFragment f = new PodListFragment();
@@ -61,7 +62,7 @@ public class PodListFragment extends Fragment {
         recyclerView.setAdapter(podcastAdapter);
 
         FilterRepository filterRepository = FilterRepository.getInstance();
-        Subscriber<String> mySubscriber = new Subscriber<String>() {
+        mySubscriber = new Subscriber<String>() {
             @Override
             public void onNext(String s) {
                 getPosts(s);
@@ -82,6 +83,13 @@ public class PodListFragment extends Fragment {
     public void onStart() {
         super.onStart();
         getPosts("");
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        FilterRepository filterRepository = FilterRepository.getInstance();
+        mySubscriber.unsubscribe();
     }
 
     private void getPosts(String search) {

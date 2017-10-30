@@ -83,7 +83,10 @@ class PodcastAdapter extends RecyclerView.Adapter<PodcastAdapter.ViewHolder> {
     if (post.getFeaturedImage() != null) {
       imageLink = post.getFeaturedImage();
     }
-    Picasso.with(context.getContext()).load(imageLink).into(holder.imageView);
+    Picasso.with(context.getContext())
+        .load(imageLink)
+        .fit()
+        .into(holder.imageView);
   }
 
   @Override

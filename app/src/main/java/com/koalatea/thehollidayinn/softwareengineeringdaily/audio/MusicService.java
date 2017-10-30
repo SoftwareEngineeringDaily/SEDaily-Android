@@ -157,6 +157,7 @@ public class MusicService extends MediaBrowserServiceCompat {
         // Always release the MediaSession to clean up resources
         // and notify associated MediaController(s).
         mSession.release();
+        unregisterReceiver(mediaNotificationHelper);
     }
 
     @Override
