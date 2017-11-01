@@ -35,6 +35,7 @@ public class MainActivity extends PlaybackControllerActivity implements SearchVi
         this.setUp();
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
 
         userRepository = UserRepository.getInstance(this);
         filterRepository = FilterRepository.getInstance();
