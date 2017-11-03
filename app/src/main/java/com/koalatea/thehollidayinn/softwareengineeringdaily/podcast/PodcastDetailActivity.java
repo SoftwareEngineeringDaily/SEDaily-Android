@@ -2,13 +2,11 @@ package com.koalatea.thehollidayinn.softwareengineeringdaily.podcast;
 
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.media.MediaBrowserCompat;
@@ -32,6 +30,8 @@ import com.koalatea.thehollidayinn.softwareengineeringdaily.data.models.Post;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.data.models.Title;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.data.remote.APIInterface;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.data.remote.ApiUtils;
+import com.koalatea.thehollidayinn.softwareengineeringdaily.data.repositories.FilterRepository;
+import com.koalatea.thehollidayinn.softwareengineeringdaily.data.repositories.PodcastDownloadsRepository;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.data.repositories.PostRepository;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.data.repositories.UserRepository;
 
@@ -45,11 +45,13 @@ import butterknife.ButterKnife;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
+import timber.log.Timber;
 
 public class PodcastDetailActivity extends PlaybackControllerActivity {
   private static String TAG = "PodcastDetail";
   private PostRepository postRepository;
   private UserRepository userRepository;
+  private Subscriber mySubscriber;
 
   @BindView(R.id.scoreTextView)
   TextView scoreText;
@@ -91,6 +93,15 @@ public class PodcastDetailActivity extends PlaybackControllerActivity {
     loadPost(postId);
   }
 
+  @Override
+  public void onStop() {
+    super.onStop();
+    if (mySubscriber != null) {
+      mySubscriber.unsubscribe();
+    }
+
+  }
+
   private void displayMessage (String message) {
     AlertDialog.Builder builder;
 
@@ -103,231 +114,248 @@ public class PodcastDetailActivity extends PlaybackControllerActivity {
     builder.setTitle("Error")
       .setMessage(message)
       .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-          public void onClick(DialogInterface dialog, int which) {
-        // continue with delete
-          }
+        public void onClick(DialogInterface dialog, int which) {}
       })
       .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
-          public void onClick(DialogInterface dialog, int which) {
-        // do nothing
-          }
+        public void onClick(DialogInterface dialog, int which) {}
       })
       .setIcon(android.R.drawable.ic_dialog_alert)
       .show();
   }
 
-    private void loadPost (final String postId) {
-      post = postRepository.getPostById(postId);
+  private void loadPost (final String postId) {
+    post = postRepository.getPostById(postId);
 
-      // @TODO: Why would this be null?
-      if (post == null) {
+    // @TODO: Why would this be null?
+    if (post == null) {
+      return;
+    }
+
+    Title postTile = post.getTitle();
+    Date postDate = post.getDate();
+    final Content postContent = post.getContent();
+
+    TextView titleTextView = (TextView) findViewById(R.id.titleTextView);
+    titleTextView.setText(postTile.getRendered());
+
+    String dayString = android.text.format.DateFormat.format("MMMM dd, yyyy", postDate.getTime()).toString();
+    TextView secondaryTextView = (TextView) findViewById(R.id.secondaryTextView);
+    secondaryTextView.setText(dayString);
+
+    TextView descriptionTextView = (TextView) findViewById(R.id.description);
+    if (Build.VERSION.SDK_INT > 24) {
+      descriptionTextView.setText(Html.fromHtml(postContent.getRendered(), Html.FROM_HTML_MODE_COMPACT));
+    } else {
+      //noinspection deprecation
+      descriptionTextView.setText(Html.fromHtml(postContent.getRendered()));
+    }
+
+    descriptionTextView.setMovementMethod(LinkMovementMethod.getInstance());
+
+
+    scoreText.setText(String.valueOf(post.getScore()));
+
+    final ImageView upButton = (ImageView) findViewById(R.id.up_button);
+    final ImageView downButton = (ImageView) findViewById(R.id.down_button);
+
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+      if (post.getUpvoted() != null && post.getUpvoted()) {
+        upButton.getDrawable().setTint(ContextCompat.getColor(this, R.color.colorAccent));
+      }
+    }
+
+    upButton.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View v) {
+        if (userRepository.getToken().isEmpty()) {
+          displayMessage("You must login to vote");
           return;
-      }
+        }
 
-      Title postTile = post.getTitle();
-      Date postDate = post.getDate();
-      Content postContent = post.getContent();
-      
-      TextView titleTextView = (TextView) findViewById(R.id.titleTextView);
-      titleTextView.setText(postTile.getRendered());
+        Integer newScore = post.getScore();
 
-      String dayString = android.text.format.DateFormat.format("MMMM dd, yyyy", postDate.getTime()).toString();
-      TextView secondaryTextView = (TextView) findViewById(R.id.secondaryTextView);
-      secondaryTextView.setText(dayString);
-
-      TextView descriptionTextView = (TextView) findViewById(R.id.description);
-      if (Build.VERSION.SDK_INT > 24) {
-          descriptionTextView.setText(Html.fromHtml(postContent.getRendered(), Html.FROM_HTML_MODE_COMPACT));
-      } else {
-        //noinspection deprecation
-        descriptionTextView.setText(Html.fromHtml(postContent.getRendered()));
-      }
-
-      descriptionTextView.setMovementMethod(LinkMovementMethod.getInstance());
-
-
-      scoreText.setText(String.valueOf(post.getScore()));
-
-      final ImageView upButton = (ImageView) findViewById(R.id.up_button);
-      final ImageView downButton = (ImageView) findViewById(R.id.down_button);
-
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-          if (post.getUpvoted() != null && post.getUpvoted()) {
-              upButton.getDrawable().setTint(ContextCompat.getColor(this, R.color.colorAccent));
+        if (post.getUpvoted() != null && post.getUpvoted()) {
+          newScore -= 1;
+          post.setUpvoted(false);
+          post.setDownvoted(false);
+          if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+              upButton.getDrawable().setTint(ContextCompat.getColor(getApplicationContext(), R.color.button_grey));
+              downButton.getDrawable().setTint(ContextCompat.getColor(getApplicationContext(), R.color.button_grey));
           }
-      }
+        } else {
+          newScore += 1;
 
-        upButton.setOnClickListener(new View.OnClickListener() {
+          if (post.getDownvoted()) {
+              newScore += 1;
+          }
+
+          post.setUpvoted(true);
+          post.setDownvoted(false);
+          if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+              upButton.getDrawable().setTint(ContextCompat.getColor(getApplicationContext(), R.color.colorPrimary));
+              downButton.getDrawable().setTint(ContextCompat.getColor(getApplicationContext(), R.color.button_grey));
+          }
+        }
+
+        Bundle bundle = new Bundle();
+        bundle.putString(FirebaseAnalytics.Param.ITEM_ID, postId);
+        bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, "UP");
+        bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, "VOTE");
+        mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
+
+        scoreText.setText(String.valueOf(newScore));
+
+        mService.upVote(post.get_id())
+          .subscribeOn(Schedulers.io())
+          .observeOn(AndroidSchedulers.mainThread())
+          .subscribe(new Subscriber<Void>() {
             @Override
-            public void onClick(View v) {
-          if (userRepository.getToken().isEmpty()) {
+            public void onCompleted() {}
+            @Override
+            public void onError(Throwable e) {
+                Log.v(TAG, e.toString());
+            }
+            @Override
+            public void onNext(Void posts) {}
+          });
+      }
+    });
+
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+      if (post.getDownvoted() != null && post.getDownvoted()) {
+        downButton.getDrawable().setTint(ContextCompat.getColor(this, R.color.colorAccent));
+      }
+    }
+
+    downButton.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View v) {
+        if (userRepository.getToken().isEmpty()) {
             displayMessage("You must login to vote");
             return;
+        }
+
+        Integer newScore = post.getScore();
+
+        if (post.getDownvoted() != null && post.getDownvoted()) {
+          newScore += 1;
+          post.setDownvoted(false);
+          post.setUpvoted(false);
+          if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+              downButton.getDrawable().setTint(ContextCompat.getColor(getApplicationContext(), R.color.button_grey));
+              upButton.getDrawable().setTint(ContextCompat.getColor(getApplicationContext(), R.color.button_grey));
           }
+        } else {
+          newScore -= 1;
 
-          Integer newScore = post.getScore();
-
-          if (post.getUpvoted() != null && post.getUpvoted()) {
+          if (post.getUpvoted()) {
             newScore -= 1;
-            post.setUpvoted(false);
-            post.setDownvoted(false);
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                upButton.getDrawable().setTint(ContextCompat.getColor(getApplicationContext(), R.color.button_grey));
-                downButton.getDrawable().setTint(ContextCompat.getColor(getApplicationContext(), R.color.button_grey));
-            }
-          } else {
-              newScore += 1;
-
-              if (post.getDownvoted()) {
-                  newScore += 1;
-              }
-
-              post.setUpvoted(true);
-              post.setDownvoted(false);
-              if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                  upButton.getDrawable().setTint(ContextCompat.getColor(getApplicationContext(), R.color.colorPrimary));
-                  downButton.getDrawable().setTint(ContextCompat.getColor(getApplicationContext(), R.color.button_grey));
-              }
           }
 
-                Bundle bundle = new Bundle();
-                bundle.putString(FirebaseAnalytics.Param.ITEM_ID, postId);
-                bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, "UP");
-                bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, "VOTE");
-                mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
-
-                scoreText.setText(String.valueOf(newScore));
-
-                mService.upVote(post.get_id())
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(new Subscriber<Void>() {
-                        @Override
-                        public void onCompleted() {
-
-                        }
-
-                        @Override
-                        public void onError(Throwable e) {
-                            Log.v(TAG, e.toString());
-                        }
-
-                        @Override
-                        public void onNext(Void posts) {
-
-                        }
-                    });
-            }
-        });
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            if (post.getDownvoted() != null && post.getDownvoted()) {
-                downButton.getDrawable().setTint(ContextCompat.getColor(this, R.color.colorAccent));
-            }
+          post.setDownvoted(true);
+          post.setUpvoted(false);
+          if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+              downButton.getDrawable().setTint(ContextCompat.getColor(getApplicationContext(), R.color.colorPrimary));
+              upButton.getDrawable().setTint(ContextCompat.getColor(getApplicationContext(), R.color.button_grey));
+          }
         }
 
-        downButton.setOnClickListener(new View.OnClickListener() {
+        Bundle bundle = new Bundle();
+        bundle.putString(FirebaseAnalytics.Param.ITEM_ID, postId);
+        bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, "DOWN");
+        bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, "VOTE");
+        mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
+
+        scoreText.setText(String.valueOf(newScore));
+
+        mService.downVote(post.get_id())
+          .subscribeOn(Schedulers.io())
+          .observeOn(AndroidSchedulers.mainThread())
+          .subscribe(new Subscriber<Void>() {
             @Override
-            public void onClick(View v) {
-          if (userRepository.getToken().isEmpty()) {
-              displayMessage("You must login to vote");
-              return;
-          }
+            public void onCompleted() {
 
-          Integer newScore = post.getScore();
-
-            if (post.getDownvoted() != null && post.getDownvoted()) {
-                newScore += 1;
-                post.setDownvoted(false);
-                post.setUpvoted(false);
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    downButton.getDrawable().setTint(ContextCompat.getColor(getApplicationContext(), R.color.button_grey));
-                    upButton.getDrawable().setTint(ContextCompat.getColor(getApplicationContext(), R.color.button_grey));
-                }
-            } else {
-                newScore -= 1;
-
-                if (post.getUpvoted()) {
-                  newScore -= 1;
-                }
-
-                post.setDownvoted(true);
-                post.setUpvoted(false);
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    downButton.getDrawable().setTint(ContextCompat.getColor(getApplicationContext(), R.color.colorPrimary));
-                    upButton.getDrawable().setTint(ContextCompat.getColor(getApplicationContext(), R.color.button_grey));
-                }
             }
 
-            Bundle bundle = new Bundle();
-            bundle.putString(FirebaseAnalytics.Param.ITEM_ID, postId);
-            bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, "DOWN");
-            bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, "VOTE");
-            mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
-
-            scoreText.setText(String.valueOf(newScore));
-
-            mService.downVote(post.get_id())
-              .subscribeOn(Schedulers.io())
-              .observeOn(AndroidSchedulers.mainThread())
-              .subscribe(new Subscriber<Void>() {
-                @Override
-                public void onCompleted() {
-
-                }
-
-                @Override
-                public void onError(Throwable e) {
-                    Log.v(TAG, e.toString());
-                }
-
-                @Override
-                public void onNext(Void posts) {
-
-                }
-              });
+            @Override
+            public void onError(Throwable e) {
+                Log.v(TAG, e.toString());
             }
-        });
 
-      playButton.setOnClickListener(new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-          playClick(post);
-        }
-      });
-      deleteButton.setOnClickListener(new View.OnClickListener() {
-        @Override public void onClick(View view) {
-          confirmRemoveLocalDownload();
-        }
-      });
+            @Override
+            public void onNext(Void posts) {
 
-      File file = new MP3FileManager().getFileFromUrl(post.getMp3(), this.getApplicationContext());
-      if (!file.exists()) {
-        setUpDownloadedState();
+            }
+          });
+        }
+    });
+
+    playButton.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View v) {
+        playClick(post);
       }
+    });
+    deleteButton.setOnClickListener(new View.OnClickListener() {
+      @Override public void onClick(View view) {
+        confirmRemoveLocalDownload();
+      }
+    });
+
+    if (!PodcastDownloadsRepository.getInstance().isPodcastDownloaded(post)) {
+      setUpNotDownloadedState();
     }
 
-    private void confirmRemoveLocalDownload() {
-      new AlertDialog.Builder(this)
-        .setMessage(R.string.confirm_remove_download)
-        .setIcon(android.R.drawable.ic_dialog_alert)
-        .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-          public void onClick(DialogInterface dialog, int whichButton) {
-            File file = new MP3FileManager().getFileFromUrl(post.getMp3(), getApplicationContext());
-            file.delete();
-            setUpDownloadedState();
-          }})
-        .setNegativeButton(android.R.string.no, null).show();
-    }
+    mySubscriber = new Subscriber<String>() {
+      @Override
+      public void onNext(String s) {
+        Boolean downloaded = PodcastDownloadsRepository.getInstance().isPodcastDownloaded(post);
+        Timber.v("keithtest2");
+        if (downloaded) {
+          setUpDownloadedState();
+        } else {
+          setUpNotDownloadedState();
+        }
+      }
+
+      @Override
+      public void onCompleted() { }
+
+      @Override
+      public void onError(Throwable e) { }
+    };
+
+    PodcastDownloadsRepository podcastDownloadsRepository = PodcastDownloadsRepository.getInstance();
+    podcastDownloadsRepository
+        .getDownloadChanges()
+        .subscribeOn(Schedulers.io())
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(mySubscriber);
+
+  }
+
+  private void confirmRemoveLocalDownload() {
+    new AlertDialog.Builder(this)
+      .setMessage(R.string.confirm_remove_download)
+      .setIcon(android.R.drawable.ic_dialog_alert)
+      .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+        public void onClick(DialogInterface dialog, int whichButton) {
+          File file = new MP3FileManager().getFileFromUrl(post.getMp3(), getApplicationContext());
+          file.delete();
+          PodcastDownloadsRepository.getInstance().removePodcastDownload(post.getId());
+          setUpNotDownloadedState();
+        }})
+      .setNegativeButton(android.R.string.no, null).show();
+  }
 
   public void setUpDownloadedState() {
-    playButton.setText(R.string.download);
-    deleteButton.setVisibility(View.INVISIBLE);
+    playButton.setText(R.string.label_play);
+    deleteButton.setVisibility(View.VISIBLE);
   }
 
   public void setUpNotDownloadedState() {
-    playButton.setText(R.string.label_play);
-    deleteButton.setVisibility(View.VISIBLE);
+    playButton.setText(R.string.download);
+    deleteButton.setVisibility(View.INVISIBLE);
   }
 
   private void displayDownloadNotification() {
@@ -349,10 +377,8 @@ public class PodcastDetailActivity extends PlaybackControllerActivity {
             .setContentText("Download in progress")
             .setSmallIcon(R.drawable.sedaily_logo);
 
-    //mNotifyManager.notify(id, mBuilder.build());
-
     // execute this when the downloader must be fired
-    final DownloadTask downloadTask = new DownloadTask(this.getApplicationContext(), mNotifyManager, mBuilder);
+    final DownloadTask downloadTask = new DownloadTask(this.getApplicationContext(), mNotifyManager, mBuilder, post.getId());
     downloadTask.execute(post.getMp3());
   }
 
@@ -361,31 +387,12 @@ public class PodcastDetailActivity extends PlaybackControllerActivity {
       return;
     }
 
-    // Download if not downloaded
-    File file = new MP3FileManager().getFileFromUrl(post.getMp3(), this.getApplicationContext());
-    if (!file.exists()) {
-      // declare the dialog as a member field of your activity
-      ProgressDialog mProgressDialog;
-
-      // instantiate it within the onCreate method
-      //mProgressDialog = new ProgressDialog(this);
-      //mProgressDialog.setMessage("A message");
-      //mProgressDialog.setIndeterminate(true);
-      //mProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-      //mProgressDialog.setCancelable(true);
-
-
-
-      //mProgressDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
-      //  @Override public void onCancel(DialogInterface dialog) {
-      //    downloadTask.cancel(true);
-      //    setUpNotDownloadedState();
-      //  }
-      //});
-
+    if (!PodcastDownloadsRepository.getInstance().isPodcastDownloaded(post)) {
       displayDownloadNotification();
       return;
     }
+
+    File file = new MP3FileManager().getFileFromUrl(post.getMp3(), this.getApplicationContext());
 
     String source = post.getMp3();
     String id = String.valueOf(source.hashCode());

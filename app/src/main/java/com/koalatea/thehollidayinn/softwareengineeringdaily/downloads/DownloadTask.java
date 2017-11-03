@@ -10,6 +10,7 @@ import android.os.PowerManager;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 import android.widget.Toast;
+import com.koalatea.thehollidayinn.softwareengineeringdaily.data.repositories.PodcastDownloadsRepository;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -31,12 +32,14 @@ public class DownloadTask extends AsyncTask<String, Integer, String> {
   private ProgressDialog mProgressDialog;
   private NotificationManager mNotifyManager;
   private NotificationCompat.Builder mBuilder;
+  private String podcastId;
 
-  public DownloadTask(Context context, NotificationManager notificationManager, NotificationCompat.Builder mBuilder) {
+  public DownloadTask(Context context, NotificationManager notificationManager, NotificationCompat.Builder mBuilder, String mPodcastId) {
     this.context = context;
     this.mProgressDialog = mProgressDialog;
     this.mNotifyManager = notificationManager;
     this.mBuilder = mBuilder;
+    this.podcastId = mPodcastId;
   }
 
   @Override protected String doInBackground(String... sUrl) {
@@ -129,10 +132,12 @@ public class DownloadTask extends AsyncTask<String, Integer, String> {
   @Override
   protected void onPostExecute(String result) {
     mWakeLock.release();
-    //mProgressDialog.dismiss();
+
     mBuilder.setContentText("Download complete")
         .setProgress(0,0,false);
     mNotifyManager.notify(id, mBuilder.build());
+
+    PodcastDownloadsRepository.getInstance().setPodcastDownload(podcastId);
 
     if (result != null)
       Log.v("keithtest2", String.valueOf("Download error: "+result));
