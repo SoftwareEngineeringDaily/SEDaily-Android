@@ -17,8 +17,10 @@ import com.koalatea.thehollidayinn.softwareengineeringdaily.data.repositories.Fi
 import com.koalatea.thehollidayinn.softwareengineeringdaily.data.repositories.UserRepository;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.podcast.PodListFragment;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.podcast.RecentPodcastFragment;
+import timber.log.Timber;
 
-public class MainActivity extends PlaybackControllerActivity implements SearchView.OnQueryTextListener {
+public class MainActivity extends PlaybackControllerActivity
+    implements SearchView.OnQueryTextListener {
     private UserRepository userRepository;
     private FilterRepository filterRepository;
 
@@ -49,6 +51,7 @@ public class MainActivity extends PlaybackControllerActivity implements SearchVi
         if (firstFragment == null) {
             firstFragment = RecentPodcastFragment.newInstance();
         }
+
         this.getSupportFragmentManager()
                 .beginTransaction()
                 .replace(R.id.fragment_container, firstFragment)
@@ -169,6 +172,4 @@ public class MainActivity extends PlaybackControllerActivity implements SearchVi
     public boolean onQueryTextChange(String newText) {
         return true;
     }
-
-
 }
