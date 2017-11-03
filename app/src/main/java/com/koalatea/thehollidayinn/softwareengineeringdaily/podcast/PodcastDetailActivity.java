@@ -127,10 +127,7 @@ public class PodcastDetailActivity extends PlaybackControllerActivity {
       Title postTile = post.getTitle();
       Date postDate = post.getDate();
       Content postContent = post.getContent();
-
-      CollapsingToolbarLayout collapsingToolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
-      collapsingToolbarLayout.setTitle(postTile.getRendered());
-
+      
       TextView titleTextView = (TextView) findViewById(R.id.titleTextView);
       titleTextView.setText(postTile.getRendered());
 
