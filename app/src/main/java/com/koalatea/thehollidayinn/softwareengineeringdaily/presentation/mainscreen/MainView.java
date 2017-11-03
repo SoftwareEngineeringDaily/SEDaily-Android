@@ -8,5 +8,4 @@ import com.koalatea.thehollidayinn.softwareengineeringdaily.presentation.base.MV
 
 public interface MainView extends MVPContract.View {
 
-
 }

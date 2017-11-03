@@ -50,6 +50,12 @@ public class PodcastDetailActivity extends PlaybackControllerActivity {
   @BindView(R.id.scoreTextView)
   TextView scoreText;
 
+  @BindView(R.id.deleteButton)
+  Button deleteButton;
+
+  @BindView(R.id.playButton)
+  Button playButton;
+
   private Post post;
   private APIInterface mService;
   private FirebaseAnalytics mFirebaseAnalytics;
@@ -153,35 +159,35 @@ public class PodcastDetailActivity extends PlaybackControllerActivity {
         upButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (userRepository.getToken().isEmpty()) {
-                    displayMessage("You must login to vote");
-                    return;
-                }
+          if (userRepository.getToken().isEmpty()) {
+            displayMessage("You must login to vote");
+            return;
+          }
 
-                Integer newScore = post.getScore();
+          Integer newScore = post.getScore();
 
-                if (post.getUpvoted() != null && post.getUpvoted()) {
-                    newScore -= 1;
-                    post.setUpvoted(false);
-                    post.setDownvoted(false);
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                        upButton.getDrawable().setTint(ContextCompat.getColor(getApplicationContext(), R.color.button_grey));
-                        downButton.getDrawable().setTint(ContextCompat.getColor(getApplicationContext(), R.color.button_grey));
-                    }
-                } else {
-                    newScore += 1;
+          if (post.getUpvoted() != null && post.getUpvoted()) {
+            newScore -= 1;
+            post.setUpvoted(false);
+            post.setDownvoted(false);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                upButton.getDrawable().setTint(ContextCompat.getColor(getApplicationContext(), R.color.button_grey));
+                downButton.getDrawable().setTint(ContextCompat.getColor(getApplicationContext(), R.color.button_grey));
+            }
+          } else {
+              newScore += 1;
 
-                    if (post.getDownvoted()) {
-                        newScore += 1;
-                    }
+              if (post.getDownvoted()) {
+                  newScore += 1;
+              }
 
-                    post.setUpvoted(true);
-                    post.setDownvoted(false);
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                        upButton.getDrawable().setTint(ContextCompat.getColor(getApplicationContext(), R.color.colorPrimary));
-                        downButton.getDrawable().setTint(ContextCompat.getColor(getApplicationContext(), R.color.button_grey));
-                    }
-                }
+              post.setUpvoted(true);
+              post.setDownvoted(false);
+              if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                  upButton.getDrawable().setTint(ContextCompat.getColor(getApplicationContext(), R.color.colorPrimary));
+                  downButton.getDrawable().setTint(ContextCompat.getColor(getApplicationContext(), R.color.button_grey));
+              }
+          }
 
                 Bundle bundle = new Bundle();
                 bundle.putString(FirebaseAnalytics.Param.ITEM_ID, postId);
@@ -282,15 +288,46 @@ public class PodcastDetailActivity extends PlaybackControllerActivity {
             }
         });
 
-
-      Button playButton = (Button) findViewById(R.id.playButton);
       playButton.setOnClickListener(new View.OnClickListener() {
         @Override
         public void onClick(View v) {
           playClick(post);
         }
       });
+      deleteButton.setOnClickListener(new View.OnClickListener() {
+        @Override public void onClick(View view) {
+          confirmRemoveLocalDownload();
+        }
+      });
+
+      File file = new MP3FileManager().getFileFromUrl(post.getMp3(), this.getApplicationContext());
+      if (!file.exists()) {
+        setUpDownloadedState();
+      }
     }
+
+    private void confirmRemoveLocalDownload() {
+      new AlertDialog.Builder(this)
+        .setMessage(R.string.confirm_remove_download)
+        .setIcon(android.R.drawable.ic_dialog_alert)
+        .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+          public void onClick(DialogInterface dialog, int whichButton) {
+            File file = new MP3FileManager().getFileFromUrl(post.getMp3(), getApplicationContext());
+            file.delete();
+            setUpDownloadedState();
+          }})
+        .setNegativeButton(android.R.string.no, null).show();
+    }
+
+  public void setUpDownloadedState() {
+    playButton.setText(R.string.download);
+    deleteButton.setVisibility(View.INVISIBLE);
+  }
+
+  public void setUpNotDownloadedState() {
+    playButton.setText(R.string.label_play);
+    deleteButton.setVisibility(View.VISIBLE);
+  }
 
     private void playClick (Post post) {
       if (post.getMp3() == null || post.getMp3().isEmpty()) {
@@ -317,8 +354,10 @@ public class PodcastDetailActivity extends PlaybackControllerActivity {
         mProgressDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
           @Override public void onCancel(DialogInterface dialog) {
             downloadTask.cancel(true);
+            setUpNotDownloadedState();
           }
         });
+        return;
       }
 
       String source = post.getMp3();
