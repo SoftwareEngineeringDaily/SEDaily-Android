@@ -1,11 +1,15 @@
 package com.koalatea.thehollidayinn.softwareengineeringdaily.podcast;
 
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.CollapsingToolbarLayout;
+import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.MediaMetadataCompat;
@@ -329,58 +333,84 @@ public class PodcastDetailActivity extends PlaybackControllerActivity {
     deleteButton.setVisibility(View.VISIBLE);
   }
 
-    private void playClick (Post post) {
-      if (post.getMp3() == null || post.getMp3().isEmpty()) {
-        return;
-      }
+  private void displayDownloadNotification() {
+    final int id = 1;
+    final NotificationManager mNotifyManager =
+        (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
-      // Download if not downloaded
-      File file = new MP3FileManager().getFileFromUrl(post.getMp3(), this.getApplicationContext());
-      if (!file.exists()) {
-        // declare the dialog as a member field of your activity
-        ProgressDialog mProgressDialog;
-
-        // instantiate it within the onCreate method
-        mProgressDialog = new ProgressDialog(this);
-        mProgressDialog.setMessage("A message");
-        mProgressDialog.setIndeterminate(true);
-        mProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-        mProgressDialog.setCancelable(true);
-
-        // execute this when the downloader must be fired
-        final DownloadTask downloadTask = new DownloadTask(this, mProgressDialog);
-        downloadTask.execute(post.getMp3());
-
-        mProgressDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
-          @Override public void onCancel(DialogInterface dialog) {
-            downloadTask.cancel(true);
-            setUpNotDownloadedState();
-          }
-        });
-        return;
-      }
-
-      String source = post.getMp3();
-      String id = String.valueOf(source.hashCode());
-
-      MusicProvider mMusicProvider = MusicProvider.getInstance();
-      MediaMetadataCompat item = mMusicProvider.getMusic(id);
-
-      if (item == null) {
-        item = new MediaMetadataCompat.Builder()
-          .putString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID, id)
-          .putString(MediaMetadataCompat.METADATA_KEY_MEDIA_URI, file.getAbsolutePath())
-          .putString(MediaMetadataCompat.METADATA_KEY_TITLE, post.getTitle().getRendered())
-          .build();
-
-        mMusicProvider.updateMusic(id, item);
-      }
-
-      MediaBrowserCompat.MediaItem bItem =
-        new MediaBrowserCompat.MediaItem(item.getDescription(),
-          MediaBrowserCompat.MediaItem.FLAG_PLAYABLE);
-
-      boolean isSameMedia = id.equals(getPlayingMediaId());
-      onMediaItemSelected(bItem, isSameMedia);
+    String CHANNEL_ID = "my_channel_01";
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+      CharSequence name = getString(R.string.app_name);
+      int importance = NotificationManager.IMPORTANCE_DEFAULT;
+      NotificationChannel mChannel = new NotificationChannel(CHANNEL_ID, name, importance);
+      mNotifyManager.createNotificationChannel(mChannel);
     }
+
+    final NotificationCompat.Builder mBuilder =
+        new NotificationCompat.Builder(this.getApplicationContext(), CHANNEL_ID)
+            .setContentTitle("Downloading " + post.getTitle().getRendered())
+            .setContentText("Download in progress")
+            .setSmallIcon(R.drawable.sedaily_logo);
+
+    //mNotifyManager.notify(id, mBuilder.build());
+
+    // execute this when the downloader must be fired
+    final DownloadTask downloadTask = new DownloadTask(this.getApplicationContext(), mNotifyManager, mBuilder);
+    downloadTask.execute(post.getMp3());
+  }
+
+  private void playClick (Post post) {
+    if (post.getMp3() == null || post.getMp3().isEmpty()) {
+      return;
+    }
+
+    // Download if not downloaded
+    File file = new MP3FileManager().getFileFromUrl(post.getMp3(), this.getApplicationContext());
+    if (!file.exists()) {
+      // declare the dialog as a member field of your activity
+      ProgressDialog mProgressDialog;
+
+      // instantiate it within the onCreate method
+      //mProgressDialog = new ProgressDialog(this);
+      //mProgressDialog.setMessage("A message");
+      //mProgressDialog.setIndeterminate(true);
+      //mProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+      //mProgressDialog.setCancelable(true);
+
+
+
+      //mProgressDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
+      //  @Override public void onCancel(DialogInterface dialog) {
+      //    downloadTask.cancel(true);
+      //    setUpNotDownloadedState();
+      //  }
+      //});
+
+      displayDownloadNotification();
+      return;
+    }
+
+    String source = post.getMp3();
+    String id = String.valueOf(source.hashCode());
+
+    MusicProvider mMusicProvider = MusicProvider.getInstance();
+    MediaMetadataCompat item = mMusicProvider.getMusic(id);
+
+    if (item == null) {
+      item = new MediaMetadataCompat.Builder()
+        .putString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID, id)
+        .putString(MediaMetadataCompat.METADATA_KEY_MEDIA_URI, file.getAbsolutePath())
+        .putString(MediaMetadataCompat.METADATA_KEY_TITLE, post.getTitle().getRendered())
+        .build();
+
+      mMusicProvider.updateMusic(id, item);
+    }
+
+    MediaBrowserCompat.MediaItem bItem =
+      new MediaBrowserCompat.MediaItem(item.getDescription(),
+        MediaBrowserCompat.MediaItem.FLAG_PLAYABLE);
+
+    boolean isSameMedia = id.equals(getPlayingMediaId());
+    onMediaItemSelected(bItem, isSameMedia);
+  }
 }
