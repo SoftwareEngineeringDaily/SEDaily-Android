@@ -1,19 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--
-  Copyright (C) 2014 The Android Open Source Project
-
-  Licensed under the Apache License, Version 2.0 (the "License");
-  you may not use this file except in compliance with the License.
-  You may obtain a copy of the License at
-
-       http://www.apache.org/licenses/LICENSE-2.0
-
-  Unless required by applicable law or agreed to in writing, software
-  distributed under the License is distributed on an "AS IS" BASIS,
-  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  See the License for the specific language governing permissions and
-  limitations under the License.
-  -->
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="wrap_content"
@@ -27,8 +12,8 @@
         android:layout_marginLeft="@dimen/playback_controls_albumart_horizontal_margin"
         android:layout_marginStart="@dimen/playback_controls_albumart_horizontal_margin"
         android:orientation="vertical"
-        android:layout_toStartOf="@+id/play_pause"
-        android:layout_toLeftOf="@+id/play_pause"
+        android:layout_toStartOf="@+id/speed"
+        android:layout_toLeftOf="@+id/speed"
         android:layout_centerVertical="true">
         <TextView
             android:id="@+id/title"
@@ -104,6 +89,19 @@
             android:contentDescription="@string/currently_playing_extra_info"
             android:textAppearance="?android:attr/textAppearanceSmall"/>
     </LinearLayout>
+
+    <Button
+        android:id="@+id/speed"
+        android:layout_centerVertical="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toLeftOf="@+id/play_pause"
+        android:layout_toStartOf="@+id/play_pause"
+        android:padding="8dp"
+        android:background="?selectableItemBackgroundBorderless"
+        android:text="@string/speed_1x"
+        android:contentDescription="@string/speed"
+        android:tint="@color/bt_accent"/>
 
     <ImageButton
         android:id="@+id/play_pause"
