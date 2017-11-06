@@ -1,0 +1,51 @@
+{
+  "project_info": {
+    "project_number": "",
+    "project_id": "dev"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:000000000000:android:aaaaaaaaaaaaaaaa",
+        "android_client_info": {
+          "package_name": "com.koalatea.thehollidayinn.softwareengineeringdaily.dev"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "asdcad",
+          "client_type": 3
+        },
+        {
+          "client_id": "",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.koalatea.thehollidayinn.softwareengineeringdaily.dev",
+            "certificate_hash": ""
+          }
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": ""
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 2,
+          "analytics_property": {
+            "tracking_id": ""
+          }
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 1
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
