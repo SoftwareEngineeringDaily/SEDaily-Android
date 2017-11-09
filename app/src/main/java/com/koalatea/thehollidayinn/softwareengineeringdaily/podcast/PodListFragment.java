@@ -107,6 +107,8 @@ public class PodListFragment extends Fragment {
       data.put("type", "top");
     } else if (this.title != null && this.title.equals("Just For You") && !userRepository.getToken().isEmpty()) {
       query = mService.getRecommendations(data);
+    } else if (this.title != null && this.title.equals("Bookmarks") && !userRepository.getToken().isEmpty()) {
+      query = mService.getBookmarks(data);
     } else if (tagId != null && !tagId.isEmpty()) {
       data.put("categories", tagId);
     }

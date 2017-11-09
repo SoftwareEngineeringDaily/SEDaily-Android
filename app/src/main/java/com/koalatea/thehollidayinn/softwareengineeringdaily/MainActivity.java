@@ -27,6 +27,7 @@ public class MainActivity extends PlaybackControllerActivity
     private RecentPodcastFragment firstFragment;
     private PodListFragment secondPage;
     private PodListFragment thirdPage;
+    private PodListFragment bookmarksFragment;
 
 
     @Override
@@ -94,6 +95,14 @@ public class MainActivity extends PlaybackControllerActivity
                         .replace(R.id.fragment_container, thirdPage)
                         .commit();
                 break;
+            case R.id.action_bookmarks:
+                if (bookmarksFragment == null) {
+                    bookmarksFragment = PodListFragment.newInstance("Bookmarks", "");
+                }
+                this.getSupportFragmentManager()
+                        .beginTransaction()
+                        .replace(R.id.fragment_container, bookmarksFragment)
+                        .commit();
         }
 
         return true;
