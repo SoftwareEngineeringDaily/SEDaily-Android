@@ -42,6 +42,7 @@ import java.util.Date;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
@@ -52,6 +53,7 @@ public class PodcastDetailActivity extends PlaybackControllerActivity {
   private PostRepository postRepository;
   private UserRepository userRepository;
   private Subscriber mySubscriber;
+  private boolean isBookmarked;
 
   @BindView(R.id.scoreTextView)
   TextView scoreText;
@@ -61,6 +63,9 @@ public class PodcastDetailActivity extends PlaybackControllerActivity {
 
   @BindView(R.id.playButton)
   Button playButton;
+
+  @BindView(R.id.bookmark_button)
+  ImageView bookmarkButton;
 
   private Post post;
   private APIInterface mService;
@@ -91,6 +96,9 @@ public class PodcastDetailActivity extends PlaybackControllerActivity {
 
     postRepository = PostRepository.getInstance();
     loadPost(postId);
+
+    // TODO: check if post is already liked
+    isBookmarked = false;
   }
 
   @Override
@@ -416,5 +424,15 @@ public class PodcastDetailActivity extends PlaybackControllerActivity {
 
     boolean isSameMedia = id.equals(getPlayingMediaId());
     onMediaItemSelected(bItem, isSameMedia);
+  }
+
+  @OnClick(R.id.bookmark_button)
+  public void onClickBookmarkButton() {
+    if(isBookmarked) {
+
+    }
+    else {
+
+    }
   }
 }
