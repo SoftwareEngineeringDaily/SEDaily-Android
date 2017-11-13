@@ -340,6 +340,10 @@ public class PodcastDetailActivity extends PlaybackControllerActivity {
       .setIcon(android.R.drawable.ic_dialog_alert)
       .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
         public void onClick(DialogInterface dialog, int whichButton) {
+          if (post.getMp3() == null || post.getMp3().isEmpty()) {
+            return;
+          }
+
           File file = new MP3FileManager().getFileFromUrl(post.getMp3(), getApplicationContext());
           file.delete();
           PodcastDownloadsRepository.getInstance().removePodcastDownload(post.getId());
