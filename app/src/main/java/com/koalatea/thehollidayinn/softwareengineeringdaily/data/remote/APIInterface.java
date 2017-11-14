@@ -32,15 +32,6 @@ public interface APIInterface {
     @POST("posts/{postid}/downvote")
     Observable<Void> downVote(@Path("postid") String postId);
 
-    @GET("favorites")
-    Observable<List<Post>> getBookmarks(@QueryMap Map<String, String> options);
-
-    @POST("posts/{postid}/favorite")
-    Observable<Void> addBookmark(@Path("postid") String postId);
-
-    @POST("posts/{postid}/unfavorite")
-    Observable<Void> removeBookmark(@Path("postid") String postId);
-
     @FormUrlEncoded
     @POST("auth/login")
     Observable<User> login(@Field("username") String username, @Field("password") String password);
