@@ -17,6 +17,8 @@
   <string name="download">Download</string>
   <string name="remove_download">Remove</string>
   <string name="confirm_remove_download">Do you really want to delete this download?</string>
+  <string name="speed">Speed</string>
+  <string name="speed_1x">1x</string>
 
 
   <string name="just_for_you">Just For You</string>
