@@ -99,6 +99,10 @@ public class PodcastDetailActivity extends PlaybackControllerActivity {
 
     // TODO: check if post is already liked
     isBookmarked = false;
+
+    if(isBookmarked) {
+      bookmarkButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_bookmark_set));
+    }
   }
 
   @Override
@@ -428,11 +432,52 @@ public class PodcastDetailActivity extends PlaybackControllerActivity {
 
   @OnClick(R.id.bookmark_button)
   public void onClickBookmarkButton() {
+    if(userRepository.getToken().isEmpty()) {
+      displayMessage("You must login to vote");
+      return;
+    }
     if(isBookmarked) {
+      mService.removeBookmark(post.get_id())
+        .subscribeOn(Schedulers.io())
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(new Subscriber<Void>() {
+          @Override
+          public void onCompleted() {
+            bookmarkButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_bookmark));
+          }
 
+          @Override
+          public void onError(Throwable e) {
+            Log.v(TAG, e.toString());
+          }
+
+          @Override
+          public void onNext(Void posts) {
+
+          }
+        });
     }
     else {
+      mService.addBookmark(post.get_id())
+        .subscribeOn(Schedulers.io())
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(new Subscriber<Void>() {
+          @Override
+          public void onCompleted() {
+            bookmarkButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_bookmark_set));
+          }
 
+          @Override
+          public void onError(Throwable e) {
+            Log.v(TAG, e.toString());
+          }
+
+          @Override
+          public void onNext(Void posts) {
+
+          }
+        });
     }
+    isBookmarked = !isBookmarked;
   }
 }
