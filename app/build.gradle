@@ -74,6 +74,7 @@ dependencies {
     compile "com.squareup.picasso:picasso:$rootProject.picassoVersion"
     compile "com.google.android.gms:play-services-oss-licenses:$rootProject.playVersion"
     compile 'com.ethanhua:skeleton:1.0.0'
+    compile 'de.hdodenhof:circleimageview:2.2.0'
     //UI
     compile "com.github.pchmn:MaterialChipsInput:$rootProject.materialChipsVersion"
     compile "com.jakewharton:butterknife:$rootProject.butterknifeVersion"
