@@ -46,7 +46,7 @@ public class PodcastDownloadsRepository {
   }
 
   public Boolean isPodcastDownloaded(Post post) {
-    if (this.filesLoaded.get(post.getId()) != null && this.filesLoaded.get(post.getId())) return true;
+    if (this.filesLoaded.get(post.get_id()) != null && this.filesLoaded.get(post.get_id())) return true;
 
     if (post.getMp3() == null || post.getMp3().isEmpty()) {
       return false;
@@ -54,7 +54,7 @@ public class PodcastDownloadsRepository {
 
     File file = new MP3FileManager().getFileFromUrl(post.getMp3(), SDEApp.component().context());
     if (file.exists()) {
-      this.filesLoaded.put(post.getId(), true);
+      this.filesLoaded.put(post.get_id(), true);
       return true;
     }
 
