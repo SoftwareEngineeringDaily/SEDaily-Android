@@ -13,14 +13,14 @@ import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
-import android.text.Html;
-import android.text.method.LinkMovementMethod;
 import android.util.Log;
 import android.view.View;
+import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
-
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.PlaybackControllerActivity;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.R;
@@ -30,11 +30,9 @@ import com.koalatea.thehollidayinn.softwareengineeringdaily.data.models.Post;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.data.models.Title;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.data.remote.APIInterface;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.data.remote.ApiUtils;
-import com.koalatea.thehollidayinn.softwareengineeringdaily.data.repositories.FilterRepository;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.data.repositories.PodcastDownloadsRepository;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.data.repositories.PostRepository;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.data.repositories.UserRepository;
-
 import com.koalatea.thehollidayinn.softwareengineeringdaily.downloads.DownloadTask;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.downloads.MP3FileManager;
 import java.io.File;
@@ -154,15 +152,8 @@ public class PodcastDetailActivity extends PlaybackControllerActivity {
     TextView secondaryTextView = (TextView) findViewById(R.id.secondaryTextView);
     secondaryTextView.setText(dayString);
 
-    TextView descriptionTextView = (TextView) findViewById(R.id.description);
-    if (Build.VERSION.SDK_INT > 24) {
-      descriptionTextView.setText(Html.fromHtml(postContent.getRendered(), Html.FROM_HTML_MODE_COMPACT));
-    } else {
-      //noinspection deprecation
-      descriptionTextView.setText(Html.fromHtml(postContent.getRendered()));
-    }
-
-    descriptionTextView.setMovementMethod(LinkMovementMethod.getInstance());
+    WebView descriptionWebView = findViewById(R.id.description);
+    descriptionWebView.loadData(postContent.getRendered(), "text/html", "UTF-8");
 
 
     scoreText.setText(String.valueOf(post.getScore()));
