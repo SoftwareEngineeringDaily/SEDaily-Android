@@ -277,6 +277,8 @@ public class PlaybackControlsFragment extends Fragment {
       @Override
       public void onClick(View v) {
     MediaControllerCompat controller = MediaControllerCompat.getMediaController(getActivity());
+    if (controller == null) return;
+
     PlaybackStateCompat stateObj = controller.getPlaybackState();
     final int state = stateObj == null ? PlaybackStateCompat.STATE_NONE : stateObj.getState();
 
