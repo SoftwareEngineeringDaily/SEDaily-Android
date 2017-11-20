@@ -138,7 +138,29 @@ public class PlaybackControlsFragment extends Fragment {
     });
 
     setSpeedText();
+    setUpSpeedSubscription();
 
+    return rootView;
+  }
+
+  @Override
+  public void onStart() {
+    super.onStart();
+    long currentPlayTime = PodcastSessionStateManager.getInstance().getCurrentProgress();
+    mLastPlaybackState = PodcastSessionStateManager.getInstance().getLastPlaybackState();
+
+    if (currentPlayTime > 0) {
+        scheduleSeekbarUpdate();
+    }
+    mStart.setText(DateUtils.formatElapsedTime(currentPlayTime / 1000));
+    setSpeedTextView();
+
+    if (speedSubscription != null && speedSubscription.isUnsubscribed()) {
+      setUpSpeedSubscription();
+    }
+  }
+
+  private void setUpSpeedSubscription () {
     speedSubscription = new Subscriber<Integer>() {
       @Override public void onCompleted() {
       }
@@ -156,20 +178,6 @@ public class PlaybackControlsFragment extends Fragment {
         .subscribeOn(Schedulers.io())
         .observeOn(AndroidSchedulers.mainThread())
         .subscribe(speedSubscription);
-
-    return rootView;
-  }
-
-  @Override
-  public void onStart() {
-      super.onStart();
-      long currentPlayTime = PodcastSessionStateManager.getInstance().getCurrentProgress();
-      mLastPlaybackState = PodcastSessionStateManager.getInstance().getLastPlaybackState();
-
-      if (currentPlayTime > 0) {
-          scheduleSeekbarUpdate();
-      }
-      mStart.setText(DateUtils.formatElapsedTime(currentPlayTime / 1000));
   }
 
   @Override
@@ -217,12 +225,12 @@ public class PlaybackControlsFragment extends Fragment {
   }
 
   public void onConnected() {
-      MediaControllerCompat controller = MediaControllerCompat.getMediaController(getActivity());
-      if (controller != null) {
-          updateWithMeta(controller.getMetadata());
-          handlePlaybackStateChange(controller.getPlaybackState());
-          controller.registerCallback(mCallback);
-      }
+    MediaControllerCompat controller = MediaControllerCompat.getMediaController(getActivity());
+    if (controller != null) {
+      updateWithMeta(controller.getMetadata());
+      handlePlaybackStateChange(controller.getPlaybackState());
+      controller.registerCallback(mCallback);
+    }
   }
 
   private void updateWithMeta(MediaMetadataCompat metadata) {
@@ -370,14 +378,18 @@ public class PlaybackControlsFragment extends Fragment {
     new SpeedDialog().show(this.getFragmentManager(), "tag");
   }
 
-  private void setSpeedText() {
+  private int setSpeedTextView () {
     int currentSpeed = PodcastSessionStateManager.getInstance().getCurrentSpeed();
     String[] speedArray = getResources().getStringArray(R.array.speed_options);
     speed.setText(speedArray[currentSpeed]);
+    return currentSpeed;
+
+  }
+  private void setSpeedText() {
+    int currentSpeed = setSpeedTextView();
 
     MediaControllerCompat controller = MediaControllerCompat.getMediaController(getActivity());
     if (controller != null) {
-
       Bundle args = new Bundle();
       args.putInt("SPEED", currentSpeed);
       // @TODO: Make constant
