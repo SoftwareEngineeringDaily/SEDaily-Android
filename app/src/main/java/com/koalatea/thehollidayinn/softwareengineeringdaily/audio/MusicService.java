@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import timber.log.Timber;
 
 public class MusicService extends MediaBrowserServiceCompat {
     private static final String TAG = "MusicService";
@@ -276,6 +277,15 @@ public class MusicService extends MediaBrowserServiceCompat {
             Log.d(TAG, "stop. current state=" + mPlayback.getState());
             handleStopRequest();
         }
+
+        @Override
+        public void onCustomAction (String action,
+            Bundle extras) {
+            if (action.equals("SPEED_CHANGE")) {
+                int speed = extras.getInt("SPEED");
+                handleSpeedChange(speed);
+            }
+        }
     }
 
     /**
@@ -417,6 +427,10 @@ public class MusicService extends MediaBrowserServiceCompat {
         }
         mediaNotificationHelper.createNotification();
         mediaNotificationHelper.startNotification();
+    }
+
+    private void handleSpeedChange(int speed) {
+        mPlayback.setSpeed(speed);
     }
 
     /**

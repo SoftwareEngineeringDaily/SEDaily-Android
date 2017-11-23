@@ -13,6 +13,13 @@
   <string name="search">Search</string>
   <string name="label_pause">Pause</string>
   <string name="label_play">Play</string>
+  <string name="open_source_info">Open Source Info</string>
+  <string name="download">Download</string>
+  <string name="remove_download">Remove</string>
+  <string name="confirm_remove_download">Do you really want to delete this download?</string>
+  <string name="speed">Speed</string>
+  <string name="speed_1x">1x</string>
+
 
   <string name="just_for_you">Just For You</string>
   <string name="greatest_hits">Greatest Hits</string>

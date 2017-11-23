@@ -25,6 +25,9 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
 import retrofit2.Response;
 import retrofit2.adapter.rxjava.HttpException;
 import rx.Subscriber;
@@ -33,55 +36,64 @@ import rx.schedulers.Schedulers;
 
 public class LoginRegisterActivity extends AppCompatActivity {
     private Boolean register = false;
-    private TextView title;
-    private EditText usernameEditText;
-    private EditText passwordEditText;
-    private Button loginRegButton;
-    private Button toggleButton;
+
+    @BindView(R.id.title)
+    TextView title;
+
+    @BindView(R.id.username)
+    EditText usernameEditText;
+
+    @BindView(R.id.password)
+    EditText passwordEditText;
+
+    @BindView(R.id.loginRegButton)
+    Button loginRegButton;
+
+    @BindView(R.id.toggleButton)
+    Button toggleButton;
+
     private UserRepository userRepository;
     private FirebaseAnalytics mFirebaseAnalytics;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_login_register);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+      super.onCreate(savedInstanceState);
+      setContentView(R.layout.activity_login_register);
+      Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+      setSupportActionBar(toolbar);
+      getSupportActionBar().setDisplayShowTitleEnabled(false);
 
-        mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
-        userRepository = UserRepository.getInstance(this);
-        title = (TextView) findViewById(R.id.title);
-        usernameEditText = (EditText) findViewById(R.id.username);
-        passwordEditText = (EditText) findViewById(R.id.password);
-        loginRegButton = (Button) findViewById(R.id.loginRegButton);
-        toggleButton = (Button) findViewById(R.id.toggleButton);
+      ButterKnife.bind(this);
 
-        loginRegButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String username = usernameEditText.getText().toString();
-                String password = passwordEditText.getText().toString();
+      mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
+      userRepository = UserRepository.getInstance(this);
 
-                loginReg(username, password);
-            }
-        });
+      loginRegButton.setOnClickListener(new View.OnClickListener() {
+          @Override
+          public void onClick(View v) {
+              String username = usernameEditText.getText().toString();
+              String password = passwordEditText.getText().toString();
 
-        toggleButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (register) {
-                    register = false;
-                    title.setText(getString(R.string.login));
-                    toggleButton.setText(getString(R.string.register));
-                    loginRegButton.setText(getString(R.string.login));
-                } else {
-                    register = true;
-                    title.setText(getString(R.string.register));
-                    toggleButton.setText(getString(R.string.login));
-                    loginRegButton.setText(getString(R.string.register));
-                }
-            }
-        });
+              loginReg(username, password);
+          }
+      });
+
+      toggleButton.setOnClickListener(new View.OnClickListener() {
+          @Override
+          public void onClick(View v) {
+        if (register) {
+          register = false;
+          title.setText(getString(R.string.login));
+          toggleButton.setText(getString(R.string.register));
+          loginRegButton.setText(getString(R.string.login));
+        } else {
+          register = true;
+          title.setText(getString(R.string.register));
+          toggleButton.setText(getString(R.string.login));
+          loginRegButton.setText(getString(R.string.register));
+        }
+          }
+      });
     }
 
     private void displayMessage (String message) {
@@ -93,20 +105,22 @@ public class LoginRegisterActivity extends AppCompatActivity {
             builder = new AlertDialog.Builder(this);
         }
 
+        loginRegButton.setEnabled(true);
+
         builder.setTitle("Error")
-                .setMessage(message)
-                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        // continue with delete
-                    }
-                })
-                .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        // do nothing
-                    }
-                })
-                .setIcon(android.R.drawable.ic_dialog_alert)
-                .show();
+          .setMessage(message)
+          .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+              public void onClick(DialogInterface dialog, int which) {
+            // continue with delete
+              }
+          })
+          .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+              public void onClick(DialogInterface dialog, int which) {
+            // do nothing
+              }
+          })
+          .setIcon(android.R.drawable.ic_dialog_alert)
+          .show();
     }
 
     private void loginReg(String username, String password) {

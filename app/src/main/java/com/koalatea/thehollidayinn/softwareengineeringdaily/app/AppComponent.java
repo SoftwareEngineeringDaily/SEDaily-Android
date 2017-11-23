@@ -5,6 +5,8 @@ import android.content.SharedPreferences;
 
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.gson.Gson;
+import com.koalatea.thehollidayinn.softwareengineeringdaily.analytics.AnalyticsFacade;
+import com.koalatea.thehollidayinn.softwareengineeringdaily.analytics.AnalyticsModule;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.data.DataModule;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.data.mapper.PostItemMapper;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.data.preference.AuthPreference;
@@ -23,11 +25,11 @@ import dagger.Component;
  * Created by Kurian on 25-Sep-17.
  */
 @AppScope
-@Component(modules = {AppModule.class, NetworkModule.class, DataModule.class, DomainModule.class})
+@Component(modules = {AppModule.class, NetworkModule.class, DataModule.class, DomainModule.class,
+    AnalyticsModule.class})
 public interface AppComponent {
     Context context();
     SharedPreferences sharedPreferences();
-    FirebaseAnalytics firebaseAnalytics();
     LocalTextUtils textUtils();
     AuthPreference authPreference();
     PostItemMapper mapper();
@@ -37,4 +39,5 @@ public interface AppComponent {
     UserRepository userRepository();
     PresenterCache presenterCache();
     Gson gson();
+    AnalyticsFacade analyticsFacade();
 }

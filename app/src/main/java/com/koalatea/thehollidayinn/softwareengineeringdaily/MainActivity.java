@@ -11,13 +11,16 @@ import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import com.google.android.gms.oss.licenses.OssLicensesMenuActivity;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.auth.LoginRegisterActivity;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.data.repositories.FilterRepository;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.data.repositories.UserRepository;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.podcast.PodListFragment;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.podcast.RecentPodcastFragment;
+import timber.log.Timber;
 
-public class MainActivity extends PlaybackControllerActivity implements SearchView.OnQueryTextListener {
+public class MainActivity extends PlaybackControllerActivity
+    implements SearchView.OnQueryTextListener {
     private UserRepository userRepository;
     private FilterRepository filterRepository;
 
@@ -34,6 +37,7 @@ public class MainActivity extends PlaybackControllerActivity implements SearchVi
         this.setUp();
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
 
         userRepository = UserRepository.getInstance(this);
         filterRepository = FilterRepository.getInstance();
@@ -47,6 +51,7 @@ public class MainActivity extends PlaybackControllerActivity implements SearchVi
         if (firstFragment == null) {
             firstFragment = RecentPodcastFragment.newInstance();
         }
+
         this.getSupportFragmentManager()
                 .beginTransaction()
                 .replace(R.id.fragment_container, firstFragment)
@@ -146,6 +151,11 @@ public class MainActivity extends PlaybackControllerActivity implements SearchVi
             userRepository.setToken("");
             Intent intent = new Intent(this, MainActivity.class);
             startActivity(intent);
+        } else if (id == R.id.opensource) {
+            Intent intent = new Intent(this, OssLicensesMenuActivity.class);
+            String title = getString(R.string.open_source_info);
+            intent.putExtra("title", title);
+            startActivity(intent);
         }
 
         return super.onOptionsItemSelected(item);
@@ -162,6 +172,4 @@ public class MainActivity extends PlaybackControllerActivity implements SearchVi
     public boolean onQueryTextChange(String newText) {
         return true;
     }
-
-
 }

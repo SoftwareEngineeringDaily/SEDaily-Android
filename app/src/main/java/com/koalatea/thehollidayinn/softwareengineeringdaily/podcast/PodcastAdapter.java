@@ -17,6 +17,9 @@ import com.squareup.picasso.Picasso;
 import java.util.ArrayList;
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 /*
  * Created by krh12 on 5/22/2017.
  */
@@ -26,13 +29,15 @@ class PodcastAdapter extends RecyclerView.Adapter<PodcastAdapter.ViewHolder> {
   private PodListFragment context;
 
   static class ViewHolder extends RecyclerView.ViewHolder {
-    private TextView mTextView;
-    private ImageView imageView;
+    @BindView(R.id.card_title)
+    TextView mTextView;
+
+    @BindView(R.id.card_image)
+    ImageView imageView;
 
     private ViewHolder(View v) {
         super(v);
-        mTextView = (TextView) v.findViewById(R.id.card_title);
-        imageView = (ImageView) v.findViewById(R.id.card_image);
+        ButterKnife.bind(this, v);
     }
   }
 
@@ -78,7 +83,10 @@ class PodcastAdapter extends RecyclerView.Adapter<PodcastAdapter.ViewHolder> {
     if (post.getFeaturedImage() != null) {
       imageLink = post.getFeaturedImage();
     }
-    Picasso.with(context.getContext()).load(imageLink).into(holder.imageView);
+    Picasso.with(context.getContext())
+        .load(imageLink)
+        .fit()
+        .into(holder.imageView);
   }
 
   @Override

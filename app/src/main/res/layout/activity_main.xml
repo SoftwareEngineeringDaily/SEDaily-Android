@@ -15,7 +15,7 @@
         <android.support.v7.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
-            android:layout_height="40dp"
+            android:layout_height="?attr/actionBarSize"
             android:background="@color/colorPrimary"
             app:elevation="0dp"
             app:popupTheme="@style/AppTheme.PopupOverlay">
@@ -27,8 +27,8 @@
                 android:paddingTop="8dp">
 
                 <ImageView
-                    android:layout_width="28dp"
-                    android:layout_height="28dp"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
                     android:src="@drawable/sedaily_logo"
                     android:contentDescription="@string/logo" />
             </LinearLayout>
@@ -39,7 +39,7 @@
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="35dp"
+        android:layout_marginTop="?attr/actionBarSize"
         android:layout_marginBottom="40dp"
         android:id="@+id/fragment_container">
     </FrameLayout>

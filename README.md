@@ -17,7 +17,7 @@ $ cd SEDaily-Android
 1. Go to the [Firebase website](https://firebase.google.com/) and create an account if you do not already have one
 2. Create a new project on the Firebase dashboard
 3. Add a new Android app in the Firebase Dashboard.
-4. Set the package name to `com.koalatea.thehollidayinn.softwareengineeringdaily`
+4. Set the package name to `com.koalatea.thehollidayinn.softwareengineeringdaily.debug`
 5. Download `google-services.json` and place it in `/app/`
 
 

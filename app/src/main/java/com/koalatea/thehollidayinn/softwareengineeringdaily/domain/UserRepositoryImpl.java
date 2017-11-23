@@ -1,11 +1,10 @@
 package com.koalatea.thehollidayinn.softwareengineeringdaily.domain;
 
 import android.support.annotation.NonNull;
-
+import com.koalatea.thehollidayinn.softwareengineeringdaily.app.SDEApp;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.data.preference.AuthPreference;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.network.api.AuthNetworkService;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.network.response.AuthResponse;
-
 import io.reactivex.Completable;
 import io.reactivex.Single;
 import io.reactivex.functions.Action;
@@ -22,7 +21,7 @@ class UserRepositoryImpl implements UserRepository {
     private final AuthNetworkService api;
     private final AuthPreference preference;
 
-    public UserRepositoryImpl(@NonNull AuthNetworkService api,
+  UserRepositoryImpl(@NonNull AuthNetworkService api,
                               @NonNull AuthPreference preference) {
         Timber.tag(UserRepositoryImpl.class.getCanonicalName());
         this.api = api;
@@ -30,55 +29,59 @@ class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
-    public Single<Boolean> login(@NonNull String username, @NonNull String password) {
-        return api.login(username, password)
-                .map(new Function<AuthResponse, String>() {
-                    @Override
-                    public String apply(@NonNull AuthResponse authResponse) throws Exception {
-                        return authResponse.token();
-                    }
-                })
-                .map(new Function<String, Boolean>() {
-                    @Override
-                    public Boolean apply(@NonNull String token) throws Exception {
-                        preference.saveToken(token);
-                        Timber.d("Token value: %1$s, logged in status %2$b",
-                                preference.getToken(),
-                                preference.isLoggedIn());
-                        return preference.isLoggedIn();
-                    }
-                })
-                .doOnError(new Consumer<Throwable>() {
-                    @Override
-                    public void accept(Throwable throwable) throws Exception {
-                        Timber.e(throwable, throwable.getMessage());
-                    }
-                });
+    public Single<Boolean> login(@NonNull final String username, @NonNull String password) {
+      return api.login(username, password).map(new Function<AuthResponse, String>() {
+        @Override
+        public String apply(@NonNull AuthResponse authResponse) throws Exception {
+          return authResponse.token();
+        }
+      }).map(new Function<String, Boolean>() {
+        @Override
+        public Boolean apply(@NonNull String token) throws Exception {
+          preference.saveToken(token);
+          Timber.d("Token value: %1$s, logged in status %2$b", preference.getToken(),
+              preference.isLoggedIn());
+          return preference.isLoggedIn();
+        }
+      }).doOnSuccess(new Consumer<Boolean>() {
+        @Override
+        public void accept(Boolean success) throws Exception {
+          if (success) {
+            SDEApp.component().analyticsFacade().trackLogin(username);
+          }
+        }
+      }).doOnError(new Consumer<Throwable>() {
+        @Override public void accept(Throwable throwable) throws Exception {
+          Timber.e(throwable, throwable.getMessage());
+        }
+      });
     }
 
     @Override
-    public Single<Boolean> register(@NonNull String username, @NonNull String password) {
-        return api.register(username, password)
-                .map(new Function<AuthResponse, String>() {
-                    @Override
-                    public String apply(@NonNull AuthResponse authResponse) throws Exception {
-                        return authResponse.token();
-                    }
-                })
-                .map(new Function<String, Boolean>() {
-                    @Override
-                    public Boolean apply(@NonNull String token) throws Exception {
-                        preference.saveToken(token);
-                        return preference.isLoggedIn();
-                    }
-                })
-                .onErrorReturn(new Function<Throwable, Boolean>() {
-                    @Override
-                    public Boolean apply(@NonNull Throwable throwable) throws Exception {
-                        preference.clearToken();
-                        return Boolean.FALSE;
-                    }
-                });
+    public Single<Boolean> register(@NonNull final String username, @NonNull String password) {
+      return api.register(username, password).map(new Function<AuthResponse, String>() {
+        @Override public String apply(@NonNull AuthResponse authResponse) throws Exception {
+          return authResponse.token();
+        }
+      }).map(new Function<String, Boolean>() {
+        @Override
+        public Boolean apply(@NonNull String token) throws Exception {
+          preference.saveToken(token);
+          return preference.isLoggedIn();
+        }
+      }).doOnSuccess(new Consumer<Boolean>() {
+        @Override
+        public void accept(Boolean success) throws Exception {
+          if (success) {
+            SDEApp.component().analyticsFacade().trackRegistration(username);
+          }
+        }
+      }).onErrorReturn(new Function<Throwable, Boolean>() {
+        @Override public Boolean apply(@NonNull Throwable throwable) throws Exception {
+          preference.clearToken();
+          return Boolean.FALSE;
+        }
+      });
     }
 
     @Override

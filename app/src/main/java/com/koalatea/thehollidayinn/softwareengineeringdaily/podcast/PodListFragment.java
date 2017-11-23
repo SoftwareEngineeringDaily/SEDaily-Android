@@ -24,108 +24,116 @@ import java.util.Map;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
+import timber.log.Timber;
 
 /*
  * Created by krh12 on 5/22/2017.
  */
 
 public class PodListFragment extends Fragment {
-    private static String TAG = "PodList";
-    private String title;
-    private String tagId;
-    private PodcastAdapter podcastAdapter;
+  private static String TAG = "PodList";
+  private String title;
+  private String tagId;
+  private PodcastAdapter podcastAdapter;
+  private Subscriber<String> mySubscriber;
 
-    public static PodListFragment newInstance(String title, String tagId) {
-        PodListFragment f = new PodListFragment();
-        Bundle args = new Bundle();
-        f.title = title;
-        f.tagId = tagId;
-        f.setArguments(args);
-        return f;
+  public static PodListFragment newInstance(String title, String tagId) {
+    PodListFragment f = new PodListFragment();
+    Bundle args = new Bundle();
+    f.title = title;
+    f.tagId = tagId;
+    f.setArguments(args);
+    return f;
+  }
+
+  @Override
+  public View onCreateView(LayoutInflater inflater,
+                           ViewGroup container, Bundle savedInstanceState) {
+    View rootView = inflater.inflate(
+      R.layout.fragment_podcast_horizontal, container, false);
+
+    RecyclerView recyclerView = (RecyclerView) rootView.findViewById(R.id.my_recycler_view);
+
+    recyclerView.setHasFixedSize(true);
+
+    LinearLayoutManager mLayoutManager = new LinearLayoutManager(this.getContext());
+    recyclerView.setLayoutManager(mLayoutManager);
+
+    podcastAdapter = new PodcastAdapter(this);
+    recyclerView.setAdapter(podcastAdapter);
+
+    FilterRepository filterRepository = FilterRepository.getInstance();
+    mySubscriber = new Subscriber<String>() {
+      @Override
+      public void onNext(String s) {
+          getPosts(s);
+      }
+
+      @Override
+      public void onCompleted() { }
+
+      @Override
+      public void onError(Throwable e) { }
+    };
+    filterRepository.getModelChanges().subscribe(mySubscriber);
+
+    return rootView;
+  }
+
+  @Override
+  public void onStart() {
+    super.onStart();
+    getPosts("");
+  }
+
+  @Override
+  public void onDestroy() {
+    super.onDestroy();
+    mySubscriber.unsubscribe();
+  }
+
+  private void getPosts(String search) {
+    APIInterface mService = ApiUtils.getKibbleService(getActivity());
+
+    // @TODO: Replace tmp with query
+
+    Map<String, String> data = new HashMap<>();
+    rx.Observable<List<Post>> query = mService.getPosts(data);
+
+    UserRepository userRepository = UserRepository.getInstance(this.getContext());
+    final PostRepository postRepository = PostRepository.getInstance();
+
+    if (this.title != null && this.title.equals("Greatest Hits")) {
+      data.put("type", "top");
+    } else if (this.title != null && this.title.equals("Just For You") && !userRepository.getToken().isEmpty()) {
+      query = mService.getRecommendations(data);
+    } else if (tagId != null && !tagId.isEmpty()) {
+      data.put("categories", tagId);
     }
 
-    @Override
-    public View onCreateView(LayoutInflater inflater,
-                             ViewGroup container, Bundle savedInstanceState) {
-        View rootView = inflater.inflate(
-                R.layout.fragment_podcast_horizontal, container, false);
-
-        RecyclerView recyclerView = (RecyclerView) rootView.findViewById(R.id.my_recycler_view);
-
-        recyclerView.setHasFixedSize(true);
-
-        LinearLayoutManager mLayoutManager = new LinearLayoutManager(this.getContext());
-        recyclerView.setLayoutManager(mLayoutManager);
-
-        podcastAdapter = new PodcastAdapter(this);
-        recyclerView.setAdapter(podcastAdapter);
-
-        FilterRepository filterRepository = FilterRepository.getInstance();
-        Subscriber<String> mySubscriber = new Subscriber<String>() {
-            @Override
-            public void onNext(String s) {
-                getPosts(s);
-            }
-
-            @Override
-            public void onCompleted() { }
-
-            @Override
-            public void onError(Throwable e) { }
-        };
-        filterRepository.getModelChanges().subscribe(mySubscriber);
-
-        return rootView;
+    if (!search.isEmpty()) {
+      data.put("search", search);
     }
 
-    @Override
-    public void onStart() {
-        super.onStart();
-        getPosts("");
-    }
+    query
+      .subscribeOn(Schedulers.io())
+      .observeOn(AndroidSchedulers.mainThread())
+      .subscribe(new Subscriber<List<Post>>() {
+        @Override
+        public void onCompleted() {
 
-    private void getPosts(String search) {
-        APIInterface mService = ApiUtils.getKibbleService(getActivity());
-
-        // @TODO: Replace tmp with query
-
-        Map<String, String> data = new HashMap<>();
-        rx.Observable<List<Post>> query = mService.getPosts(data);
-
-        UserRepository userRepository = UserRepository.getInstance(this.getContext());
-        final PostRepository postRepository = PostRepository.getInstance();
-
-        if (this.title != null && this.title.equals("Greatest Hits")) {
-            data.put("type", "top");
-        } else if (this.title != null && this.title.equals("Just For You") && !userRepository.getToken().isEmpty()) {
-            query = mService.getRecommendations(data);
-        } else if (tagId != null && !tagId.isEmpty()) {
-            data.put("categories", tagId);
         }
 
-        if (!search.isEmpty()) {
-            data.put("search", search);
+        @Override
+        public void onError(Throwable e) {
+            Log.v(TAG, e.toString());
         }
 
-        query
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(new Subscriber<List<Post>>() {
-                @Override
-                public void onCompleted() {
-
-                }
-
-                @Override
-                public void onError(Throwable e) {
-                    Log.v(TAG, e.toString());
-                }
-
-                @Override
-                public void onNext(List<Post> posts) {
-                    podcastAdapter.setPosts(posts);
-                    postRepository.setPosts(posts);
-                }
-            });
-    }
+        @Override
+        public void onNext(List<Post> posts) {
+          podcastAdapter.setPosts(posts);
+          postRepository.setPosts(posts);
+        }
+      });
+  }
 }

@@ -1,10 +1,9 @@
 package com.koalatea.thehollidayinn.softwareengineeringdaily.network.api;
 
 import com.koalatea.thehollidayinn.softwareengineeringdaily.network.response.PostResponse;
-
-import java.util.List;
-
+import io.reactivex.Completable;
 import io.reactivex.Observable;
+import java.util.List;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
 import retrofit2.http.Path;
@@ -32,8 +31,8 @@ public interface EpisodePostNetworkService {
     Observable<List<PostResponse>> getRecommendations();
 
     @POST("posts/{postid}/upvote")
-    Observable<Void> upVote(@Path("postid") String postId);
+    Completable upVote(@Path("postid") String postId);
 
     @POST("posts/{postid}/downvote")
-    Observable<Void> downVote(@Path("postid") String postId);
+    Completable downVote(@Path("postid") String postId);
 }

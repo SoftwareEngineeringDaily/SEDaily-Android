@@ -12,13 +12,20 @@ import android.view.ViewGroup;
 
 import com.koalatea.thehollidayinn.softwareengineeringdaily.R;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 /**
  * Created by keithholliday on 9/16/17.
  */
 
 public class RecentPodcastFragment extends Fragment {
   RecentPodcastsPageAdapter recentPodcatsPageAdapter;
+
+  @BindView(R.id.pager)
   ViewPager viewPager;
+
+  @BindView(R.id.tabs)
   TabLayout tabLayout;
 
   public static RecentPodcastFragment newInstance() {
@@ -32,9 +39,9 @@ public class RecentPodcastFragment extends Fragment {
     View rootView = (View) inflater.inflate(
         R.layout.fragment_recent_podcast, container, false);
 
-    tabLayout = (TabLayout) rootView.findViewById(R.id.tabs);
+    ButterKnife.bind(this, rootView);
+
     recentPodcatsPageAdapter = new RecentPodcastsPageAdapter(this.getActivity().getSupportFragmentManager());
-    viewPager = (ViewPager) rootView.findViewById(R.id.pager);
     viewPager.setAdapter(recentPodcatsPageAdapter);
     tabLayout.post(new Runnable() {
       @Override

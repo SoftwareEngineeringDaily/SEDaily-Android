@@ -2,8 +2,6 @@ package com.koalatea.thehollidayinn.softwareengineeringdaily.test.dagger;
 
 import com.koalatea.thehollidayinn.softwareengineeringdaily.app.AppComponent;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.app.AppScope;
-import com.koalatea.thehollidayinn.softwareengineeringdaily.network.NetworkModule;
-
 import dagger.Component;
 
 /**
@@ -11,6 +9,6 @@ import dagger.Component;
  */
 @AppScope
 @Component(modules = {UnitTestAppModule.class, UnitTestDataModule.class,
-        UnitTestDomainModule.class, NetworkModule.class})
+        UnitTestDomainModule.class, UnitTestNetworkModule.class, UnitTestAnalyticsModule.class})
 public interface UnitTestAppComponent extends AppComponent {
 }

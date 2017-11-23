@@ -249,6 +249,20 @@ class Playback implements AudioManager.OnAudioFocusChangeListener,
         }
     }
 
+    public void setSpeed(int speed) {
+        float speedFloat = 1f;
+
+        if (speed == 1) {
+            speedFloat = 1.5f;
+        } else if (speed == 2) {
+            speedFloat = 2f;
+        }
+
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+            mMediaPlayer.setPlaybackParams(mMediaPlayer.getPlaybackParams().setSpeed(speedFloat));
+        }
+    }
+
     void setCallback(Callback callback) {
         this.mCallback = callback;
     }
