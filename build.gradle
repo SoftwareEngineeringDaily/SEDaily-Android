@@ -17,6 +17,7 @@ buildscript {
     classpath 'com.google.gms:oss-licenses:0.9.1'
     classpath 'org.jetbrains.kotlin:kotlin-gradle-plugin:1.1.51'
     classpath 'io.fabric.tools:gradle:1.24.4'
+    classpath 'com.dicedmelon.gradle:jacoco-android:0.1.2'
   }
 }
 
