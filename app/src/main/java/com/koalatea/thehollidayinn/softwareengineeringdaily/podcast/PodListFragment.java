@@ -97,7 +97,10 @@ public class PodListFragment extends Fragment {
   @Override
   public void onDestroy() {
     super.onDestroy();
-    mySubscriber.unsubscribe();
+
+    if (mySubscriber != null) {
+      mySubscriber.unsubscribe();
+    }
   }
 
   private void getPosts(String search) {
