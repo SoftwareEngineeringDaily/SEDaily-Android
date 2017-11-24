@@ -1,6 +1,8 @@
 package com.koalatea.thehollidayinn.softwareengineeringdaily.audio;
 
 import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -8,6 +10,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.Build;
 import android.os.RemoteException;
 import android.support.annotation.NonNull;
 import android.support.v4.app.NotificationManagerCompat;
@@ -17,7 +20,7 @@ import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaControllerCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
-import android.support.v7.app.NotificationCompat;
+import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
 import com.koalatea.thehollidayinn.softwareengineeringdaily.R;
@@ -133,7 +136,17 @@ public class MediaNotificationHelper extends BroadcastReceiver {
                     R.drawable.sedaily_logo);
         }
 
-        NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(mService);
+        final NotificationManager mNotifyManager =
+            (NotificationManager) mService.getSystemService(Context.NOTIFICATION_SERVICE);
+        String CHANNEL_ID = "sedaily_player_notifications";
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            CharSequence name = mService.getString(R.string.app_name);
+            int importance = NotificationManager.IMPORTANCE_DEFAULT;
+            NotificationChannel mChannel = new NotificationChannel(CHANNEL_ID, name, importance);
+            mNotifyManager.createNotificationChannel(mChannel);
+        }
+
+        NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(mService, CHANNEL_ID);
         notificationBuilder
                 .setLargeIcon(art)
                 .setContentIntent(controller.getSessionActivity())
@@ -142,14 +155,9 @@ public class MediaNotificationHelper extends BroadcastReceiver {
                 .setSmallIcon(R.drawable.sedaily_logo)
                 .setColor(ContextCompat.getColor(mService, R.color.colorPrimaryDark))
                 .addAction(action)
-                .setStyle(new NotificationCompat.MediaStyle()
-                        // show only play/pause in compact view.
-                        .setShowActionsInCompactView(new int[]{0})
-                        .setMediaSession(mSessionToken))
                 .setShowWhen(false)
                 .setContentTitle(description.getTitle())
                 .setContentText(description.getSubtitle());
-
 
         return notificationBuilder.build();
     }

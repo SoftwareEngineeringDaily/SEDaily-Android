@@ -3,6 +3,7 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
 apply plugin: 'com.google.gms.oss.licenses.plugin'
 apply plugin: 'project-report'
+apply plugin: 'io.fabric'
 
 android {
     compileSdkVersion rootProject.compileSdkVersion
@@ -11,8 +12,8 @@ android {
         applicationId "com.koalatea.thehollidayinn.softwareengineeringdaily"
         minSdkVersion rootProject.minSdkVersion
         targetSdkVersion rootProject.targetSdkVersion
-        versionCode 4
-        versionName "1.1"
+        versionCode 10
+        versionName "1.24"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
         //Note this will be deprecated soon....
@@ -113,14 +114,19 @@ dependencies {
     implementation "com.squareup.retrofit2:converter-gson:$rootProject.retrofit2Version"
     implementation "com.squareup.retrofit2:adapter-rxjava2:$rootProject.retrofit2Version"
     //Presentation
-    implementation "com.squareup.picasso:picasso:$rootProject.picassoVersion"
-    implementation "com.google.android.gms:play-services-oss-licenses:$rootProject.playVersion"
+    compile "com.squareup.picasso:picasso:$rootProject.picassoVersion"
+    compile "com.google.android.gms:play-services-oss-licenses:$rootProject.playVersion"
+    compile 'com.ethanhua:skeleton:1.0.0'
+    compile 'de.hdodenhof:circleimageview:2.2.0'
     //UI
     implementation "com.github.pchmn:MaterialChipsInput:$rootProject.materialChipsVersion"
     implementation "com.jakewharton:butterknife:$rootProject.butterknifeVersion"
     kapt "com.jakewharton:butterknife-compiler:$rootProject.butterknifeVersion"
     implementation "blue.aodev:material-values:$rootProject.materialValuesVersion"
     //Firebase
+    compile('com.crashlytics.sdk.android:crashlytics:2.7.1@aar') {
+        transitive = true
+    }
     implementation "com.google.firebase:firebase-core:$rootProject.firebaseServicesVersion"
     implementation "com.google.firebase:firebase-crash:$rootProject.firebaseServicesVersion"
     //Architecture
