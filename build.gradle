@@ -7,13 +7,13 @@ buildscript {
     mavenCentral()
   }
   dependencies {
-      classpath 'com.android.tools.build:gradle:3.0.0'
-      // NOTE: Do not place your application dependencies here; they belong
-      // in the individual module build.gradle files
-      classpath 'com.google.gms:google-services:3.1.0'
-      classpath 'com.google.gms:oss-licenses:0.9.1'
-      classpath 'org.jetbrains.kotlin:kotlin-gradle-plugin:1.1.51'
-    }
+    // NOTE: Do not place your application dependencies here; they belong
+    // in the individual module build.gradle files
+    classpath 'com.android.tools.build:gradle:3.0.1'
+    classpath 'com.google.gms:google-services:3.1.0'
+    classpath 'com.google.gms:oss-licenses:0.9.1'
+    classpath 'org.jetbrains.kotlin:kotlin-gradle-plugin:1.1.51'
+  }
 }
 
 allprojects {
@@ -33,15 +33,15 @@ ext {
   buildToolsVersion = '27.0.0'
   //Android
   supportLibraryVersion = '26.1.0'
-  architectureComponents = '1.0.0-rc1'
+  architectureComponents = '1.0.0'
   constraintlayoutVersion = '1.0.2'
   //Kotlin
   kotlinVersion = '1.1.51'
   //Firebase
-  firebaseServicesVersion = '11.4.2'
+  firebaseServicesVersion = '11.6.0'
   //Architecture
   daggerVersion = '2.11'
-  playVersion = '11.4.2'
+  playVersion = '11.6.0'
   //UI
   butterknifeVersion = '8.8.1'
   materialChipsVersion = '1.0.8'
