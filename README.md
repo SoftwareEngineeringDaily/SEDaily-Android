@@ -1,6 +1,8 @@
 
 [![logo](https://i.imgur.com/3OtP3p8.png)](https://softwareengineeringdaily.com/)
 
+[![Build Status](https://travis-ci.org/SoftwareEngineeringDaily/software-engineering-daily-api.svg?branch=develop)](https://travis-ci.org/SoftwareEngineeringDaily/software-engineering-daily-api)
+
 # SEDaily-Android
 
 A podcast for the Software Engineering Daily Podcast
