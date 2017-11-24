@@ -1,10 +1,8 @@
 package com.koalatea.thehollidayinn.softwareengineeringdaily.audio;
 
-/**
- * Created by krh12 on 6/16/2017.
- */
-
 import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -12,20 +10,24 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.Build;
 import android.os.RemoteException;
 import android.support.annotation.NonNull;
 import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.media.MediaDescriptionCompat;
 import android.support.v4.media.MediaMetadataCompat;
-import android.support.v4.media.session.MediaButtonReceiver;
 import android.support.v4.media.session.MediaControllerCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
-import android.support.v7.app.NotificationCompat;
+import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
 import com.koalatea.thehollidayinn.softwareengineeringdaily.R;
+
+/*
+  Created by krh12 on 6/16/2017.
+ */
 
 /**
  * Helper class for building Media style Notifications from a
@@ -36,19 +38,17 @@ public class MediaNotificationHelper extends BroadcastReceiver {
     private static final int REQUEST_CODE = 100;
 
     private MediaControllerCompat.TransportControls mTransportControls;
-    private MusicService mService;
+    private final MusicService mService;
     private MediaSessionCompat.Token mSessionToken;
     private MediaControllerCompat mController;
     private boolean mStarted = false;
-    private PlaybackStateCompat mPlaybackState;
-    private MediaMetadataCompat mMetadata;
 
-    public static final String ACTION_PAUSE = "com.koalatea.thehollidayinn.softwareengineeringdaily.pause";
-    public static final String ACTION_PLAY = "com.koalatea.thehollidayinn.softwareengineeringdaily.play";
-    public static final String ACTION_STOP = "com.koalatea.thehollidayinn.softwareengineeringdaily.stop";
+    private static final String ACTION_PAUSE = "com.koalatea.thehollidayinn.softwareengineeringdaily.pause";
+    private static final String ACTION_PLAY = "com.koalatea.thehollidayinn.softwareengineeringdaily.play";
+    private static final String ACTION_STOP = "com.koalatea.thehollidayinn.softwareengineeringdaily.stop";
     private final PendingIntent mPauseIntent;
     private final PendingIntent mPlayIntent;
-    private final PendingIntent mStopInent;
+    private final PendingIntent mStopIntent;
 
     private final NotificationManagerCompat mNotificationManager;
 
@@ -63,7 +63,7 @@ public class MediaNotificationHelper extends BroadcastReceiver {
                 new Intent(ACTION_PAUSE).setPackage(pkg), PendingIntent.FLAG_CANCEL_CURRENT);
         mPlayIntent = PendingIntent.getBroadcast(mService, REQUEST_CODE,
                 new Intent(ACTION_PLAY).setPackage(pkg), PendingIntent.FLAG_CANCEL_CURRENT);
-        mStopInent = PendingIntent.getBroadcast(mService, REQUEST_CODE,
+        mStopIntent = PendingIntent.getBroadcast(mService, REQUEST_CODE,
                 new Intent(ACTION_STOP).setPackage(pkg), PendingIntent.FLAG_CANCEL_CURRENT);
 
 
@@ -135,33 +135,35 @@ public class MediaNotificationHelper extends BroadcastReceiver {
             art = BitmapFactory.decodeResource(mService.getResources(),
                     R.drawable.sedaily_logo);
         }
-        Log.v("keithtest", String.valueOf(description.getTitle()));
-        NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(mService);
+
+        final NotificationManager mNotifyManager =
+            (NotificationManager) mService.getSystemService(Context.NOTIFICATION_SERVICE);
+        String CHANNEL_ID = "sedaily_player_notifications";
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            CharSequence name = mService.getString(R.string.app_name);
+            int importance = NotificationManager.IMPORTANCE_DEFAULT;
+            NotificationChannel mChannel = new NotificationChannel(CHANNEL_ID, name, importance);
+            mNotifyManager.createNotificationChannel(mChannel);
+        }
+
+        NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(mService, CHANNEL_ID);
         notificationBuilder
                 .setLargeIcon(art)
                 .setContentIntent(controller.getSessionActivity())
-                .setDeleteIntent(mStopInent)
+                .setDeleteIntent(mStopIntent)
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
                 .setSmallIcon(R.drawable.sedaily_logo)
                 .setColor(ContextCompat.getColor(mService, R.color.colorPrimaryDark))
                 .addAction(action)
-                .setStyle(new NotificationCompat.MediaStyle()
-                        // show only play/pause in compact view.
-                        .setShowActionsInCompactView(new int[]{0})
-                        .setMediaSession(mSessionToken))
                 .setShowWhen(false)
                 .setContentTitle(description.getTitle())
                 .setContentText(description.getSubtitle());
-
 
         return notificationBuilder.build();
     }
 
     public void startNotification() {
         if (!mStarted) {
-            mMetadata = mController.getMetadata();
-            mPlaybackState = mController.getPlaybackState();
-
             // The notification must be updated after setting started to true
             Notification notification = createNotification();
             if (notification != null) {
@@ -178,7 +180,7 @@ public class MediaNotificationHelper extends BroadcastReceiver {
         }
     }
 
-    public void stopNotification() {
+    private void stopNotification() {
         if (mStarted) {
             mStarted = false;
             mController.unregisterCallback(mCb);
@@ -195,7 +197,6 @@ public class MediaNotificationHelper extends BroadcastReceiver {
     private final MediaControllerCompat.Callback mCb = new MediaControllerCompat.Callback() {
         @Override
         public void onPlaybackStateChanged(@NonNull PlaybackStateCompat state) {
-            mPlaybackState = state;
             if (state.getState() == PlaybackStateCompat.STATE_STOPPED ||
                     state.getState() == PlaybackStateCompat.STATE_NONE) {
                 stopNotification();
@@ -209,8 +210,6 @@ public class MediaNotificationHelper extends BroadcastReceiver {
 
         @Override
         public void onMetadataChanged(MediaMetadataCompat metadata) {
-            mMetadata = metadata;
-
             Notification notification = createNotification();
             if (notification != null) {
                 mNotificationManager.notify(NOTIFICATION_ID, notification);

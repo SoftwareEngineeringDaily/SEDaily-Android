@@ -12,42 +12,49 @@ import android.view.ViewGroup;
 
 import com.koalatea.thehollidayinn.softwareengineeringdaily.R;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 /**
  * Created by keithholliday on 9/16/17.
  */
 
 public class RecentPodcastFragment extends Fragment {
-    RecentPodcatsPageAdapter recentPodcatsPageAdapter;
-    ViewPager viewPager;
-    TabLayout tabLayout;
+  RecentPodcastsPageAdapter recentPodcatsPageAdapter;
 
-    public static RecentPodcastFragment newInstance() {
-        RecentPodcastFragment f = new RecentPodcastFragment();
-        return f;
-    }
+  @BindView(R.id.pager)
+  ViewPager viewPager;
 
-    @Override
-    public View onCreateView(LayoutInflater inflater,
-                             ViewGroup container, Bundle savedInstanceState) {
-        View rootView = (View) inflater.inflate(
-                R.layout.fragment_recent_podcast, container, false);
+  @BindView(R.id.tabs)
+  TabLayout tabLayout;
 
-        tabLayout = (TabLayout) rootView.findViewById(R.id.tabs);
-        recentPodcatsPageAdapter = new RecentPodcatsPageAdapter(this.getActivity().getSupportFragmentManager());
-        viewPager = (ViewPager) rootView.findViewById(R.id.pager);
-        viewPager.setAdapter(recentPodcatsPageAdapter);
-        tabLayout.post(new Runnable() {
-            @Override
-            public void run() {
-                tabLayout.setupWithViewPager(viewPager);
-            }
-        });
+  public static RecentPodcastFragment newInstance() {
+    RecentPodcastFragment f = new RecentPodcastFragment();
+    return f;
+  }
 
-        return rootView;
-    }
+  @Override
+  public View onCreateView(LayoutInflater inflater,
+      ViewGroup container, Bundle savedInstanceState) {
+    View rootView = (View) inflater.inflate(
+        R.layout.fragment_recent_podcast, container, false);
 
-    public void goHome () {
-        TabLayout.Tab tab = tabLayout.getTabAt(0);
-        tab.select();
-    }
+    ButterKnife.bind(this, rootView);
+
+    recentPodcatsPageAdapter = new RecentPodcastsPageAdapter(this.getActivity().getSupportFragmentManager());
+    viewPager.setAdapter(recentPodcatsPageAdapter);
+    tabLayout.post(new Runnable() {
+      @Override
+      public void run() {
+        tabLayout.setupWithViewPager(viewPager);
+      }
+    });
+
+    return rootView;
+  }
+
+  public void goHome () {
+    TabLayout.Tab tab = tabLayout.getTabAt(0);
+    tab.select();
+  }
 }

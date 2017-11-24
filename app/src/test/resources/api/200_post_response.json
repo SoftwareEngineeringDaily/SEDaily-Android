@@ -1,0 +1,28 @@
+{
+  "_id": "1234",
+  "date": "2017-09-25T02:00:53.000Z",
+  "link": "episode page link",
+  "categories": [
+    1363,
+    14,
+    1083
+  ],
+  "tags": [
+    1480,
+    1479,
+    1478,
+    700,
+    1481,
+    1477
+  ],
+  "mp3": "mp3 link",
+  "featuredImage": "image link",
+  "content": {
+    "rendered": "rendered content",
+    "protected": false
+  },
+  "title": {
+    "rendered": "rendered title"
+  },
+  "score": 0
+}

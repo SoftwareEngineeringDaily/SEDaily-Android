@@ -1,7 +1,7 @@
 package com.koalatea.thehollidayinn.softwareengineeringdaily.audio;
 
-/**
- * Created by krh12 on 6/16/2017.
+/*
+  Created by krh12 on 6/16/2017.
  */
 
 /*
@@ -22,6 +22,7 @@ package com.koalatea.thehollidayinn.softwareengineeringdaily.audio;
 
 import android.content.Context;
 import android.media.AudioManager;
+import android.media.MediaMetadataRetriever;
 import android.media.MediaPlayer;
 import android.net.wifi.WifiManager;
 import android.os.PowerManager;
@@ -31,13 +32,14 @@ import android.support.v4.media.session.PlaybackStateCompat;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.google.firebase.crash.FirebaseCrash;
 import java.io.IOException;
 
 
 /**
  * A class that implements local media playback using {@link android.media.MediaPlayer}
  */
-public class Playback implements AudioManager.OnAudioFocusChangeListener,
+class Playback implements AudioManager.OnAudioFocusChangeListener,
         MediaPlayer.OnCompletionListener, MediaPlayer.OnErrorListener, MediaPlayer.OnPreparedListener, MediaPlayer.OnSeekCompleteListener {
 
     private static final String TAG = Playback.class.getSimpleName();
@@ -64,9 +66,9 @@ public class Playback implements AudioManager.OnAudioFocusChangeListener,
 
     // The volume we set the media player to when we lose audio focus, but are
     // allowed to reduce the volume instead of stopping playback.
-    public static final float VOLUME_DUCK = 0.2f;
+    private static final float VOLUME_DUCK = 0.2f;
     // The volume we set the media player when we have audio focus.
-    public static final float VOLUME_NORMAL = 1.0f;
+    private static final float VOLUME_NORMAL = 1.0f;
 
     // we don't have audio focus, and can't duck (play at a low volume)
     private static final int AUDIO_NO_FOCUS_NO_DUCK = 0;
@@ -86,10 +88,10 @@ public class Playback implements AudioManager.OnAudioFocusChangeListener,
 
     // Type of audio focus we have:
     private int mAudioFocus = AUDIO_NO_FOCUS_NO_DUCK;
-    private AudioManager mAudioManager;
+    private final AudioManager mAudioManager;
     private MediaPlayer mMediaPlayer;
 
-    public Playback(MusicService service, MusicProvider musicProvider) {
+    Playback(MusicService service, MusicProvider musicProvider) {
         Context context = service.getApplicationContext();
         this.mService = service;
         this.mMusicProvider = musicProvider;
@@ -100,7 +102,7 @@ public class Playback implements AudioManager.OnAudioFocusChangeListener,
                 .createWifiLock(WifiManager.WIFI_MODE_FULL, "sample_lock");
     }
 
-    public void stop() {
+    void stop() {
         mState = PlaybackStateCompat.STATE_STOPPED;
         if (mCallback != null) {
             mCallback.onPlaybackStatusChanged(mState);
@@ -115,23 +117,23 @@ public class Playback implements AudioManager.OnAudioFocusChangeListener,
         }
     }
 
-    public int getState() {
+    int getState() {
         return mState;
     }
 
-    public boolean isConnected() {
+    boolean isConnected() {
         return true;
     }
 
-    public boolean isPlaying() {
+    boolean isPlaying() {
         return mPlayOnFocusGain || (mMediaPlayer != null && mMediaPlayer.isPlaying());
     }
 
-    public int getCurrentStreamPosition() {
+    int getCurrentStreamPosition() {
         return mMediaPlayer != null ? mMediaPlayer.getCurrentPosition() : mCurrentPosition;
     }
 
-    public void play(MediaSessionCompat.QueueItem item) {
+    void play(MediaSessionCompat.QueueItem item) {
         mPlayOnFocusGain = true;
         tryToGetAudioFocus();
         String mediaId = item.getDescription().getMediaId();
@@ -172,15 +174,31 @@ public class Playback implements AudioManager.OnAudioFocusChangeListener,
                 mWifiLock.acquire();
 
                 // Add the duration since we are streaming
-                long duration = mMediaPlayer.getDuration();
-                String oldSource = item.getDescription().getMediaUri().toString();
-                String title = item.getDescription().getTitle().toString();
+                //long duration = mMediaPlayer.getDuration();
+                MediaMetadataRetriever metaRetriever = new MediaMetadataRetriever();
+                metaRetriever.setDataSource(source);
+                String duration =
+                  metaRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
+                long dur = Long.parseLong(duration);
 
-                // @TODO: Abstrac this to podcast UseCase
+
+                String oldSource = "";
+                if (item.getDescription() != null && item.getDescription().getMediaUri() != null) {
+                    oldSource = item.getDescription().getMediaUri().toString();
+
+                }
+
+                String title = "";
+                if (item.getDescription() != null && item.getDescription().getTitle() != null) {
+                    title = item.getDescription().getTitle().toString();
+                }
+
+
+                // @TODO: Abstract this to Podcast UseCase
                 MediaMetadataCompat updatedItem = new MediaMetadataCompat.Builder()
                         .putString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID, currentMediaId)
                         .putString(MediaMetadataCompat.METADATA_KEY_MEDIA_URI, oldSource)
-                        .putLong(MediaMetadataCompat.METADATA_KEY_DURATION, duration)
+                        .putLong(MediaMetadataCompat.METADATA_KEY_DURATION, dur)
                         .putString(MediaMetadataCompat.METADATA_KEY_TITLE, title)
                         .build();
 
@@ -199,7 +217,7 @@ public class Playback implements AudioManager.OnAudioFocusChangeListener,
         }
     }
 
-    public void pause() {
+    void pause() {
         if (mState == PlaybackStateCompat.STATE_PLAYING) {
             // Pause media player and cancel the 'foreground service' state.
             if (mMediaPlayer != null && mMediaPlayer.isPlaying()) {
@@ -215,7 +233,7 @@ public class Playback implements AudioManager.OnAudioFocusChangeListener,
         }
     }
 
-    public void seekTo(int position) {
+    void seekTo(int position) {
         Log.d(TAG, "seekTo called with " + position);
 
         if (mMediaPlayer == null) {
@@ -232,7 +250,25 @@ public class Playback implements AudioManager.OnAudioFocusChangeListener,
         }
     }
 
-    public void setCallback(Callback callback) {
+    public void setSpeed(int speed) {
+        float speedFloat = 1f;
+
+        if (speed == 1) {
+            speedFloat = 1.5f;
+        } else if (speed == 2) {
+            speedFloat = 2f;
+        }
+
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+            try {
+                mMediaPlayer.setPlaybackParams(mMediaPlayer.getPlaybackParams().setSpeed(speedFloat));
+            } catch (Exception e) {
+                FirebaseCrash.report(new Exception(e));
+            }
+        }
+    }
+
+    void setCallback(Callback callback) {
         this.mCallback = callback;
     }
 

@@ -1,37 +1,26 @@
 package com.koalatea.thehollidayinn.softwareengineeringdaily;
 
 import android.app.SearchManager;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.os.RemoteException;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
-import android.support.v4.media.MediaBrowserCompat;
-import android.support.v4.media.MediaMetadataCompat;
-import android.support.v4.media.session.MediaControllerCompat;
-import android.support.v4.media.session.MediaSessionCompat;
-import android.support.v4.media.session.PlaybackStateCompat;
 import android.support.v4.view.MenuItemCompat;
-import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.ImageView;
-
+import com.google.android.gms.oss.licenses.OssLicensesMenuActivity;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.auth.LoginRegisterActivity;
-import com.koalatea.thehollidayinn.softwareengineeringdaily.audio.MusicService;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.data.repositories.FilterRepository;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.data.repositories.UserRepository;
-import com.koalatea.thehollidayinn.softwareengineeringdaily.mediaui.PlaybackControlsFragment;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.podcast.PodListFragment;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.podcast.RecentPodcastFragment;
+import timber.log.Timber;
 
-public class MainActivity extends PlaybackControllerActivity implements SearchView.OnQueryTextListener {
+public class MainActivity extends PlaybackControllerActivity
+    implements SearchView.OnQueryTextListener {
     private UserRepository userRepository;
     private FilterRepository filterRepository;
 
@@ -46,14 +35,15 @@ public class MainActivity extends PlaybackControllerActivity implements SearchVi
         setContentView(R.layout.activity_main);
 
         this.setUp();
-
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
 
         userRepository = UserRepository.getInstance(this);
         filterRepository = FilterRepository.getInstance();
 
         setUpBottomNavigation();
+
         showInitialPage();
     }
 
@@ -61,6 +51,7 @@ public class MainActivity extends PlaybackControllerActivity implements SearchVi
         if (firstFragment == null) {
             firstFragment = RecentPodcastFragment.newInstance();
         }
+
         this.getSupportFragmentManager()
                 .beginTransaction()
                 .replace(R.id.fragment_container, firstFragment)
@@ -104,6 +95,7 @@ public class MainActivity extends PlaybackControllerActivity implements SearchVi
                         .commit();
                 break;
         }
+
         return true;
     }
 
@@ -152,10 +144,17 @@ public class MainActivity extends PlaybackControllerActivity implements SearchVi
         if (id == R.id.action_toggle_login_register) {
             Intent intent = new Intent(this, LoginRegisterActivity.class);
             startActivity(intent);
+            //TODO clean up with MVP
+            //LoginFragment.show(getSupportFragmentManager());
             return true;
         } else if (id == R.id.action_logout) {
             userRepository.setToken("");
             Intent intent = new Intent(this, MainActivity.class);
+            startActivity(intent);
+        } else if (id == R.id.opensource) {
+            Intent intent = new Intent(this, OssLicensesMenuActivity.class);
+            String title = getString(R.string.open_source_info);
+            intent.putExtra("title", title);
             startActivity(intent);
         }
 
@@ -173,6 +172,4 @@ public class MainActivity extends PlaybackControllerActivity implements SearchVi
     public boolean onQueryTextChange(String newText) {
         return true;
     }
-
-
 }

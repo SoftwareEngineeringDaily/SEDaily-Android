@@ -15,23 +15,32 @@
         <android.support.v7.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
-            android:layout_height="40dp"
+            android:layout_height="?attr/actionBarSize"
             android:background="@color/colorPrimary"
             app:elevation="0dp"
             app:popupTheme="@style/AppTheme.PopupOverlay">
 
             <LinearLayout
-                android:id="@+id/back_menu_ll"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:orientation="horizontal"
-                android:paddingTop="8dp">
+                android:paddingTop="10dp">
 
                 <ImageView
-                    android:id="@+id/logo"
-                    android:layout_width="28dp"
-                    android:layout_height="28dp"
-                    android:src="@drawable/sedaily_logo" />
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:src="@drawable/sedaily_logo"
+                    android:contentDescription="@string/logo" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:text="@string/app_name"
+                    android:paddingTop="4dp"
+                    android:paddingLeft="8dp"
+                    android:paddingStart="8dp"
+                    android:textSize="16sp"
+                    />
             </LinearLayout>
         </android.support.v7.widget.Toolbar>
     </android.support.design.widget.AppBarLayout>
@@ -40,13 +49,12 @@
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="35dp"
-        android:layout_marginBottom="40dp"
+        android:layout_marginTop="?attr/actionBarSize"
+        android:layout_marginBottom="48dp"
         android:id="@+id/fragment_container">
     </FrameLayout>
 
     <android.support.v7.widget.CardView
-        android:id="@+id/controls_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"

@@ -1,14 +1,12 @@
 package com.koalatea.thehollidayinn.softwareengineeringdaily.audio;
 
-import android.app.Notification;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.graphics.Bitmap;
 import android.media.AudioManager;
-import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -31,12 +29,13 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import timber.log.Timber;
 
 public class MusicService extends MediaBrowserServiceCompat {
-    private static final String TAG = "keithtest";
+    private static final String TAG = "MusicService";
 
     // ID for our MediaNotification.
-    public static final int NOTIFICATION_ID = 412;
+    private static final int NOTIFICATION_ID = 412;
 
     // Request code for starting the UI.
     private static final int REQUEST_CODE = 99;
@@ -47,18 +46,18 @@ public class MusicService extends MediaBrowserServiceCompat {
 
     private MusicProvider mMusicProvider;
     private MediaSessionCompat mSession;
-    public NotificationManagerCompat mNotificationManager;
+    private NotificationManagerCompat mNotificationManager;
     // Indicates whether the service was started.
     private boolean mServiceStarted;
     private Playback mPlayback;
     private MediaSessionCompat.QueueItem mCurrentMedia;
     private AudioBecomingNoisyReceiver mAudioBecomingNoisyReceiver;
-    MediaNotificationHelper mediaNotificationHelper;
+    private MediaNotificationHelper mediaNotificationHelper;
 
     /**
      * Custom {@link Handler} to process the delayed stop command.
      */
-    private Handler mDelayedStopHandler = new Handler(new Handler.Callback() {
+    private final Handler mDelayedStopHandler = new Handler(new Handler.Callback() {
         @Override
         public boolean handleMessage(Message msg) {
             if (msg == null || msg.what != STOP_CMD) {
@@ -278,6 +277,15 @@ public class MusicService extends MediaBrowserServiceCompat {
             Log.d(TAG, "stop. current state=" + mPlayback.getState());
             handleStopRequest();
         }
+
+        @Override
+        public void onCustomAction (String action,
+            Bundle extras) {
+            if (action.equals("SPEED_CHANGE")) {
+                int speed = extras.getInt("SPEED");
+                handleSpeedChange(speed);
+            }
+        }
     }
 
     /**
@@ -337,9 +345,8 @@ public class MusicService extends MediaBrowserServiceCompat {
     private void updateMetadata() {
         MediaSessionCompat.QueueItem queueItem = mCurrentMedia;
         String musicId = queueItem.getDescription().getMediaId();
-        MediaMetadataCompat track = mMusicProvider.getMusic(musicId);
 
-        final String trackId = track.getString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID);
+        MediaMetadataCompat track = mMusicProvider.getMusic(musicId);
         mSession.setMetadata(track);
 
         // Set the proper album artwork on the media session, so it can be shown in the
@@ -377,7 +384,13 @@ public class MusicService extends MediaBrowserServiceCompat {
         if (error != null) {
             // Error states are really only supposed to be used for errors that cause playback to
             // stop unexpectedly and persist until the user takes action to fix it.
-            stateBuilder.setErrorMessage(error);
+            if (Build.VERSION.SDK_INT >= 21) {
+                stateBuilder.setErrorMessage(android.media.session.PlaybackState.STATE_ERROR, error);
+            } else {
+              //noinspection deprecation
+              stateBuilder.setErrorMessage(error);
+            }
+
             state = PlaybackStateCompat.STATE_ERROR;
         }
 
@@ -416,6 +429,10 @@ public class MusicService extends MediaBrowserServiceCompat {
         mediaNotificationHelper.startNotification();
     }
 
+    private void handleSpeedChange(int speed) {
+        mPlayback.setSpeed(speed);
+    }
+
     /**
      * Implementation of the AudioManager.ACTION_AUDIO_BECOMING_NOISY Receiver.
      */
@@ -424,7 +441,7 @@ public class MusicService extends MediaBrowserServiceCompat {
         private final Context mContext;
         private boolean mIsRegistered = false;
 
-        private IntentFilter mAudioNoisyIntentFilter =
+        private final IntentFilter mAudioNoisyIntentFilter =
                 new IntentFilter(AudioManager.ACTION_AUDIO_BECOMING_NOISY);
 
         protected AudioBecomingNoisyReceiver(Context context) {

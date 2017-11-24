@@ -6,7 +6,6 @@ import com.koalatea.thehollidayinn.softwareengineeringdaily.data.models.User;
 import java.util.List;
 import java.util.Map;
 
-import retrofit2.http.Body;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
@@ -15,7 +14,7 @@ import retrofit2.http.Path;
 import retrofit2.http.QueryMap;
 import rx.Observable;
 
-/**
+/*
  * Created by krh12 on 6/17/2017.
  */
 

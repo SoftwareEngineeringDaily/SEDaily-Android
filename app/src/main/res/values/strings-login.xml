@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="sign_in_screen_sign_in_title">@string/sign_in</string>
+    <string name="sign_in_screen_register_title">@string/register</string>
+    <string name="sign_in_screen_username_hint">@string/username</string>
+    <string name="sign_in_screen_password_hint">@string/password</string>
+    <string name="sign_in_screen_confirmation_error">@string/passwords_must_match</string>
+    <string name="sign_in_screen_confirm_password_hint">@string/confirm_password</string>
+    <string name="sign_in_screen_submit">@string/submit</string>
+    <string name="sign_in_screen_cancel">@string/cancel</string>
+    <string name="sign_in_screen_required_field_error">@string/required_field</string>
+    <string name="sign_in_screen_auth_failed">@string/unable_to_authenticate</string>
+    <string name="sign_in_screen_unable_to_connect_error">@string/unable_to_connect_to_server</string>
+</resources>

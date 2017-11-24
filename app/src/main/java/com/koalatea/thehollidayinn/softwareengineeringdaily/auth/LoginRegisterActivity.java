@@ -25,6 +25,9 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
 import retrofit2.Response;
 import retrofit2.adapter.rxjava.HttpException;
 import rx.Subscriber;
@@ -33,55 +36,64 @@ import rx.schedulers.Schedulers;
 
 public class LoginRegisterActivity extends AppCompatActivity {
     private Boolean register = false;
-    private TextView title;
-    private EditText usernameEditText;
-    private EditText passwordEditText;
-    private Button loginRegButton;
-    private Button toggleButton;
+
+    @BindView(R.id.title)
+    TextView title;
+
+    @BindView(R.id.username)
+    EditText usernameEditText;
+
+    @BindView(R.id.password)
+    EditText passwordEditText;
+
+    @BindView(R.id.loginRegButton)
+    Button loginRegButton;
+
+    @BindView(R.id.toggleButton)
+    Button toggleButton;
+
     private UserRepository userRepository;
     private FirebaseAnalytics mFirebaseAnalytics;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_login_register);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+      super.onCreate(savedInstanceState);
+      setContentView(R.layout.activity_login_register);
+      Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+      setSupportActionBar(toolbar);
+      getSupportActionBar().setDisplayShowTitleEnabled(false);
 
-        mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
-        userRepository = UserRepository.getInstance(this);
-        title = (TextView) findViewById(R.id.title);
-        usernameEditText = (EditText) findViewById(R.id.username);
-        passwordEditText = (EditText) findViewById(R.id.password);
-        loginRegButton = (Button) findViewById(R.id.loginRegButton);
-        toggleButton = (Button) findViewById(R.id.toggleButton);
+      ButterKnife.bind(this);
 
-        loginRegButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String username = usernameEditText.getText().toString();
-                String password = passwordEditText.getText().toString();
+      mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
+      userRepository = UserRepository.getInstance(this);
 
-                loginReg(username, password);
-            }
-        });
+      loginRegButton.setOnClickListener(new View.OnClickListener() {
+          @Override
+          public void onClick(View v) {
+              String username = usernameEditText.getText().toString();
+              String password = passwordEditText.getText().toString();
 
-        toggleButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (register) {
-                    register = false;
-                    title.setText("Login");
-                    toggleButton.setText("Register");
-                    loginRegButton.setText("Login");
-                } else {
-                    register = true;
-                    title.setText("Register");
-                    toggleButton.setText("Login");
-                    loginRegButton.setText("Register");
-                }
-            }
-        });
+              loginReg(username, password);
+          }
+      });
+
+      toggleButton.setOnClickListener(new View.OnClickListener() {
+          @Override
+          public void onClick(View v) {
+        if (register) {
+          register = false;
+          title.setText(getString(R.string.login));
+          toggleButton.setText(getString(R.string.register));
+          loginRegButton.setText(getString(R.string.login));
+        } else {
+          register = true;
+          title.setText(getString(R.string.register));
+          toggleButton.setText(getString(R.string.login));
+          loginRegButton.setText(getString(R.string.register));
+        }
+          }
+      });
     }
 
     private void displayMessage (String message) {
@@ -93,44 +105,31 @@ public class LoginRegisterActivity extends AppCompatActivity {
             builder = new AlertDialog.Builder(this);
         }
 
+        loginRegButton.setEnabled(true);
+
         builder.setTitle("Error")
-                .setMessage(message)
-                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        // continue with delete
-                    }
-                })
-                .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        // do nothing
-                    }
-                })
-                .setIcon(android.R.drawable.ic_dialog_alert)
-                .show();
+          .setMessage(message)
+          .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+              public void onClick(DialogInterface dialog, int which) {
+            // continue with delete
+              }
+          })
+          .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+              public void onClick(DialogInterface dialog, int which) {
+            // do nothing
+              }
+          })
+          .setIcon(android.R.drawable.ic_dialog_alert)
+          .show();
     }
 
     private void loginReg(String username, String password) {
         loginRegButton.setEnabled(false);
 
-        APIInterface mService = ApiUtils.getKibbleService(this);
-        rx.Observable query;
+        String type = getType();
+        logLoginRegAnalytics(username, type);
 
-        String type = "";
-
-        if (register) {
-            type = "Register";
-            query = mService.register(username, password);
-        } else {
-            type = "Login";
-            query = mService.login(username, password);
-        }
-
-        Bundle bundle = new Bundle();
-        bundle.putString(FirebaseAnalytics.Param.ITEM_ID, username);
-        bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, type);
-        mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
-
-        query
+        getQuery(username, password)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(new Subscriber<User>() {
@@ -146,19 +145,41 @@ public class LoginRegisterActivity extends AppCompatActivity {
                     try {
                         JSONObject jsonResponse = new JSONObject(response.errorBody().string());
                         displayMessage(jsonResponse.getString("message"));
-                    } catch (IOException e1) {
-                        e1.printStackTrace();
-                    } catch (JSONException e1) {
+                    } catch (IOException | JSONException e1) {
                         e1.printStackTrace();
                     }
                 }
 
                 @Override
                 public void onNext(User user) {
-                    userRepository.setToken(user.token);
+                    userRepository.setToken(user.getToken());
                     Intent intent = new Intent(LoginRegisterActivity.this, MainActivity.class);
                     startActivity(intent);
                 }
             });
+    }
+
+    private void logLoginRegAnalytics(String username, String type) {
+      Bundle bundle = new Bundle();
+      bundle.putString(FirebaseAnalytics.Param.ITEM_ID, username);
+      bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, type);
+      mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
+    }
+
+    private String getType () {
+        if (register) {
+            return getString(R.string.register);
+        }
+
+        return getString(R.string.login);
+    }
+
+    private rx.Observable<User> getQuery (String username, String password) {
+      APIInterface mService = ApiUtils.getKibbleService(this);
+      if (register) {
+        return mService.register(username, password);
+      }
+
+      return mService.login(username, password);
     }
 }

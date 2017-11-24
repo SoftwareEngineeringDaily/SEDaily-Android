@@ -7,12 +7,13 @@
 
     <application
         android:allowBackup="true"
-        android:icon="@drawable/sedaily_logo"
+        android:icon="@drawable/ic_launcher_app"
         android:label="@string/app_name"
-        android:roundIcon="@drawable/sedaily_logo"
+        android:roundIcon="@drawable/ic_launcher_app"
         android:supportsRtl="true"
+        android:name=".app.SDEApp"
         android:theme="@style/AppTheme"
-        android:name=".SEDailyApplication">
+        android:fullBackupContent="@xml/backup_descriptor">
 
         <activity android:name=".MainActivity">
             <intent-filter>
@@ -24,11 +25,24 @@
                 android:resource="@xml/searchable" />
         </activity>
 
-        <service android:name=".audio.MusicService">
+        <service android:name=".audio.MusicService"
+            android:exported="false" >
             <intent-filter>
                 <action android:name="android.media.browse.MediaBrowserService" />
             </intent-filter>
         </service>
+
+        <!--
+        A receiver that will receive media buttons and send as
+        intents to your MediaBrowserServiceCompat implementation.
+        Required on pre-Lollipop. More information at
+        http://developer.android.com/reference/android/support/v4/media/session/MediaButtonReceiver.html
+        -->
+        <receiver android:name="android.support.v4.media.session.MediaButtonReceiver">
+            <intent-filter>
+                <action android:name="android.intent.action.MEDIA_BUTTON"/>
+            </intent-filter>
+        </receiver>
 
         <activity
             android:name=".podcast.PodcastDetailActivity"
@@ -39,6 +53,17 @@
             android:name=".auth.LoginRegisterActivity"
             android:label="@string/title_activity_login_register"
             android:theme="@style/AppTheme" />
+
+        <activity
+            android:name=".PlaybackControllerActivity"
+            android:label="@string/playback_controller"
+            android:theme="@style/AppTheme" />
+
+        <activity android:name="com.google.android.gms.oss.licenses.OssLicensesMenuActivity"
+            android:theme="@style/Theme.AppCompat.DayNight.DarkActionBar"/>
+
+        <activity android:name="com.google.android.gms.oss.licenses.OssLicensesActivity"
+            android:theme="@style/Theme.AppCompat.DayNight.DarkActionBar"/>
     </application>
 
 </manifest>
