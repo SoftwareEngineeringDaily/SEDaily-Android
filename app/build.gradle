@@ -22,6 +22,12 @@ android {
         debug {
             applicationIdSuffix ".debug"
         }
+
+        dev {
+            minifyEnabled false
+            applicationIdSuffix ".dev"
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
     }
 
     packagingOptions {
@@ -41,8 +47,25 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_7
-        targetCompatibility JavaVersion.VERSION_1_7
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+}
+
+def build_param = "${build}"
+if (build_param != "dev") {
+    //exclude dev build
+    android.variantFilter { variant ->
+        if (variant.buildType.name.equals('dev')) {
+            variant.setIgnore(true)
+        }
+    }
+} else {
+    //exclude all except dev build
+    android.variantFilter { variant ->
+        if (!variant.buildType.name.equals('dev')) {
+            variant.setIgnore(true)
+        }
     }
 }
 
@@ -89,6 +112,7 @@ dependencies {
     compile "com.jakewharton.timber:timber:$rootProject.timberVersion"
     compile "com.akaita.java:rxjava2-debug:$rootProject.rxjava2Debug"
     debugCompile "com.squareup.leakcanary:leakcanary-android:$rootProject.leakCanaryVersion"
+    devCompile "com.squareup.leakcanary:leakcanary-android:$rootProject.leakCanaryVersion"
     releaseCompile "com.squareup.leakcanary:leakcanary-android-no-op:$rootProject.leakCanaryVersion"
     //Data
     compile "com.google.code.gson:gson:$rootProject.gsonVersion"
