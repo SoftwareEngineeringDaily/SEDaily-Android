@@ -41,15 +41,13 @@ import java.util.Date;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
+import timber.log.Timber;
 
 public class PodcastDetailActivity extends PlaybackControllerActivity {
   private static String TAG = "PodcastDetail";
   private PostRepository postRepository;
   private UserRepository userRepository;
   private Subscriber mySubscriber;
-
-  private DownloadTask downloadTask;
-  private NotificationManager mNotifyManager;
 
   @BindView(R.id.scoreTextView)
   TextView scoreText;
@@ -297,6 +295,11 @@ public class PodcastDetailActivity extends PlaybackControllerActivity {
       setUpNotDownloadedState();
     }
 
+    if (PodcastDownloadsRepository.getInstance().isDownloading(post.get_id())) {
+      playButton.setText(R.string.downloading);
+      deleteButton.setVisibility(View.INVISIBLE);
+    }
+
     mySubscriber = new Subscriber<String>() {
       @Override
       public void onNext(String s) {
@@ -330,19 +333,9 @@ public class PodcastDetailActivity extends PlaybackControllerActivity {
       .setIcon(android.R.drawable.ic_dialog_alert)
       .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
         public void onClick(DialogInterface dialog, int whichButton) {
-          removeFileForPost(post);
+          PodcastDownloadsRepository.getInstance().removeFileForPost(post);
         }})
       .setNegativeButton(android.R.string.no, null).show();
-  }
-
-  private void removeFileForPost (Post post) {
-    if (post.getMp3() == null || post.getMp3().isEmpty()) {
-      return;
-    }
-
-    File file = new MP3FileManager().getFileFromUrl(post.getMp3(), getApplicationContext());
-    file.delete();
-    PodcastDownloadsRepository.getInstance().removePodcastDownload(post.get_id());
   }
 
   public void setUpDownloadedState() {
@@ -355,49 +348,24 @@ public class PodcastDetailActivity extends PlaybackControllerActivity {
     deleteButton.setVisibility(View.INVISIBLE);
   }
 
-  private void displayDownloadNotification() {
-    final int id = 1;
-    mNotifyManager =
-        (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-
-    String CHANNEL_ID = "my_channel_01";
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-      CharSequence name = getString(R.string.app_name);
-      int importance = NotificationManager.IMPORTANCE_DEFAULT;
-      NotificationChannel mChannel = new NotificationChannel(CHANNEL_ID, name, importance);
-      mNotifyManager.createNotificationChannel(mChannel);
-    }
-
-    final NotificationCompat.Builder mBuilder =
-        new NotificationCompat.Builder(SDEApp.component().context(), CHANNEL_ID)
-            .setContentTitle("Downloading " + post.getTitle().getRendered())
-            .setContentText("Download in progress")
-            .setSmallIcon(R.drawable.sedaily_logo);
-
-    // execute this when the downloader must be fired
-    downloadTask = new DownloadTask(mNotifyManager, mBuilder, post.get_id());
-    downloadTask.execute(post.getMp3());
-  }
-
   private void playClick (Post post) {
     if (post.getMp3() == null || post.getMp3().isEmpty()) {
       return;
     }
 
-    if (playButton.getText().equals(R.string.downloading) && downloadTask != null && !downloadTask.isCancelled()) {
-      removeFileForPost(post);
-      downloadTask.cancel(true);
-      mNotifyManager.cancel(1);
+    // @TODO: Check download queue instead
+    if (playButton.getText().equals(getString(R.string.downloading))) {
+      PodcastDownloadsRepository.getInstance().cancelDownload(post);
       return;
     }
 
     if (!PodcastDownloadsRepository.getInstance().isPodcastDownloaded(post)) {
       playButton.setText(R.string.downloading);
-      displayDownloadNotification();
+      PodcastDownloadsRepository.getInstance().displayDownloadNotification(post);
       return;
     }
 
-    File file = new MP3FileManager().getFileFromUrl(post.getMp3(), this.getApplicationContext());
+    File file = new MP3FileManager().getFileFromUrl(post.getMp3(), SDEApp.component().context());
 
     String source = post.getMp3();
     String id = String.valueOf(source.hashCode());

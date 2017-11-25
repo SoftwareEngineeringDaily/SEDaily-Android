@@ -37,7 +37,6 @@ public class DownloadTask extends AsyncTask<String, Integer, String> {
 
   public DownloadTask(NotificationManager notificationManager, NotificationCompat.Builder mBuilder, String mPodcastId) {
     this.context = SDEApp.component().context();
-    this.mProgressDialog = mProgressDialog;
     this.mNotifyManager = notificationManager;
     this.mBuilder = mBuilder;
     this.podcastId = mPodcastId;
@@ -117,17 +116,6 @@ public class DownloadTask extends AsyncTask<String, Integer, String> {
   @Override
   protected void onProgressUpdate(Integer... progress) {
     super.onProgressUpdate(progress);
-    // if we get here, length is known, now set indeterminate to false
-    //mProgressDialog.setIndeterminate(false);
-    //mProgressDialog.setMax(100);
-    //mProgressDialog.setProgress(progress[0]);
-    //
-    //mBuilder.setProgress(100, progress[0], false);
-    //
-    //Notification notification = mBuilder.build();
-    //notification.flags = Notification.FLAG_ONLY_ALERT_ONCE;
-    //
-    //mNotifyManager.notify(id, mBuilder.build());
   }
 
   @Override
