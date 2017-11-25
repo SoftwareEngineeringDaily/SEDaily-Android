@@ -24,6 +24,7 @@ import butterknife.ButterKnife;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.PlaybackControllerActivity;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.R;
+import com.koalatea.thehollidayinn.softwareengineeringdaily.app.SDEApp;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.audio.MusicProvider;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.data.models.Content;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.data.models.Post;
@@ -40,13 +41,15 @@ import java.util.Date;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
-import timber.log.Timber;
 
 public class PodcastDetailActivity extends PlaybackControllerActivity {
   private static String TAG = "PodcastDetail";
   private PostRepository postRepository;
   private UserRepository userRepository;
   private Subscriber mySubscriber;
+
+  private DownloadTask downloadTask;
+  private NotificationManager mNotifyManager;
 
   @BindView(R.id.scoreTextView)
   TextView scoreText;
@@ -298,7 +301,6 @@ public class PodcastDetailActivity extends PlaybackControllerActivity {
       @Override
       public void onNext(String s) {
         Boolean downloaded = PodcastDownloadsRepository.getInstance().isPodcastDownloaded(post);
-        Timber.v("keithtest2");
         if (downloaded) {
           setUpDownloadedState();
         } else {
@@ -328,16 +330,19 @@ public class PodcastDetailActivity extends PlaybackControllerActivity {
       .setIcon(android.R.drawable.ic_dialog_alert)
       .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
         public void onClick(DialogInterface dialog, int whichButton) {
-          if (post.getMp3() == null || post.getMp3().isEmpty()) {
-            return;
-          }
-
-          File file = new MP3FileManager().getFileFromUrl(post.getMp3(), getApplicationContext());
-          file.delete();
-          PodcastDownloadsRepository.getInstance().removePodcastDownload(post.getId());
-          setUpNotDownloadedState();
+          removeFileForPost(post);
         }})
       .setNegativeButton(android.R.string.no, null).show();
+  }
+
+  private void removeFileForPost (Post post) {
+    if (post.getMp3() == null || post.getMp3().isEmpty()) {
+      return;
+    }
+
+    File file = new MP3FileManager().getFileFromUrl(post.getMp3(), getApplicationContext());
+    file.delete();
+    PodcastDownloadsRepository.getInstance().removePodcastDownload(post.get_id());
   }
 
   public void setUpDownloadedState() {
@@ -352,7 +357,7 @@ public class PodcastDetailActivity extends PlaybackControllerActivity {
 
   private void displayDownloadNotification() {
     final int id = 1;
-    final NotificationManager mNotifyManager =
+    mNotifyManager =
         (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
     String CHANNEL_ID = "my_channel_01";
@@ -364,13 +369,13 @@ public class PodcastDetailActivity extends PlaybackControllerActivity {
     }
 
     final NotificationCompat.Builder mBuilder =
-        new NotificationCompat.Builder(this.getApplicationContext(), CHANNEL_ID)
+        new NotificationCompat.Builder(SDEApp.component().context(), CHANNEL_ID)
             .setContentTitle("Downloading " + post.getTitle().getRendered())
             .setContentText("Download in progress")
             .setSmallIcon(R.drawable.sedaily_logo);
 
     // execute this when the downloader must be fired
-    final DownloadTask downloadTask = new DownloadTask(this.getApplicationContext(), mNotifyManager, mBuilder, post.getId());
+    downloadTask = new DownloadTask(mNotifyManager, mBuilder, post.get_id());
     downloadTask.execute(post.getMp3());
   }
 
@@ -379,7 +384,15 @@ public class PodcastDetailActivity extends PlaybackControllerActivity {
       return;
     }
 
+    if (playButton.getText().equals(R.string.downloading) && downloadTask != null && !downloadTask.isCancelled()) {
+      removeFileForPost(post);
+      downloadTask.cancel(true);
+      mNotifyManager.cancel(1);
+      return;
+    }
+
     if (!PodcastDownloadsRepository.getInstance().isPodcastDownloaded(post)) {
+      playButton.setText(R.string.downloading);
       displayDownloadNotification();
       return;
     }

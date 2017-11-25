@@ -41,12 +41,11 @@ public class PodcastDownloadsRepository {
 
   public void removePodcastDownload(String podcastId) {
     this.filesLoaded.put(podcastId, false);
-    Timber.v("keithtest2-removePodcastDownload");
     changeObservable.onNext(podcastId);
   }
 
   public Boolean isPodcastDownloaded(Post post) {
-    if (this.filesLoaded.get(post.get_id()) != null && this.filesLoaded.get(post.get_id())) return true;
+    if (this.filesLoaded.get(post.get_id()) != null && this.filesLoaded.get(post.get_id())) return this.filesLoaded.get(post.get_id());
 
     if (post.getMp3() == null || post.getMp3().isEmpty()) {
       return false;

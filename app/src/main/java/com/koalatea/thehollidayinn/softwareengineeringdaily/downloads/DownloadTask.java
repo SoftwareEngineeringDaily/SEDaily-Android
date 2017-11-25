@@ -10,6 +10,7 @@ import android.os.PowerManager;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 import android.widget.Toast;
+import com.koalatea.thehollidayinn.softwareengineeringdaily.app.SDEApp;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.data.repositories.PodcastDownloadsRepository;
 import java.io.File;
 import java.io.FileInputStream;
@@ -34,8 +35,8 @@ public class DownloadTask extends AsyncTask<String, Integer, String> {
   private NotificationCompat.Builder mBuilder;
   private String podcastId;
 
-  public DownloadTask(Context context, NotificationManager notificationManager, NotificationCompat.Builder mBuilder, String mPodcastId) {
-    this.context = context;
+  public DownloadTask(NotificationManager notificationManager, NotificationCompat.Builder mBuilder, String mPodcastId) {
+    this.context = SDEApp.component().context();
     this.mProgressDialog = mProgressDialog;
     this.mNotifyManager = notificationManager;
     this.mBuilder = mBuilder;
@@ -67,7 +68,7 @@ public class DownloadTask extends AsyncTask<String, Integer, String> {
       input = connection.getInputStream();
 
       String urlString = url.toString();
-      output = new FileOutputStream(new MP3FileManager().getFileFromUrl(urlString, context.getApplicationContext()));
+      output = new FileOutputStream(new MP3FileManager().getFileFromUrl(urlString, context));
 
       byte data[] = new byte[4096];
       long total = 0;
@@ -106,7 +107,7 @@ public class DownloadTask extends AsyncTask<String, Integer, String> {
     PowerManager pm = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
     mWakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK,
         getClass().getName());
-    mWakeLock.acquire();
+    mWakeLock.acquire(600000);
 
     //mProgressDialog.show();
     mBuilder.setProgress(0, 0, true);
