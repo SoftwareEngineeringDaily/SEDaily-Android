@@ -107,10 +107,6 @@ public class DownloadTask extends AsyncTask<String, Integer, String> {
     mWakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK,
         getClass().getName());
     mWakeLock.acquire(600000);
-
-    //mProgressDialog.show();
-    mBuilder.setProgress(0, 0, true);
-    mNotifyManager.notify(id, mBuilder.build());
   }
 
   @Override
