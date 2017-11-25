@@ -179,8 +179,11 @@ class Playback implements AudioManager.OnAudioFocusChangeListener,
                 metaRetriever.setDataSource(source);
                 String duration =
                   metaRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
-                long dur = Long.parseLong(duration);
 
+                long dur = 0;
+                if (duration != null) {
+                    dur = Long.parseLong(duration);
+                }
 
                 String oldSource = "";
                 if (item.getDescription() != null && item.getDescription().getMediaUri() != null) {

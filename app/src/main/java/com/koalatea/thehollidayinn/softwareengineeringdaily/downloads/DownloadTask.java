@@ -10,6 +10,7 @@ import android.os.PowerManager;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 import android.widget.Toast;
+import com.koalatea.thehollidayinn.softwareengineeringdaily.app.SDEApp;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.data.repositories.PodcastDownloadsRepository;
 import java.io.File;
 import java.io.FileInputStream;
@@ -34,9 +35,8 @@ public class DownloadTask extends AsyncTask<String, Integer, String> {
   private NotificationCompat.Builder mBuilder;
   private String podcastId;
 
-  public DownloadTask(Context context, NotificationManager notificationManager, NotificationCompat.Builder mBuilder, String mPodcastId) {
-    this.context = context;
-    this.mProgressDialog = mProgressDialog;
+  public DownloadTask(NotificationManager notificationManager, NotificationCompat.Builder mBuilder, String mPodcastId) {
+    this.context = SDEApp.component().context();
     this.mNotifyManager = notificationManager;
     this.mBuilder = mBuilder;
     this.podcastId = mPodcastId;
@@ -67,7 +67,7 @@ public class DownloadTask extends AsyncTask<String, Integer, String> {
       input = connection.getInputStream();
 
       String urlString = url.toString();
-      output = new FileOutputStream(new MP3FileManager().getFileFromUrl(urlString, context.getApplicationContext()));
+      output = new FileOutputStream(new MP3FileManager().getFileFromUrl(urlString, context));
 
       byte data[] = new byte[4096];
       long total = 0;
@@ -106,27 +106,12 @@ public class DownloadTask extends AsyncTask<String, Integer, String> {
     PowerManager pm = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
     mWakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK,
         getClass().getName());
-    mWakeLock.acquire();
-
-    //mProgressDialog.show();
-    mBuilder.setProgress(0, 0, true);
-    mNotifyManager.notify(id, mBuilder.build());
+    mWakeLock.acquire(600000);
   }
 
   @Override
   protected void onProgressUpdate(Integer... progress) {
     super.onProgressUpdate(progress);
-    // if we get here, length is known, now set indeterminate to false
-    //mProgressDialog.setIndeterminate(false);
-    //mProgressDialog.setMax(100);
-    //mProgressDialog.setProgress(progress[0]);
-    //
-    //mBuilder.setProgress(100, progress[0], false);
-    //
-    //Notification notification = mBuilder.build();
-    //notification.flags = Notification.FLAG_ONLY_ALERT_ONCE;
-    //
-    //mNotifyManager.notify(id, mBuilder.build());
   }
 
   @Override
