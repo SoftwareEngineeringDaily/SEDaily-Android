@@ -121,7 +121,7 @@ public class DownloadTask extends AsyncTask<String, Integer, String> {
     } catch (Throwable th) {
       // ignoring this exception, probably wakeLock was already released
     }
-    
+
     mBuilder.setContentText("Download complete")
         .setProgress(0,0,false);
     mNotifyManager.notify(id, mBuilder.build());
