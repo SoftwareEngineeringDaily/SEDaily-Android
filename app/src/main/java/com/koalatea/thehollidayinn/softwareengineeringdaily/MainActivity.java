@@ -151,12 +151,13 @@ public class MainActivity extends PlaybackControllerActivity
             userRepository.setToken("");
             Intent intent = new Intent(this, MainActivity.class);
             startActivity(intent);
-        } else if (id == R.id.opensource) {
-            Intent intent = new Intent(this, OssLicensesMenuActivity.class);
-            String title = getString(R.string.open_source_info);
-            intent.putExtra("title", title);
-            startActivity(intent);
         }
+        //else if (id == R.id.opensource) {
+            //Intent intent = new Intent(this, OssLicensesMenuActivity.class);
+            //String title = getString(R.string.open_source_info);
+            //intent.putExtra("title", title);
+            //startActivity(intent);
+        //}
 
         return super.onOptionsItemSelected(item);
     }

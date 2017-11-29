@@ -36,7 +36,7 @@ ext {
   compileSdkVersion = 27
   buildToolsVersion = '27.0.0'
   //Android
-  supportLibraryVersion = '26.1.0'
+  supportLibraryVersion = '27.0.1'
   architectureComponents = '1.0.0'
   constraintlayoutVersion = '1.0.2'
   //Kotlin

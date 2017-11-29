@@ -116,7 +116,11 @@ public class DownloadTask extends AsyncTask<String, Integer, String> {
 
   @Override
   protected void onPostExecute(String result) {
-    mWakeLock.release();
+    try {
+      mWakeLock.release();
+    } catch (Throwable th) {
+      // ignoring this exception, probably wakeLock was already released
+    }
 
     mBuilder.setContentText("Download complete")
         .setProgress(0,0,false);
