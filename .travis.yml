@@ -1,0 +1,36 @@
+language: android
+jdk: oraclejdk8
+sudo: false
+
+android:
+  components:
+    - tools
+    - platform-tools
+    # The BuildTools version used by your project
+    - build-tools-27.0.0
+    # The SDK version used to compile your project
+    - android-27
+
+    # Additional components
+    - extra-google-android-support
+
+
+    # Specify at least one system image,
+    # if you need to run emulator(s) during your tests
+    - sys-img-armeabi-v7a-android-27
+
+  licenses:
+    - 'android-sdk-license-.+'
+    - 'android-sdk-preview-license-.+'
+    - 'google-gdk-license-.+'
+
+
+cache: false
+
+install:
+  # Ensure Gradle wrapper is executable, download wrapper and show version
+  - chmod +x ./gradlew; ls -l gradlew; ./gradlew wrapper -v
+
+script: ./gradlew clean build -Pbuild=dev
+script: ./gradlew test -Pbuild=dev
+# script: ./gradlew connectedAndroidTest -Pbuild=dev

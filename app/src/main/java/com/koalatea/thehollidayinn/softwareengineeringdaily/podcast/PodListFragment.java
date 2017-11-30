@@ -9,6 +9,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.ethanhua.skeleton.RecyclerViewSkeletonScreen;
+import com.ethanhua.skeleton.Skeleton;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.R;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.data.models.Post;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.data.remote.APIInterface;
@@ -36,6 +38,7 @@ public class PodListFragment extends Fragment {
   private String tagId;
   private PodcastAdapter podcastAdapter;
   private Subscriber<String> mySubscriber;
+  private RecyclerViewSkeletonScreen skeletonScreen;
 
   public static PodListFragment newInstance(String title, String tagId) {
     PodListFragment f = new PodListFragment();
@@ -53,7 +56,6 @@ public class PodListFragment extends Fragment {
       R.layout.fragment_podcast_horizontal, container, false);
 
     RecyclerView recyclerView = (RecyclerView) rootView.findViewById(R.id.my_recycler_view);
-
     recyclerView.setHasFixedSize(true);
 
     LinearLayoutManager mLayoutManager = new LinearLayoutManager(this.getContext());
@@ -61,6 +63,12 @@ public class PodListFragment extends Fragment {
 
     podcastAdapter = new PodcastAdapter(this);
     recyclerView.setAdapter(podcastAdapter);
+
+    skeletonScreen = Skeleton.bind(recyclerView)
+        .adapter(podcastAdapter)
+        .load(R.layout.item_skeleton_news)
+        .shimmer(true)
+        .show();
 
     FilterRepository filterRepository = FilterRepository.getInstance();
     mySubscriber = new Subscriber<String>() {
@@ -89,7 +97,10 @@ public class PodListFragment extends Fragment {
   @Override
   public void onDestroy() {
     super.onDestroy();
-    mySubscriber.unsubscribe();
+
+    if (mySubscriber != null) {
+      mySubscriber.unsubscribe();
+    }
   }
 
   private void getPosts(String search) {
@@ -123,7 +134,7 @@ public class PodListFragment extends Fragment {
       .subscribe(new Subscriber<List<Post>>() {
         @Override
         public void onCompleted() {
-
+          skeletonScreen.hide();
         }
 
         @Override

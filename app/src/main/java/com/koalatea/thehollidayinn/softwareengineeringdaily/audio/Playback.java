@@ -32,6 +32,7 @@ import android.support.v4.media.session.PlaybackStateCompat;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.google.firebase.crash.FirebaseCrash;
 import java.io.IOException;
 
 
@@ -178,8 +179,11 @@ class Playback implements AudioManager.OnAudioFocusChangeListener,
                 metaRetriever.setDataSource(source);
                 String duration =
                   metaRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
-                long dur = Long.parseLong(duration);
 
+                long dur = 0;
+                if (duration != null) {
+                    dur = Long.parseLong(duration);
+                }
 
                 String oldSource = "";
                 if (item.getDescription() != null && item.getDescription().getMediaUri() != null) {
@@ -259,7 +263,11 @@ class Playback implements AudioManager.OnAudioFocusChangeListener,
         }
 
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
-            mMediaPlayer.setPlaybackParams(mMediaPlayer.getPlaybackParams().setSpeed(speedFloat));
+            try {
+                mMediaPlayer.setPlaybackParams(mMediaPlayer.getPlaybackParams().setSpeed(speedFloat));
+            } catch (Exception e) {
+                FirebaseCrash.report(new Exception(e));
+            }
         }
     }
 

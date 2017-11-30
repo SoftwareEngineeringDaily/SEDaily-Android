@@ -62,11 +62,11 @@ class PodcastAdapter extends RecyclerView.Adapter<PodcastAdapter.ViewHolder> {
     view.setOnClickListener(new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-      final int position = viewHolder.getAdapterPosition();
-      Post post = posts.get(position);
-      Intent intent = new Intent(context.getActivity(), PodcastDetailActivity.class);
-      intent.putExtra("POST_ID", post.get_id());
-      context.getActivity().startActivity(intent);
+          final int position = viewHolder.getAdapterPosition();
+          Post post = posts.get(position);
+          Intent intent = new Intent(context.getActivity(), PodcastDetailActivity.class);
+          intent.putExtra("POST_ID", post.get_id());
+          context.getActivity().startActivity(intent);
         }
     });
 
