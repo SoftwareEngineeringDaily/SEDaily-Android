@@ -1,6 +1,7 @@
 package com.koalatea.thehollidayinn.softwareengineeringdaily;
 
 import android.app.SearchManager;
+import android.arch.persistence.room.Room;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -13,6 +14,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import com.google.android.gms.oss.licenses.OssLicensesMenuActivity;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.auth.LoginRegisterActivity;
+import com.koalatea.thehollidayinn.softwareengineeringdaily.data.AppDatabase;
+import com.koalatea.thehollidayinn.softwareengineeringdaily.data.repositories.BookmarkDao;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.data.repositories.FilterRepository;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.data.repositories.UserRepository;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.podcast.PodListFragment;
@@ -158,6 +161,9 @@ public class MainActivity extends PlaybackControllerActivity
             return true;
         } else if (id == R.id.action_logout) {
             userRepository.setToken("");
+            AppDatabase db = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "sed-db").build();
+            BookmarkDao bookmarkDao = db.bookmarkDao();
+            bookmarkDao.deleteAll();    // remove all bookmarks from db when user logs out
             Intent intent = new Intent(this, MainActivity.class);
             startActivity(intent);
         }

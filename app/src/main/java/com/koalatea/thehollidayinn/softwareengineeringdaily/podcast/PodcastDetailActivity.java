@@ -2,6 +2,7 @@ package com.koalatea.thehollidayinn.softwareengineeringdaily.podcast;
 
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.arch.persistence.room.Room;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -26,11 +27,14 @@ import com.koalatea.thehollidayinn.softwareengineeringdaily.PlaybackControllerAc
 import com.koalatea.thehollidayinn.softwareengineeringdaily.R;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.app.SDEApp;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.audio.MusicProvider;
+import com.koalatea.thehollidayinn.softwareengineeringdaily.data.AppDatabase;
+import com.koalatea.thehollidayinn.softwareengineeringdaily.data.models.Bookmark;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.data.models.Content;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.data.models.Post;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.data.models.Title;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.data.remote.APIInterface;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.data.remote.ApiUtils;
+import com.koalatea.thehollidayinn.softwareengineeringdaily.data.repositories.BookmarkDao;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.data.repositories.PodcastDownloadsRepository;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.data.repositories.PostRepository;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.data.repositories.UserRepository;
@@ -39,8 +43,6 @@ import com.koalatea.thehollidayinn.softwareengineeringdaily.downloads.MP3FileMan
 import java.io.File;
 import java.util.Date;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
 import butterknife.OnClick;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
@@ -52,7 +54,6 @@ public class PodcastDetailActivity extends PlaybackControllerActivity {
   private PostRepository postRepository;
   private UserRepository userRepository;
   private Subscriber mySubscriber;
-  private boolean isBookmarked;
 
   @BindView(R.id.scoreTextView)
   TextView scoreText;
@@ -96,10 +97,13 @@ public class PodcastDetailActivity extends PlaybackControllerActivity {
     postRepository = PostRepository.getInstance();
     loadPost(postId);
 
-    // TODO: check if post is already liked
-    isBookmarked = false;
+    AppDatabase db = Room.databaseBuilder(getApplicationContext(),
+            AppDatabase.class, "sed-db").build();
 
-    if(isBookmarked) {
+    BookmarkDao bookmarkDao = db.bookmarkDao();
+    Bookmark bookmark = bookmarkDao.loadById(postId);
+
+    if(bookmark != null) {  // the post has been bookmarked before
       bookmarkButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_bookmark_set));
     }
   }
@@ -412,7 +416,11 @@ public class PodcastDetailActivity extends PlaybackControllerActivity {
       displayMessage("You must login to vote");
       return;
     }
-    if(isBookmarked) {
+    AppDatabase db = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "sed-db")
+            .build();
+    BookmarkDao bookmarkDao = db.bookmarkDao();
+    Bookmark bookmark = bookmarkDao.loadById(post.getId());
+    if(bookmark != null) {
       mService.removeBookmark(post.get_id())
         .subscribeOn(Schedulers.io())
         .observeOn(AndroidSchedulers.mainThread())
@@ -432,6 +440,7 @@ public class PodcastDetailActivity extends PlaybackControllerActivity {
 
           }
         });
+      bookmarkDao.delete(bookmark);
     }
     else {
       mService.addBookmark(post.get_id())
@@ -453,7 +462,8 @@ public class PodcastDetailActivity extends PlaybackControllerActivity {
 
           }
         });
+      bookmark = new Bookmark(post);
+      bookmarkDao.insertOne(bookmark);
     }
-    isBookmarked = !isBookmarked;
   }
 }

@@ -3,6 +3,7 @@ package com.koalatea.thehollidayinn.softwareengineeringdaily.data.repositories;
 import android.arch.persistence.room.Dao;
 import android.arch.persistence.room.Delete;
 import android.arch.persistence.room.Insert;
+import android.arch.persistence.room.OnConflictStrategy;
 import android.arch.persistence.room.Query;
 
 import com.koalatea.thehollidayinn.softwareengineeringdaily.data.models.Bookmark;
@@ -24,9 +25,12 @@ public interface BookmarkDao {
     @Insert
     void insertOne(Bookmark bookmark);
 
-    @Insert
-    void insertAll(Bookmark... bookmarks);
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    void insertAll(List<Bookmark> bookmarks);
 
     @Delete
     void delete(Bookmark bookmark);
+
+    @Query("DELETE FROM bookmark")
+    void deleteAll();
 }

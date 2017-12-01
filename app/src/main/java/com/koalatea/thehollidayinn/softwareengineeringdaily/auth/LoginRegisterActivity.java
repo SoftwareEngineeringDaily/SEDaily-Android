@@ -1,5 +1,6 @@
 package com.koalatea.thehollidayinn.softwareengineeringdaily.auth;
 
+import android.arch.persistence.room.Room;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Build;
@@ -15,21 +16,29 @@ import android.widget.TextView;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.MainActivity;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.R;
+import com.koalatea.thehollidayinn.softwareengineeringdaily.data.AppDatabase;
+import com.koalatea.thehollidayinn.softwareengineeringdaily.data.models.Bookmark;
+import com.koalatea.thehollidayinn.softwareengineeringdaily.data.models.Post;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.data.models.User;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.data.remote.APIInterface;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.data.remote.ApiUtils;
+import com.koalatea.thehollidayinn.softwareengineeringdaily.data.repositories.BookmarkDao;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.data.repositories.UserRepository;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import retrofit2.Response;
 import retrofit2.adapter.rxjava.HttpException;
+import rx.Scheduler;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
@@ -153,6 +162,35 @@ public class LoginRegisterActivity extends AppCompatActivity {
                 @Override
                 public void onNext(User user) {
                     userRepository.setToken(user.getToken());
+                    // user successfully authenticated
+                    // get their bookmarks
+                    APIInterface service = ApiUtils.getKibbleService(getApplicationContext());
+                    service.getBookmarks()
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(new Subscriber<List<Post>>() {
+                            @Override
+                            public void onCompleted() {
+
+                            }
+
+                            @Override
+                            public void onError(Throwable e) {
+
+                            }
+
+                            @Override
+                            public void onNext(List<Post> posts) {
+                                ArrayList<Bookmark> bookmarks = new ArrayList<>();
+                                for(Post post: posts) {
+                                    bookmarks.add(new Bookmark(post));
+                                }
+                                AppDatabase db = Room.databaseBuilder(getApplicationContext(),
+                                        AppDatabase.class,"sed-db").build();
+                                BookmarkDao bookmarkDao = db.bookmarkDao();
+                                bookmarkDao.insertAll(bookmarks);
+                            }
+                        });
                     Intent intent = new Intent(LoginRegisterActivity.this, MainActivity.class);
                     startActivity(intent);
                 }
