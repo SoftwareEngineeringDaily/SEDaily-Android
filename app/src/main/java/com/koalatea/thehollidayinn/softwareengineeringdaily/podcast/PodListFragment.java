@@ -70,11 +70,20 @@ public class PodListFragment extends Fragment {
         .shimmer(true)
         .show();
 
-    FilterRepository filterRepository = FilterRepository.getInstance();
+    this.setUpSubscription();
+
+    return rootView;
+  }
+
+  public void setUpSubscription() {
+    if (mySubscriber != null) {
+      return;
+    }
+
     mySubscriber = new Subscriber<String>() {
       @Override
       public void onNext(String s) {
-          getPosts(s);
+        getPosts(s);
       }
 
       @Override
@@ -83,15 +92,14 @@ public class PodListFragment extends Fragment {
       @Override
       public void onError(Throwable e) { }
     };
+    FilterRepository filterRepository = FilterRepository.getInstance();
     filterRepository.getModelChanges().subscribe(mySubscriber);
-
-    return rootView;
   }
 
   @Override
   public void onStart() {
     super.onStart();
-    getPosts("");
+    this.getPosts("");
   }
 
   @Override
