@@ -2,6 +2,7 @@ package com.koalatea.thehollidayinn.softwareengineeringdaily.podcast;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -39,6 +40,7 @@ public class PodListFragment extends Fragment {
   private PodcastAdapter podcastAdapter;
   private Subscriber<String> mySubscriber;
   private RecyclerViewSkeletonScreen skeletonScreen;
+  private SwipeRefreshLayout swipeRefreshLayout;
 
   public static PodListFragment newInstance(String title, String tagId) {
     PodListFragment f = new PodListFragment();
@@ -69,6 +71,17 @@ public class PodListFragment extends Fragment {
         .load(R.layout.item_skeleton_news)
         .shimmer(true)
         .show();
+
+    swipeRefreshLayout = rootView.findViewById(R.id.swiperefresh);
+    swipeRefreshLayout.setOnRefreshListener(
+      new SwipeRefreshLayout.OnRefreshListener() {
+        @Override
+        public void onRefresh() {
+          getPosts("");
+        }
+      }
+    );
+
 
     this.setUpSubscription();
 
@@ -152,6 +165,7 @@ public class PodListFragment extends Fragment {
         public void onNext(List<Post> posts) {
           podcastAdapter.setPosts(posts);
           postRepository.setPosts(posts);
+          swipeRefreshLayout.setRefreshing(false);
         }
       });
   }
