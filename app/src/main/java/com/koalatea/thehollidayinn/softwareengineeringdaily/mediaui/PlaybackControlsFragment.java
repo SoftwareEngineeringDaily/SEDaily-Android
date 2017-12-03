@@ -1,6 +1,5 @@
 package com.koalatea.thehollidayinn.softwareengineeringdaily.mediaui;
 
-import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.SystemClock;
@@ -30,11 +29,11 @@ import java.util.concurrent.TimeUnit;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import rx.Subscriber;
-import rx.Subscription;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
-import timber.log.Timber;
+
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.observers.DisposableObserver;
+import io.reactivex.schedulers.Schedulers;
+
 /*
  * Created by keithholliday on 9/26/17.
  */
@@ -70,7 +69,7 @@ public class PlaybackControlsFragment extends Fragment {
           updateProgress();
       }
   };
-  private Subscriber speedSubscription;
+  private DisposableObserver speedSubscription;
 
   // Receive callbacks from the MediaController. Here we update our state such as which queue
   // is being shown, the current title and description and the PlaybackState.
@@ -155,20 +154,22 @@ public class PlaybackControlsFragment extends Fragment {
     mStart.setText(DateUtils.formatElapsedTime(currentPlayTime / 1000));
     setSpeedTextView();
 
-    if (speedSubscription != null && speedSubscription.isUnsubscribed()) {
+    if (speedSubscription != null && speedSubscription.isDisposed()) {
       setUpSpeedSubscription();
     }
   }
 
   private void setUpSpeedSubscription () {
-    speedSubscription = new Subscriber<Integer>() {
-      @Override public void onCompleted() {
-      }
+    speedSubscription = new DisposableObserver<Integer>() {
+        @Override public void onError(Throwable e) {
+        }
 
-      @Override public void onError(Throwable e) {
-      }
+        @Override
+        public void onComplete() {
 
-      @Override public void onNext(Integer integer) {
+        }
+
+        @Override public void onNext(Integer integer) {
         setSpeedText();
       }
     };
@@ -189,7 +190,7 @@ public class PlaybackControlsFragment extends Fragment {
       }
 
       if (speedSubscription != null) {
-        speedSubscription.unsubscribe();
+        speedSubscription.dispose();
       }
 
       stopSeekbarUpdate();

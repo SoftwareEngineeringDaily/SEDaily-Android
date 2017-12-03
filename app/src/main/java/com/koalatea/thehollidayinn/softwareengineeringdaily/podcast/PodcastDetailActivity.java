@@ -1,13 +1,10 @@
 package com.koalatea.thehollidayinn.softwareengineeringdaily.podcast;
 
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
-import android.content.Context;
+
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.MediaMetadataCompat;
@@ -34,20 +31,19 @@ import com.koalatea.thehollidayinn.softwareengineeringdaily.data.remote.ApiUtils
 import com.koalatea.thehollidayinn.softwareengineeringdaily.data.repositories.PodcastDownloadsRepository;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.data.repositories.PostRepository;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.data.repositories.UserRepository;
-import com.koalatea.thehollidayinn.softwareengineeringdaily.downloads.DownloadTask;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.downloads.MP3FileManager;
 import java.io.File;
 import java.util.Date;
-import rx.Subscriber;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
-import timber.log.Timber;
+
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.observers.DisposableObserver;
+import io.reactivex.schedulers.Schedulers;
 
 public class PodcastDetailActivity extends PlaybackControllerActivity {
   private static String TAG = "PodcastDetail";
   private PostRepository postRepository;
   private UserRepository userRepository;
-  private Subscriber mySubscriber;
+  private DisposableObserver myDisposableObserver;
 
   @BindView(R.id.scoreTextView)
   TextView scoreText;
@@ -92,8 +88,8 @@ public class PodcastDetailActivity extends PlaybackControllerActivity {
   @Override
   public void onStop() {
     super.onStop();
-    if (mySubscriber != null) {
-      mySubscriber.unsubscribe();
+    if (myDisposableObserver != null) {
+      myDisposableObserver.dispose();
     }
 
   }
@@ -197,9 +193,9 @@ public class PodcastDetailActivity extends PlaybackControllerActivity {
         mService.upVote(post.get_id())
           .subscribeOn(Schedulers.io())
           .observeOn(AndroidSchedulers.mainThread())
-          .subscribe(new Subscriber<Void>() {
+          .subscribe(new DisposableObserver<Void>() {
             @Override
-            public void onCompleted() {}
+            public void onComplete() {}
             @Override
             public void onError(Throwable e) {
                 Log.v(TAG, e.toString());
@@ -260,9 +256,9 @@ public class PodcastDetailActivity extends PlaybackControllerActivity {
         mService.downVote(post.get_id())
           .subscribeOn(Schedulers.io())
           .observeOn(AndroidSchedulers.mainThread())
-          .subscribe(new Subscriber<Void>() {
+          .subscribe(new DisposableObserver<Void>() {
             @Override
-            public void onCompleted() {
+            public void onComplete() {
 
             }
 
@@ -300,7 +296,7 @@ public class PodcastDetailActivity extends PlaybackControllerActivity {
       deleteButton.setVisibility(View.INVISIBLE);
     }
 
-    mySubscriber = new Subscriber<String>() {
+    myDisposableObserver = new DisposableObserver<String>() {
       @Override
       public void onNext(String s) {
         Boolean downloaded = PodcastDownloadsRepository.getInstance().isPodcastDownloaded(post);
@@ -312,7 +308,7 @@ public class PodcastDetailActivity extends PlaybackControllerActivity {
       }
 
       @Override
-      public void onCompleted() { }
+      public void onComplete() { }
 
       @Override
       public void onError(Throwable e) { }
@@ -323,7 +319,7 @@ public class PodcastDetailActivity extends PlaybackControllerActivity {
         .getDownloadChanges()
         .subscribeOn(Schedulers.io())
         .observeOn(AndroidSchedulers.mainThread())
-        .subscribe(mySubscriber);
+        .subscribe(myDisposableObserver);
 
   }
 

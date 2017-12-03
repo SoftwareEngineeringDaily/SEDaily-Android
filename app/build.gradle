@@ -113,15 +113,12 @@ dependencies {
     //Kotlin
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jre8:$rootProject.kotlinVersion"
     //Rx Java
-    implementation "io.reactivex:rxandroid:1.2.1"
-    implementation "io.reactivex:rxjava:1.3.0"
     implementation "io.reactivex.rxjava2:rxjava:$rootProject.rxjava2Version"
     implementation "io.reactivex.rxjava2:rxandroid:$rootProject.rxAndroid2Version"
     //Network
-    implementation "com.squareup.retrofit2:retrofit:$rootProject.retrofit2Version"
-    implementation "com.squareup.retrofit2:adapter-rxjava:$rootProject.retrofit2Version"
     implementation "com.squareup.okhttp3:okhttp:$rootProject.okhttp3Version"
     implementation "com.squareup.okhttp3:logging-interceptor:$rootProject.okhttp3Version"
+    implementation "com.squareup.retrofit2:retrofit:$rootProject.retrofit2Version"
     implementation "com.squareup.retrofit2:converter-gson:$rootProject.retrofit2Version"
     implementation "com.squareup.retrofit2:adapter-rxjava2:$rootProject.retrofit2Version"
     //Presentation
