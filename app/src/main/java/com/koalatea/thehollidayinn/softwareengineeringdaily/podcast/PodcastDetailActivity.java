@@ -1,6 +1,5 @@
 package com.koalatea.thehollidayinn.softwareengineeringdaily.podcast;
 
-
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Build;
@@ -23,9 +22,7 @@ import com.koalatea.thehollidayinn.softwareengineeringdaily.PlaybackControllerAc
 import com.koalatea.thehollidayinn.softwareengineeringdaily.R;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.app.SDEApp;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.audio.MusicProvider;
-import com.koalatea.thehollidayinn.softwareengineeringdaily.data.models.Content;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.data.models.Post;
-import com.koalatea.thehollidayinn.softwareengineeringdaily.data.models.Title;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.data.remote.APIInterface;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.data.remote.ApiUtils;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.data.repositories.PodcastDownloadsRepository;
@@ -33,8 +30,8 @@ import com.koalatea.thehollidayinn.softwareengineeringdaily.data.repositories.Po
 import com.koalatea.thehollidayinn.softwareengineeringdaily.data.repositories.UserRepository;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.downloads.MP3FileManager;
 import java.io.File;
-import java.util.Date;
 
+import butterknife.OnClick;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.observers.DisposableObserver;
 import io.reactivex.schedulers.Schedulers;
@@ -54,6 +51,22 @@ public class PodcastDetailActivity extends PlaybackControllerActivity {
   @BindView(R.id.playButton)
   Button playButton;
 
+  @BindView(R.id.toolbar)
+  Toolbar toolbar;
+
+  @BindView(R.id.up_button)
+  ImageView upButton;
+
+  @BindView(R.id.down_button)
+  ImageView downButton;
+
+  @BindView(R.id.titleTextView)
+  TextView titleTextView;
+  @BindView(R.id.secondaryTextView)
+  TextView secondaryTextView;
+  @BindView(R.id.description)
+  WebView descriptionWebView;
+
   private Post post;
   private APIInterface mService;
   private FirebaseAnalytics mFirebaseAnalytics;
@@ -68,12 +81,12 @@ public class PodcastDetailActivity extends PlaybackControllerActivity {
 
     mFirebaseAnalytics = FirebaseAnalytics.getInstance(getApplicationContext());
 
-    Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-    toolbar.setTitle("");
-    setSupportActionBar(toolbar);
+    if (toolbar != null) {
+      toolbar.setTitle("");
+      setSupportActionBar(toolbar);
+      getSupportActionBar().setDisplayShowTitleEnabled(false); // @TODO: This doesn't seem to work
+    }
 
-    // @TODO: This doesn't seem to work
-    getSupportActionBar().setDisplayShowTitleEnabled(false);
 
     mService = ApiUtils.getKibbleService(this);
     userRepository = UserRepository.getInstance(this);
@@ -83,6 +96,25 @@ public class PodcastDetailActivity extends PlaybackControllerActivity {
 
     postRepository = PostRepository.getInstance();
     loadPost(postId);
+
+    myDisposableObserver = new DisposableObserver<String>() {
+      @Override
+      public void onNext(String state) {
+        handleDownloadStateChange(state);
+      }
+
+      @Override
+      public void onComplete() { }
+
+      @Override
+      public void onError(Throwable e) { }
+    };
+    PodcastDownloadsRepository podcastDownloadsRepository = PodcastDownloadsRepository.getInstance();
+    podcastDownloadsRepository
+            .getDownloadChanges()
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(myDisposableObserver);
   }
 
   @Override
@@ -91,7 +123,6 @@ public class PodcastDetailActivity extends PlaybackControllerActivity {
     if (myDisposableObserver != null) {
       myDisposableObserver.dispose();
     }
-
   }
 
   private void displayMessage (String message) {
@@ -117,175 +148,18 @@ public class PodcastDetailActivity extends PlaybackControllerActivity {
 
   private void loadPost (final String postId) {
     post = postRepository.getPostById(postId);
-
-    // @TODO: Why would this be null?
     if (post == null) {
       return;
     }
 
-    Title postTile = post.getTitle();
-    Date postDate = post.getDate();
-    final Content postContent = post.getContent();
+    titleTextView.setText(post.getTitle().getRendered());
+    descriptionWebView.loadData(post.getContent().getRendered(), "text/html", "UTF-8");
 
-    TextView titleTextView = (TextView) findViewById(R.id.titleTextView);
-    titleTextView.setText(postTile.getRendered());
-
-    String dayString = android.text.format.DateFormat.format("MMMM dd, yyyy", postDate.getTime()).toString();
-    TextView secondaryTextView = (TextView) findViewById(R.id.secondaryTextView);
+    String dayString = android.text.format.DateFormat.format("MMMM dd, yyyy", post.getDate().getTime()).toString();
     secondaryTextView.setText(dayString);
 
-    WebView descriptionWebView = findViewById(R.id.description);
-    descriptionWebView.loadData(postContent.getRendered(), "text/html", "UTF-8");
-
-
     scoreText.setText(String.valueOf(post.getScore()));
-
-    final ImageView upButton = (ImageView) findViewById(R.id.up_button);
-    final ImageView downButton = (ImageView) findViewById(R.id.down_button);
-
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      if (post.getUpvoted() != null && post.getUpvoted()) {
-        upButton.getDrawable().setTint(ContextCompat.getColor(this, R.color.colorAccent));
-      }
-    }
-
-    upButton.setOnClickListener(new View.OnClickListener() {
-      @Override
-      public void onClick(View v) {
-        if (userRepository.getToken().isEmpty()) {
-          displayMessage("You must login to vote");
-          return;
-        }
-
-        Integer newScore = post.getScore();
-
-        if (post.getUpvoted() != null && post.getUpvoted()) {
-          newScore -= 1;
-          post.setUpvoted(false);
-          post.setDownvoted(false);
-          if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-              upButton.getDrawable().setTint(ContextCompat.getColor(getApplicationContext(), R.color.button_grey));
-              downButton.getDrawable().setTint(ContextCompat.getColor(getApplicationContext(), R.color.button_grey));
-          }
-        } else {
-          newScore += 1;
-
-          if (post.getDownvoted()) {
-              newScore += 1;
-          }
-
-          post.setUpvoted(true);
-          post.setDownvoted(false);
-          if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-              upButton.getDrawable().setTint(ContextCompat.getColor(getApplicationContext(), R.color.colorPrimary));
-              downButton.getDrawable().setTint(ContextCompat.getColor(getApplicationContext(), R.color.button_grey));
-          }
-        }
-
-        Bundle bundle = new Bundle();
-        bundle.putString(FirebaseAnalytics.Param.ITEM_ID, postId);
-        bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, "UP");
-        bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, "VOTE");
-        mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
-
-        scoreText.setText(String.valueOf(newScore));
-
-        mService.upVote(post.get_id())
-          .subscribeOn(Schedulers.io())
-          .observeOn(AndroidSchedulers.mainThread())
-          .subscribe(new DisposableObserver<Void>() {
-            @Override
-            public void onComplete() {}
-            @Override
-            public void onError(Throwable e) {
-                Log.v(TAG, e.toString());
-            }
-            @Override
-            public void onNext(Void posts) {}
-          });
-      }
-    });
-
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      if (post.getDownvoted() != null && post.getDownvoted()) {
-        downButton.getDrawable().setTint(ContextCompat.getColor(this, R.color.colorAccent));
-      }
-    }
-
-    downButton.setOnClickListener(new View.OnClickListener() {
-      @Override
-      public void onClick(View v) {
-        if (userRepository.getToken().isEmpty()) {
-            displayMessage("You must login to vote");
-            return;
-        }
-
-        Integer newScore = post.getScore();
-
-        if (post.getDownvoted() != null && post.getDownvoted()) {
-          newScore += 1;
-          post.setDownvoted(false);
-          post.setUpvoted(false);
-          if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-              downButton.getDrawable().setTint(ContextCompat.getColor(getApplicationContext(), R.color.button_grey));
-              upButton.getDrawable().setTint(ContextCompat.getColor(getApplicationContext(), R.color.button_grey));
-          }
-        } else {
-          newScore -= 1;
-
-          if (post.getUpvoted()) {
-            newScore -= 1;
-          }
-
-          post.setDownvoted(true);
-          post.setUpvoted(false);
-          if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-              downButton.getDrawable().setTint(ContextCompat.getColor(getApplicationContext(), R.color.colorPrimary));
-              upButton.getDrawable().setTint(ContextCompat.getColor(getApplicationContext(), R.color.button_grey));
-          }
-        }
-
-        Bundle bundle = new Bundle();
-        bundle.putString(FirebaseAnalytics.Param.ITEM_ID, postId);
-        bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, "DOWN");
-        bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, "VOTE");
-        mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
-
-        scoreText.setText(String.valueOf(newScore));
-
-        mService.downVote(post.get_id())
-          .subscribeOn(Schedulers.io())
-          .observeOn(AndroidSchedulers.mainThread())
-          .subscribe(new DisposableObserver<Void>() {
-            @Override
-            public void onComplete() {
-
-            }
-
-            @Override
-            public void onError(Throwable e) {
-                Log.v(TAG, e.toString());
-            }
-
-            @Override
-            public void onNext(Void posts) {
-
-            }
-          });
-        }
-    });
-
-    playButton.setOnClickListener(new View.OnClickListener() {
-      @Override
-      public void onClick(View v) {
-        playClick(post);
-      }
-    });
-    deleteButton.setOnClickListener(new View.OnClickListener() {
-      @Override public void onClick(View view) {
-        confirmRemoveLocalDownload();
-      }
-    });
+    setVoteButtonStates();
 
     if (!PodcastDownloadsRepository.getInstance().isPodcastDownloaded(post)) {
       setUpNotDownloadedState();
@@ -295,35 +169,115 @@ public class PodcastDetailActivity extends PlaybackControllerActivity {
       playButton.setText(R.string.downloading);
       deleteButton.setVisibility(View.INVISIBLE);
     }
-
-    myDisposableObserver = new DisposableObserver<String>() {
-      @Override
-      public void onNext(String s) {
-        Boolean downloaded = PodcastDownloadsRepository.getInstance().isPodcastDownloaded(post);
-        if (downloaded) {
-          setUpDownloadedState();
-        } else {
-          setUpNotDownloadedState();
-        }
-      }
-
-      @Override
-      public void onComplete() { }
-
-      @Override
-      public void onError(Throwable e) { }
-    };
-
-    PodcastDownloadsRepository podcastDownloadsRepository = PodcastDownloadsRepository.getInstance();
-    podcastDownloadsRepository
-        .getDownloadChanges()
-        .subscribeOn(Schedulers.io())
-        .observeOn(AndroidSchedulers.mainThread())
-        .subscribe(myDisposableObserver);
-
   }
 
-  private void confirmRemoveLocalDownload() {
+  private void setVoteButtonStates () {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+      if (post.getUpvoted() != null && post.getUpvoted()) {
+        upButton.getDrawable().setTint(ContextCompat.getColor(this, R.color.colorAccent));
+      }
+    }
+
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+      if (post.getDownvoted() != null && post.getDownvoted()) {
+        downButton.getDrawable().setTint(ContextCompat.getColor(this, R.color.colorAccent));
+      }
+    }
+  }
+
+  @OnClick(R.id.up_button)
+  public void upvotePost () {
+    if (userRepository.getToken().isEmpty()) {
+      displayMessage("You must login to vote");
+      return;
+    }
+
+    Integer newScore = post.getScore();
+    if (post.getUpvoted() != null && post.getUpvoted()) {
+      newScore -= 1;
+      post.setUpvoted(false);
+      post.setDownvoted(false);
+    } else {
+      newScore += 1;
+      if (post.getDownvoted()) {
+        newScore += 1;
+      }
+      post.setUpvoted(true);
+      post.setDownvoted(false);
+    }
+
+    logPostEvent(post.get_id(), "UP", "VOTE");
+
+    setVoteButtonStates();
+    scoreText.setText(String.valueOf(newScore));
+
+    mService.upVote(post.get_id())
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(new DisposableObserver<Void>() {
+              @Override
+              public void onComplete() {}
+              @Override
+              public void onError(Throwable e) {
+                Log.v(TAG, e.toString());
+              }
+              @Override
+              public void onNext(Void posts) {}
+            });
+  }
+
+  @OnClick(R.id.down_button)
+  public void downVotePost () {
+    if (userRepository.getToken().isEmpty()) {
+      displayMessage("You must login to vote");
+      return;
+    }
+
+    Integer newScore = post.getScore();
+    if (post.getDownvoted() != null && post.getDownvoted()) {
+      newScore += 1;
+      post.setDownvoted(false);
+      post.setUpvoted(false);
+    } else {
+      newScore -= 1;
+      if (post.getUpvoted()) {
+        newScore -= 1;
+      }
+      post.setDownvoted(true);
+      post.setUpvoted(false);
+    }
+
+    logPostEvent(post.get_id(), "DOWN", "VOTE");
+    setVoteButtonStates();
+    scoreText.setText(String.valueOf(newScore));
+
+    mService.downVote(post.get_id())
+      .subscribeOn(Schedulers.io())
+      .observeOn(AndroidSchedulers.mainThread())
+      .subscribe(new DisposableObserver<Void>() {
+        @Override
+        public void onComplete() {}
+
+        @Override
+        public void onError(Throwable e) {
+          Log.v(TAG, e.toString());
+        }
+
+        @Override
+        public void onNext(Void posts) {}
+      });
+  }
+
+  private void logPostEvent(String postId, String category, String name) {
+    Bundle bundle = new Bundle();
+    bundle.putString(FirebaseAnalytics.Param.ITEM_ID, postId);
+    bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, category);
+    bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, name);
+    mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
+  }
+
+  @OnClick(R.id.deleteButton)
+  public void confirmRemoveLocalDownload() {
     new AlertDialog.Builder(this)
       .setMessage(R.string.confirm_remove_download)
       .setIcon(android.R.drawable.ic_dialog_alert)
@@ -344,8 +298,9 @@ public class PodcastDetailActivity extends PlaybackControllerActivity {
     deleteButton.setVisibility(View.INVISIBLE);
   }
 
-  private void playClick (Post post) {
-    if (post.getMp3() == null || post.getMp3().isEmpty()) {
+  @OnClick(R.id.playButton)
+  public void playClick () {
+    if (post == null || post.getMp3() == null || post.getMp3().isEmpty()) {
       return;
     }
 
@@ -385,5 +340,15 @@ public class PodcastDetailActivity extends PlaybackControllerActivity {
 
     boolean isSameMedia = id.equals(getPlayingMediaId());
     onMediaItemSelected(bItem, isSameMedia);
+  }
+
+  private void handleDownloadStateChange (String state) {
+    if (post == null) return;
+    Boolean downloaded = PodcastDownloadsRepository.getInstance().isPodcastDownloaded(post);
+    if (downloaded) {
+      setUpDownloadedState();
+    } else {
+      setUpNotDownloadedState();
+    }
   }
 }
