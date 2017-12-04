@@ -35,4 +35,13 @@ public interface EpisodePostNetworkService {
 
     @POST("posts/{postid}/downvote")
     Completable downVote(@Path("postid") String postId);
+
+    @GET("favorites")
+    Observable<List<PostResponse>> getFavorites();
+
+    @POST("posts/{postid}/favorite")
+    Completable addFavorite(@Path("postid") String postid);
+
+    @POST("posts/{postid}/unfavorite")
+    Completable removeFavorite(@Path("postid") String postid);
 }

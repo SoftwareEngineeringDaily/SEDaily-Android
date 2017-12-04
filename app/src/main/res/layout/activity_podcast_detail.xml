@@ -49,10 +49,20 @@
                     android:id="@+id/down_button"
                     android:layout_width="40dp"
                     android:layout_height="40dp"
-                    android:src="@drawable/ic_down_arrow"
-                    android:layout_toRightOf="@+id/scoreTextView"
                     android:layout_toEndOf="@+id/scoreTextView"
-                    android:contentDescription="@string/down_vote" />
+                    android:layout_toRightOf="@+id/scoreTextView"
+                    android:contentDescription="@string/down_vote"
+                    android:src="@drawable/ic_down_arrow" />
+
+                <ImageView
+                    android:id="@+id/bookmark_button"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_toRightOf="@id/down_button"
+                    android:layout_toEndOf="@id/down_button"
+                    android:background="@color/button_grey"
+                    android:src="@drawable/ic_bookmark"
+                    android:contentDescription="@string/bookmarks"/>
 
                 <Button
                     android:id="@+id/deleteButton"

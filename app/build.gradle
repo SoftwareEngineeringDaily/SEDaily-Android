@@ -153,6 +153,10 @@ dependencies {
     kapt "com.google.auto.value:auto-value:$rootProject.autoValueVersion"
     compileOnly "com.ryanharter.auto.value:auto-value-gson:$rootProject.autoValueGsonVersion"
     kapt "com.ryanharter.auto.value:auto-value-gson:$rootProject.autoValueGsonVersion"
+    implementation "android.arch.persistence.room:runtime:1.0.0"
+    annotationProcessor "android.arch.persistence.room:compiler:1.0.0"
+    implementation "android.arch.persistence.room:rxjava2:1.0.0"
+
     //Testing
     testImplementation "junit:junit:$rootProject.junitVersion"
     testImplementation "org.jetbrains.kotlin:kotlin-test-junit:$kotlinVersion"

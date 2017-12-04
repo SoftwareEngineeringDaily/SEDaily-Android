@@ -1,5 +1,6 @@
 package com.koalatea.thehollidayinn.softwareengineeringdaily.podcast;
 
+import android.arch.persistence.room.Room;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -13,13 +14,17 @@ import android.view.ViewGroup;
 import com.ethanhua.skeleton.RecyclerViewSkeletonScreen;
 import com.ethanhua.skeleton.Skeleton;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.R;
+import com.koalatea.thehollidayinn.softwareengineeringdaily.data.AppDatabase;
+import com.koalatea.thehollidayinn.softwareengineeringdaily.data.models.Bookmark;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.data.models.Post;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.data.remote.APIInterface;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.data.remote.ApiUtils;
+import com.koalatea.thehollidayinn.softwareengineeringdaily.data.repositories.BookmarkDao;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.data.repositories.FilterRepository;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.data.repositories.PostRepository;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.data.repositories.UserRepository;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -139,6 +144,8 @@ public class PodListFragment extends Fragment {
       data.put("type", "top");
     } else if (this.title != null && this.title.equals("Just For You") && !userRepository.getToken().isEmpty()) {
       query = mService.getRecommendations(data);
+    } else if (this.title != null && this.title.equals("Bookmarks") && !userRepository.getToken().isEmpty()) {
+      query = mService.getBookmarks();
     } else if (tagId != null && !tagId.isEmpty()) {
       data.put("categories", tagId);
     }
@@ -165,6 +172,15 @@ public class PodListFragment extends Fragment {
         public void onNext(List<Post> posts) {
           podcastAdapter.setPosts(posts);
           postRepository.setPosts(posts);
+          if(title.equals("Bookmarks")) { // ensures consistency`
+            ArrayList<Bookmark> bookmarks = new ArrayList<>();
+            for(Post post: posts) {
+              bookmarks.add(new Bookmark(post));
+            }
+            AppDatabase db = Room.databaseBuilder(getContext(), AppDatabase.class, "sed-db").build();
+            BookmarkDao bookmarkDao = db.bookmarkDao();
+            bookmarkDao.insertAll(bookmarks);
+          }
           swipeRefreshLayout.setRefreshing(false);
         }
       });

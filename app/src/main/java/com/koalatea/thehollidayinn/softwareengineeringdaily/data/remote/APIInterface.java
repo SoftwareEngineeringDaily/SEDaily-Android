@@ -40,4 +40,12 @@ public interface APIInterface {
     @POST("auth/register")
     Observable<User> register(@Field("username") String username, @Field("password") String password);
 
+    @GET("favorites")
+    Observable<List<Post>> getBookmarks();
+
+    @POST("posts/{postid}/favorite")
+    Observable<Void> addBookmark(@Path("postid") String postid);
+
+    @POST("posts/{postid}/unfavorite")
+    Observable<Void> removeBookmark(@Path("postid") String postid);
 }

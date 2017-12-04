@@ -1,5 +1,9 @@
-package com.koalatea.thehollidayinn.softwareengineeringdaily.podcast;
+;package com.koalatea.thehollidayinn.softwareengineeringdaily.podcast;
 
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.arch.persistence.room.Room;
+import android.content.Context;
 
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -18,16 +22,20 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.PlaybackControllerActivity;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.R;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.app.SDEApp;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.audio.MusicProvider;
+import com.koalatea.thehollidayinn.softwareengineeringdaily.data.AppDatabase;
+import com.koalatea.thehollidayinn.softwareengineeringdaily.data.models.Bookmark;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.data.models.Content;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.data.models.Post;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.data.models.Title;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.data.remote.APIInterface;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.data.remote.ApiUtils;
+import com.koalatea.thehollidayinn.softwareengineeringdaily.data.repositories.BookmarkDao;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.data.repositories.PodcastDownloadsRepository;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.data.repositories.PostRepository;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.data.repositories.UserRepository;
@@ -53,6 +61,9 @@ public class PodcastDetailActivity extends PlaybackControllerActivity {
 
   @BindView(R.id.playButton)
   Button playButton;
+
+  @BindView(R.id.bookmark_button)
+  ImageView bookmarkButton;
 
   private Post post;
   private APIInterface mService;
@@ -83,6 +94,16 @@ public class PodcastDetailActivity extends PlaybackControllerActivity {
 
     postRepository = PostRepository.getInstance();
     loadPost(postId);
+
+    AppDatabase db = Room.databaseBuilder(getApplicationContext(),
+            AppDatabase.class, "sed-db").build();
+
+    BookmarkDao bookmarkDao = db.bookmarkDao();
+    Bookmark bookmark = bookmarkDao.loadById(postId);
+
+    if(bookmark != null) {  // the post has been bookmarked before
+      bookmarkButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_bookmark_set));
+    }
   }
 
   @Override
@@ -385,5 +406,62 @@ public class PodcastDetailActivity extends PlaybackControllerActivity {
 
     boolean isSameMedia = id.equals(getPlayingMediaId());
     onMediaItemSelected(bItem, isSameMedia);
+  }
+
+  @OnClick(R.id.bookmark_button)
+  public void onClickBookmarkButton() {
+    if(userRepository.getToken().isEmpty()) {
+      displayMessage("You must login to vote");
+      return;
+    }
+    AppDatabase db = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "sed-db")
+            .build();
+    BookmarkDao bookmarkDao = db.bookmarkDao();
+    Bookmark bookmark = bookmarkDao.loadById(post.getId());
+    if(bookmark != null) {
+      mService.removeBookmark(post.get_id())
+        .subscribeOn(Schedulers.io())
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(new Subscriber<Void>() {
+          @Override
+          public void onCompleted() {
+            bookmarkButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_bookmark));
+          }
+
+          @Override
+          public void onError(Throwable e) {
+            Log.v(TAG, e.toString());
+          }
+
+          @Override
+          public void onNext(Void posts) {
+
+          }
+        });
+      bookmarkDao.delete(bookmark);
+    }
+    else {
+      mService.addBookmark(post.get_id())
+        .subscribeOn(Schedulers.io())
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(new Subscriber<Void>() {
+          @Override
+          public void onCompleted() {
+            bookmarkButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_bookmark_set));
+          }
+
+          @Override
+          public void onError(Throwable e) {
+            Log.v(TAG, e.toString());
+          }
+
+          @Override
+          public void onNext(Void posts) {
+
+          }
+        });
+      bookmark = new Bookmark(post);
+      bookmarkDao.insertOne(bookmark);
+    }
   }
 }
