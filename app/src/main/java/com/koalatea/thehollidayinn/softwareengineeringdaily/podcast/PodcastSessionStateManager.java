@@ -1,8 +1,9 @@
 package com.koalatea.thehollidayinn.softwareengineeringdaily.podcast;
 
 import android.support.v4.media.session.PlaybackStateCompat;
-import rx.Observable;
-import rx.subjects.PublishSubject;
+
+import io.reactivex.Observable;
+import io.reactivex.subjects.PublishSubject;
 
 /*
  * Created by keithholliday on 9/30/17.

@@ -3,6 +3,7 @@ package com.koalatea.thehollidayinn.softwareengineeringdaily.podcast;
 import android.arch.persistence.room.Room;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -28,10 +29,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import rx.Subscriber;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
-import timber.log.Timber;
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.observers.DisposableObserver;
+import io.reactivex.schedulers.Schedulers;
 
 /*
  * Created by krh12 on 5/22/2017.
@@ -42,8 +43,9 @@ public class PodListFragment extends Fragment {
   private String title;
   private String tagId;
   private PodcastAdapter podcastAdapter;
-  private Subscriber<String> mySubscriber;
+  private DisposableObserver<String> myDisposableObserver;
   private RecyclerViewSkeletonScreen skeletonScreen;
+  private SwipeRefreshLayout swipeRefreshLayout;
 
   public static PodListFragment newInstance(String title, String tagId) {
     PodListFragment f = new PodListFragment();
@@ -75,36 +77,55 @@ public class PodListFragment extends Fragment {
         .shimmer(true)
         .show();
 
-    FilterRepository filterRepository = FilterRepository.getInstance();
-    mySubscriber = new Subscriber<String>() {
+    swipeRefreshLayout = rootView.findViewById(R.id.swiperefresh);
+    swipeRefreshLayout.setOnRefreshListener(
+      new SwipeRefreshLayout.OnRefreshListener() {
+        @Override
+        public void onRefresh() {
+          getPosts("");
+        }
+      }
+    );
+
+
+    this.setUpSubscription();
+
+    return rootView;
+  }
+
+  public void setUpSubscription() {
+    if (myDisposableObserver != null) {
+      return;
+    }
+
+    myDisposableObserver = new DisposableObserver<String>() {
       @Override
       public void onNext(String s) {
-          getPosts(s);
+        getPosts(s);
       }
 
       @Override
-      public void onCompleted() { }
+      public void onComplete() { }
 
       @Override
       public void onError(Throwable e) { }
     };
-    filterRepository.getModelChanges().subscribe(mySubscriber);
-
-    return rootView;
+    FilterRepository filterRepository = FilterRepository.getInstance();
+    filterRepository.getModelChanges().subscribe(myDisposableObserver);
   }
 
   @Override
   public void onStart() {
     super.onStart();
-    getPosts("");
+    this.getPosts("");
   }
 
   @Override
   public void onDestroy() {
     super.onDestroy();
 
-    if (mySubscriber != null) {
-      mySubscriber.unsubscribe();
+    if (myDisposableObserver != null) {
+      myDisposableObserver.isDisposed();
     }
   }
 
@@ -114,7 +135,7 @@ public class PodListFragment extends Fragment {
     // @TODO: Replace tmp with query
 
     Map<String, String> data = new HashMap<>();
-    rx.Observable<List<Post>> query = mService.getPosts(data);
+    Observable<List<Post>> query = mService.getPosts(data);
 
     UserRepository userRepository = UserRepository.getInstance(this.getContext());
     final PostRepository postRepository = PostRepository.getInstance();
@@ -136,9 +157,9 @@ public class PodListFragment extends Fragment {
     query
       .subscribeOn(Schedulers.io())
       .observeOn(AndroidSchedulers.mainThread())
-      .subscribe(new Subscriber<List<Post>>() {
+      .subscribe(new DisposableObserver<List<Post>>() {
         @Override
-        public void onCompleted() {
+        public void onComplete() {
           skeletonScreen.hide();
         }
 
@@ -160,6 +181,7 @@ public class PodListFragment extends Fragment {
             BookmarkDao bookmarkDao = db.bookmarkDao();
             bookmarkDao.insertAll(bookmarks);
           }
+          swipeRefreshLayout.setRefreshing(false);
         }
       });
   }

@@ -12,12 +12,9 @@ import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
-import okhttp3.ResponseBody;
 import okhttp3.logging.HttpLoggingInterceptor;
-import retrofit2.Converter;
 import retrofit2.Retrofit;
-import retrofit2.adapter.rxjava.HttpException;
-import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
+import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 /*
@@ -32,7 +29,7 @@ public class ApiUtils {
 
   private static final Retrofit.Builder builder =
     new Retrofit.Builder()
-      .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
+      .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
       .addConverterFactory(gsonConverter)
       .baseUrl(BASE_URL);
 
@@ -72,16 +69,16 @@ public class ApiUtils {
     return retrofitAdapter.create(APIInterface.class);
   }
 
-  public static ErrorResponse getErrorResponse(HttpException error) {
-    retrofit2.Response<?> response = error.response();
-    Converter<ResponseBody, ?> errorConverter =
-      gsonConverter.responseBodyConverter(ErrorResponse.class, new Annotation[0], retrofitAdapter);
-    try {
-      return (ErrorResponse) errorConverter.convert(response.errorBody());
-    } catch (IOException e) {
-      return new ErrorResponse();
-    }
-  }
+//  public static ErrorResponse getErrorResponse(HttpException error) {
+//    retrofit2.Response<?> response = error.response();
+//    Converter<ResponseBody, ?> errorConverter =
+//      gsonConverter.responseBodyConverter(ErrorResponse.class, new Annotation[0], retrofitAdapter);
+//    try {
+//      return (ErrorResponse) errorConverter.convert(response.errorBody());
+//    } catch (IOException e) {
+//      return new ErrorResponse();
+//    }
+//  }
 
   public static class ErrorResponse {
     public String message;

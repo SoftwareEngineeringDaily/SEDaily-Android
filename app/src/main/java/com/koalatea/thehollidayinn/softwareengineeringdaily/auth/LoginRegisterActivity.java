@@ -36,12 +36,11 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import retrofit2.Response;
-import retrofit2.adapter.rxjava.HttpException;
-import rx.Scheduler;
-import rx.Subscriber;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
+
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.observers.DisposableObserver;
+import io.reactivex.schedulers.Schedulers;
 
 public class LoginRegisterActivity extends AppCompatActivity {
     private Boolean register = false;
@@ -141,22 +140,23 @@ public class LoginRegisterActivity extends AppCompatActivity {
         getQuery(username, password)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(new Subscriber<User>() {
+            .subscribe(new DisposableObserver<User>() {
                 @Override
-                public void onCompleted() {
+                public void onComplete() {
                     loginRegButton.setEnabled(true);
                 }
 
                 @Override
                 public void onError(Throwable e) {
-                    HttpException exception = (HttpException) e;
-                    Response response = exception.response();
-                    try {
-                        JSONObject jsonResponse = new JSONObject(response.errorBody().string());
-                        displayMessage(jsonResponse.getString("message"));
-                    } catch (IOException | JSONException e1) {
-                        e1.printStackTrace();
-                    }
+//                    HttpException exception = (HttpException) e;
+//                    Response response = exception.response();
+//                    try {
+//                        JSONObject jsonResponse = new JSONObject(response.errorBody().string());
+//                        displayMessage(jsonResponse.getString("message"));
+//                    } catch (IOException | JSONException e1) {
+//                        e1.printStackTrace();
+//                    }
+                    displayMessage("Incorrect username or password");
                 }
 
                 @Override
@@ -212,7 +212,7 @@ public class LoginRegisterActivity extends AppCompatActivity {
         return getString(R.string.login);
     }
 
-    private rx.Observable<User> getQuery (String username, String password) {
+    private Observable<User> getQuery (String username, String password) {
       APIInterface mService = ApiUtils.getKibbleService(this);
       if (register) {
         return mService.register(username, password);

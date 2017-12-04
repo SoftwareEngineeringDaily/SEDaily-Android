@@ -41,7 +41,7 @@ public class RecentPodcastFragment extends Fragment {
 
     ButterKnife.bind(this, rootView);
 
-    recentPodcatsPageAdapter = new RecentPodcastsPageAdapter(this.getActivity().getSupportFragmentManager());
+    recentPodcatsPageAdapter = new RecentPodcastsPageAdapter(getChildFragmentManager());
     viewPager.setAdapter(recentPodcatsPageAdapter);
     tabLayout.post(new Runnable() {
       @Override

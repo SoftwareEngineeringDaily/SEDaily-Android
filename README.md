@@ -2,6 +2,7 @@
 [![logo](https://i.imgur.com/3OtP3p8.png)](https://softwareengineeringdaily.com/)
 
 [![Build Status](https://travis-ci.org/SoftwareEngineeringDaily/software-engineering-daily-api.svg?branch=develop)](https://travis-ci.org/SoftwareEngineeringDaily/software-engineering-daily-api)
+[![codecov](https://codecov.io/gh/SoftwareEngineeringDaily/SEDaily-Android/branch/develop/graph/badge.svg)](https://codecov.io/gh/SoftwareEngineeringDaily/SEDaily-Android)
 
 # SEDaily-Android
 
