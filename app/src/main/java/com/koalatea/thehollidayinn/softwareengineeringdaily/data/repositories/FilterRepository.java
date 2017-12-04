@@ -1,11 +1,11 @@
 package com.koalatea.thehollidayinn.softwareengineeringdaily.data.repositories;
 
-import rx.Observable;
-import rx.subjects.PublishSubject;
-
 /*
  * Created by keithholliday on 9/16/17.
  */
+
+import io.reactivex.Observable;
+import io.reactivex.subjects.PublishSubject;
 
 public class FilterRepository {
     private final PublishSubject<String> changeObservable = PublishSubject.create();

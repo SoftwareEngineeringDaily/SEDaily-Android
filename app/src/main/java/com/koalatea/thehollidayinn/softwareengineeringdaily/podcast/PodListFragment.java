@@ -24,10 +24,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import rx.Subscriber;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
-import timber.log.Timber;
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.observers.DisposableObserver;
+import io.reactivex.schedulers.Schedulers;
 
 /*
  * Created by krh12 on 5/22/2017.
@@ -38,7 +38,7 @@ public class PodListFragment extends Fragment {
   private String title;
   private String tagId;
   private PodcastAdapter podcastAdapter;
-  private Subscriber<String> mySubscriber;
+  private DisposableObserver<String> myDisposableObserver;
   private RecyclerViewSkeletonScreen skeletonScreen;
   private SwipeRefreshLayout swipeRefreshLayout;
 
@@ -89,24 +89,24 @@ public class PodListFragment extends Fragment {
   }
 
   public void setUpSubscription() {
-    if (mySubscriber != null) {
+    if (myDisposableObserver != null) {
       return;
     }
 
-    mySubscriber = new Subscriber<String>() {
+    myDisposableObserver = new DisposableObserver<String>() {
       @Override
       public void onNext(String s) {
         getPosts(s);
       }
 
       @Override
-      public void onCompleted() { }
+      public void onComplete() { }
 
       @Override
       public void onError(Throwable e) { }
     };
     FilterRepository filterRepository = FilterRepository.getInstance();
-    filterRepository.getModelChanges().subscribe(mySubscriber);
+    filterRepository.getModelChanges().subscribe(myDisposableObserver);
   }
 
   @Override
@@ -119,8 +119,8 @@ public class PodListFragment extends Fragment {
   public void onDestroy() {
     super.onDestroy();
 
-    if (mySubscriber != null) {
-      mySubscriber.unsubscribe();
+    if (myDisposableObserver != null) {
+      myDisposableObserver.isDisposed();
     }
   }
 
@@ -130,7 +130,7 @@ public class PodListFragment extends Fragment {
     // @TODO: Replace tmp with query
 
     Map<String, String> data = new HashMap<>();
-    rx.Observable<List<Post>> query = mService.getPosts(data);
+    Observable<List<Post>> query = mService.getPosts(data);
 
     UserRepository userRepository = UserRepository.getInstance(this.getContext());
     final PostRepository postRepository = PostRepository.getInstance();
@@ -150,9 +150,9 @@ public class PodListFragment extends Fragment {
     query
       .subscribeOn(Schedulers.io())
       .observeOn(AndroidSchedulers.mainThread())
-      .subscribe(new Subscriber<List<Post>>() {
+      .subscribe(new DisposableObserver<List<Post>>() {
         @Override
-        public void onCompleted() {
+        public void onComplete() {
           skeletonScreen.hide();
         }
 
