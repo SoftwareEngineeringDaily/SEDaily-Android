@@ -187,6 +187,8 @@ public class PodcastDetailActivity extends PlaybackControllerActivity {
 
   @OnClick(R.id.up_button)
   public void upvotePost () {
+    if (post == null) return;
+
     if (userRepository.getToken().isEmpty()) {
       displayMessage("You must login to vote");
       return;
@@ -228,6 +230,8 @@ public class PodcastDetailActivity extends PlaybackControllerActivity {
 
   @OnClick(R.id.down_button)
   public void downVotePost () {
+    if (post == null) return;
+
     if (userRepository.getToken().isEmpty()) {
       displayMessage("You must login to vote");
       return;
@@ -278,6 +282,7 @@ public class PodcastDetailActivity extends PlaybackControllerActivity {
 
   @OnClick(R.id.deleteButton)
   public void confirmRemoveLocalDownload() {
+    if (post == null) return;
     new AlertDialog.Builder(this)
       .setMessage(R.string.confirm_remove_download)
       .setIcon(android.R.drawable.ic_dialog_alert)

@@ -11,7 +11,6 @@ import com.koalatea.thehollidayinn.softwareengineeringdaily.network.response.Pos
 
 import io.reactivex.Completable;
 import io.reactivex.functions.Action;
-import io.reactivex.functions.Consumer;
 import java.util.List;
 
 import io.reactivex.Observable;

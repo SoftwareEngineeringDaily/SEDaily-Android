@@ -20,11 +20,6 @@ import com.koalatea.thehollidayinn.softwareengineeringdaily.data.remote.APIInter
 import com.koalatea.thehollidayinn.softwareengineeringdaily.data.remote.ApiUtils;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.data.repositories.UserRepository;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.IOException;
-
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.reactivex.Observable;
