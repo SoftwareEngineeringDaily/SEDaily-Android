@@ -6,7 +6,6 @@ import com.koalatea.thehollidayinn.softwareengineeringdaily.BuildConfig;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.data.repositories.UserRepository;
 
 import java.io.IOException;
-import java.lang.annotation.Annotation;
 
 import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;

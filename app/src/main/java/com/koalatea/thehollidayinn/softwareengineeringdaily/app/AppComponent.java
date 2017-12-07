@@ -25,8 +25,12 @@ import dagger.Component;
  * Created by Kurian on 25-Sep-17.
  */
 @AppScope
-@Component(modules = {AppModule.class, NetworkModule.class, DataModule.class, DomainModule.class,
-    AnalyticsModule.class})
+@Component(modules = {
+        AppModule.class,
+        NetworkModule.class,
+        DataModule.class,
+        DomainModule.class,
+        AnalyticsModule.class})
 public interface AppComponent {
     Context context();
     SharedPreferences sharedPreferences();
