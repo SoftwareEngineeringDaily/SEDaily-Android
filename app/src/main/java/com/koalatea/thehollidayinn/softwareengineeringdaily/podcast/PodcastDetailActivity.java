@@ -69,7 +69,6 @@ public class PodcastDetailActivity extends PlaybackControllerActivity {
 
   private Post post;
   private APIInterface mService;
-  private FirebaseAnalytics mFirebaseAnalytics;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -78,8 +77,6 @@ public class PodcastDetailActivity extends PlaybackControllerActivity {
     ButterKnife.bind(this);
 
     setUp();
-
-    mFirebaseAnalytics = FirebaseAnalytics.getInstance(getApplicationContext());
 
     if (toolbar != null) {
       toolbar.setTitle("");
@@ -208,8 +205,7 @@ public class PodcastDetailActivity extends PlaybackControllerActivity {
       post.setDownvoted(false);
     }
 
-    logPostEvent(post.get_id(), "UP", "VOTE");
-
+    SDEApp.component().analyticsFacade().trackUpVote(post.getId());
     setVoteButtonStates();
     scoreText.setText(String.valueOf(newScore));
 
@@ -251,7 +247,7 @@ public class PodcastDetailActivity extends PlaybackControllerActivity {
       post.setUpvoted(false);
     }
 
-    logPostEvent(post.get_id(), "DOWN", "VOTE");
+    SDEApp.component().analyticsFacade().trackDownVote(post.getId());
     setVoteButtonStates();
     scoreText.setText(String.valueOf(newScore));
 
@@ -270,14 +266,6 @@ public class PodcastDetailActivity extends PlaybackControllerActivity {
         @Override
         public void onNext(Void posts) {}
       });
-  }
-
-  private void logPostEvent(String postId, String category, String name) {
-    Bundle bundle = new Bundle();
-    bundle.putString(FirebaseAnalytics.Param.ITEM_ID, postId);
-    bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, category);
-    bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, name);
-    mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
   }
 
   @OnClick(R.id.deleteButton)
