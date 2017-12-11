@@ -45,7 +45,7 @@ ext {
   //Firebase
   firebaseServicesVersion = '11.6.2'
   //Architecture
-  daggerVersion = '2.11'
+  daggerVersion = '2.13'
   playVersion = '11.6.2'
   //UI
   butterknifeVersion = '8.8.1'
