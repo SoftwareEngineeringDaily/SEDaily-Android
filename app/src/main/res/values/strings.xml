@@ -8,7 +8,7 @@
   <string name="zero">0</string>
   <string name="titlePlaceHolder">Pets n More Adoption Drive</string>
   <string name="datePlaceHolder">March 28—31</string>
-  <string name="login">Login</string>
+
   <string name="logout">Logout</string>
   <string name="search">Search</string>
   <string name="label_pause">Pause</string>
@@ -30,6 +30,11 @@
   <string name="currently_playing_artist">Artist of currently playing song</string>
   <string name="currently_playing_extra_info">Extra info for currently playing song</string>
   <string name="play_pause">play or pause</string>
+
+  // LoginReg
+  <string name="login">Login</string>
+  <string name="email">Email</string>
+  <string name="usernameOrEmail">Username or Email</string>
 
   // Accessibility
   <string name="logo">Logo</string>

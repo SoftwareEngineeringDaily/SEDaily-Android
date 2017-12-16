@@ -34,10 +34,10 @@ public interface APIInterface {
 
     @FormUrlEncoded
     @POST("auth/login")
-    Observable<User> login(@Field("username") String username, @Field("password") String password);
+    Observable<User> login(@Field("username") String username, @Field("email") String email, @Field("password") String password);
 
     @FormUrlEncoded
     @POST("auth/register")
-    Observable<User> register(@Field("username") String username, @Field("password") String password);
+    Observable<User> register(@Field("username") String username, @Field("email") String email, @Field("password") String password);
 
 }
