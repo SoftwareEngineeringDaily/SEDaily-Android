@@ -201,7 +201,7 @@ public class PodcastDetailActivity extends PlaybackControllerActivity {
       post.setDownvoted(false);
     } else {
       newScore += 1;
-      if (post.getDownvoted()) {
+      if (post.getDownvoted() != null && post.getDownvoted()) {
         newScore += 1;
       }
       post.setUpvoted(true);

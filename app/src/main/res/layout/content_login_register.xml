@@ -29,6 +29,17 @@
         android:layout_below="@+id/title"
         />
 
+
+    <EditText
+        android:layout_width="260dp"
+        android:layout_height="wrap_content"
+        android:id="@+id/email"
+        android:hint="@string/email"
+        android:inputType="textEmailAddress"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@+id/username"
+        />
+
     <EditText
         android:layout_width="260dp"
         android:layout_height="wrap_content"
@@ -36,7 +47,7 @@
         android:hint="@string/password"
         android:inputType="textPassword"
         android:layout_centerHorizontal="true"
-        android:layout_below="@+id/username"
+        android:layout_below="@+id/email"
         />
 
     <Button

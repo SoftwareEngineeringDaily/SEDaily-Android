@@ -27,7 +27,6 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.observers.DisposableObserver;
 import io.reactivex.schedulers.Schedulers;
 
-
 public class LoginRegisterActivity extends AppCompatActivity {
     private Boolean register = false;
 
@@ -36,6 +35,9 @@ public class LoginRegisterActivity extends AppCompatActivity {
 
     @BindView(R.id.username)
     EditText usernameEditText;
+
+    @BindView(R.id.email)
+    EditText emailEditText;
 
     @BindView(R.id.password)
     EditText passwordEditText;
@@ -67,27 +69,42 @@ public class LoginRegisterActivity extends AppCompatActivity {
           public void onClick(View v) {
               String username = usernameEditText.getText().toString();
               String password = passwordEditText.getText().toString();
+              String email = emailEditText.getText().toString();
 
-              loginReg(username, password);
+              loginReg(username, email, password);
           }
       });
 
       toggleButton.setOnClickListener(new View.OnClickListener() {
           @Override
           public void onClick(View v) {
-        if (register) {
-          register = false;
-          title.setText(getString(R.string.login));
-          toggleButton.setText(getString(R.string.register));
-          loginRegButton.setText(getString(R.string.login));
-        } else {
-          register = true;
-          title.setText(getString(R.string.register));
-          toggleButton.setText(getString(R.string.login));
-          loginRegButton.setText(getString(R.string.register));
-        }
+            if (register) {
+                setUpLoginView();
+                return;
+            }
+            setUpRegisterView();
           }
       });
+
+      setUpLoginView();
+    }
+
+    private void setUpLoginView () {
+        register = false;
+        title.setText(getString(R.string.login));
+        toggleButton.setText(getString(R.string.register));
+        loginRegButton.setText(getString(R.string.login));
+        usernameEditText.setHint(R.string.usernameOrEmail);
+        emailEditText.setVisibility(View.INVISIBLE);
+    }
+
+    private void setUpRegisterView () {
+        register = true;
+        title.setText(getString(R.string.register));
+        toggleButton.setText(getString(R.string.login));
+        loginRegButton.setText(getString(R.string.register));
+        usernameEditText.setHint(R.string.username);
+        emailEditText.setVisibility(View.VISIBLE);
     }
 
     private void displayMessage (String message) {
@@ -117,13 +134,18 @@ public class LoginRegisterActivity extends AppCompatActivity {
           .show();
     }
 
-    private void loginReg(String username, String password) {
+    private void loginReg(String username, String email, String password) {
         loginRegButton.setEnabled(false);
 
         String type = getType();
         logLoginRegAnalytics(username, type);
 
-        getQuery(username, password)
+        // Check if user is using email for login
+        if (email.isEmpty() && username.contains("@")) {
+            email = username;
+        }
+
+        getQuery(username, email, password)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(new DisposableObserver<User>() {
@@ -169,12 +191,12 @@ public class LoginRegisterActivity extends AppCompatActivity {
         return getString(R.string.login);
     }
 
-    private Observable<User> getQuery (String username, String password) {
+    private Observable<User> getQuery (String username, String email, String password) {
       APIInterface mService = ApiUtils.getKibbleService(this);
       if (register) {
-        return mService.register(username, password);
+        return mService.register(username, email, password);
       }
 
-      return mService.login(username, password);
+      return mService.login(username, email, password);
     }
 }
