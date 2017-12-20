@@ -35,7 +35,7 @@
         android:layout_height="wrap_content"
         android:id="@+id/email"
         android:hint="@string/email"
-        android:inputType="textPassword"
+        android:inputType="textEmailAddress"
         android:layout_centerHorizontal="true"
         android:layout_below="@+id/username"
         />
