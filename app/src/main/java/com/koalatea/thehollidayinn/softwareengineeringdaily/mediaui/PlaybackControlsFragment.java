@@ -251,6 +251,15 @@ public class PlaybackControlsFragment extends Fragment {
       MediaMetadataCompat latest = MusicProvider.getInstance().getMusic(metadata.getDescription().getMediaId());
 
       title.setText(latest.getDescription().getTitle());
+
+      String postTile = latest.getDescription().getTitle().toString();
+      MediaControllerCompat controller = MediaControllerCompat.getMediaController(getActivity());
+      if (controller != null && !postTile.isEmpty() && !postTile.equals(PodcastSessionStateManager.getInstance().getCurrentTitle())) {
+          PodcastSessionStateManager.getInstance().setCurrentTitle(postTile);
+          long currentPlayPosition = PodcastSessionStateManager.getInstance().getProgressForEpisode(postTile);
+          controller.getTransportControls().seekTo(currentPlayPosition);
+          mStart.setText(DateUtils.formatElapsedTime(currentPlayPosition / 1000));
+      }
   }
 
   private void handlePlaybackStateChange(PlaybackStateCompat state) {
@@ -362,6 +371,7 @@ public class PlaybackControlsFragment extends Fragment {
       if (mLastPlaybackState == null) {
           return;
       }
+
       long currentPosition = mLastPlaybackState.getPosition();
       if (mLastPlaybackState.getState() == PlaybackStateCompat.STATE_PLAYING) {
           // Calculate the elapsed time between the last position update and now and unless
@@ -372,6 +382,13 @@ public class PlaybackControlsFragment extends Fragment {
                   mLastPlaybackState.getLastPositionUpdateTime();
           currentPosition += (int) timeDelta * mLastPlaybackState.getPlaybackSpeed();
       }
+
+      // Save progress for episode
+      String postTile = PodcastSessionStateManager.getInstance().getCurrentTitle();
+      if (!postTile.isEmpty()) {
+          PodcastSessionStateManager.getInstance().setProgressForEpisode(postTile, currentPosition);
+      }
+
       mSeekbar.setProgress((int) currentPosition);
   }
 
