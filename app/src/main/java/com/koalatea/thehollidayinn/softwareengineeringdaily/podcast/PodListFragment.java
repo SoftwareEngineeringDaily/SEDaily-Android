@@ -1,5 +1,6 @@
 package com.koalatea.thehollidayinn.softwareengineeringdaily.podcast;
 
+import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -28,6 +29,7 @@ import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.observers.DisposableObserver;
 import io.reactivex.schedulers.Schedulers;
+import timber.log.Timber;
 
 /*
  * Created by krh12 on 5/22/2017.
@@ -41,6 +43,7 @@ public class PodListFragment extends Fragment {
   private DisposableObserver<String> myDisposableObserver;
   private RecyclerViewSkeletonScreen skeletonScreen;
   private SwipeRefreshLayout swipeRefreshLayout;
+  private PodcastListViewModel podcastListViewModel;
 
   public static PodListFragment newInstance(String title, String tagId) {
     PodListFragment f = new PodListFragment();
@@ -48,6 +51,7 @@ public class PodListFragment extends Fragment {
     f.title = title;
     f.tagId = tagId;
     f.setArguments(args);
+
     return f;
   }
 
@@ -82,6 +86,13 @@ public class PodListFragment extends Fragment {
       }
     );
 
+    podcastListViewModel = ViewModelProviders
+            .of(this)
+            .get(PodcastListViewModel.class);
+    podcastListViewModel.getPostList().observe(this, posts -> {
+      Timber.v("podcastListViewModel" + tagId);
+      if (posts != null) updatePosts(posts);
+    });
 
     this.setUpSubscription();
 
@@ -163,10 +174,15 @@ public class PodListFragment extends Fragment {
 
         @Override
         public void onNext(List<Post> posts) {
-          podcastAdapter.setPosts(posts);
-          postRepository.setPosts(posts);
+//          podcastAdapter.setPosts(posts);
+//          postRepository.setPosts(posts);
+          podcastListViewModel.setPostList(posts);
           swipeRefreshLayout.setRefreshing(false);
         }
       });
+  }
+
+  private void updatePosts(List<Post> postList) {
+    podcastAdapter.setPosts(postList);
   }
 }
