@@ -3,6 +3,7 @@
 
 [![Build Status](https://travis-ci.org/SoftwareEngineeringDaily/software-engineering-daily-api.svg?branch=develop)](https://travis-ci.org/SoftwareEngineeringDaily/software-engineering-daily-api)
 [![codecov](https://codecov.io/gh/SoftwareEngineeringDaily/SEDaily-Android/branch/develop/graph/badge.svg)](https://codecov.io/gh/SoftwareEngineeringDaily/SEDaily-Android)
+[![Help Contribute to Open Source](https://www.codetriage.com/softwareengineeringdaily/sedaily-android/badges/users.svg)](https://www.codetriage.com/softwareengineeringdaily/sedaily-android)
 
 # SEDaily-Android
 
