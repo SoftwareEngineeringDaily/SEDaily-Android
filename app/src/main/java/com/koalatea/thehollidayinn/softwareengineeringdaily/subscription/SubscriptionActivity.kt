@@ -1,7 +1,9 @@
 package com.koalatea.thehollidayinn.softwareengineeringdaily.subscription
 
+import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
+import com.koalatea.thehollidayinn.softwareengineeringdaily.MainActivity
 import com.koalatea.thehollidayinn.softwareengineeringdaily.R
 
 import kotlinx.android.synthetic.main.activity_subscription.*
@@ -36,8 +38,9 @@ class SubscriptionActivity : AppCompatActivity(),
                 .commit()
     }
 
-    override fun onFragmentInteraction() {
-
+    override fun paymentSuccess() {
+        val intent = Intent(this, MainActivity::class.java)
+        startActivity(intent)
     }
 
     override fun onPlanSelected(type: String) {

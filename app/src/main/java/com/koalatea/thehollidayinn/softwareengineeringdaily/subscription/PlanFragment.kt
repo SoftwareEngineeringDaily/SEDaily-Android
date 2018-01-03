@@ -29,11 +29,11 @@ class PlanFragment : Fragment() {
     }
 
     private fun selectMonthlyPlan () {
-        mListener?.onPlanSelected("Monthly");
+        mListener?.onPlanSelected("sed_monthly_subscription");
     }
 
     private fun selectYearlyPlan () {
-        mListener?.onPlanSelected("Yearl");
+        mListener?.onPlanSelected("sed_yearly_subscription");
     }
 
     override fun onAttach(context: Context?) {

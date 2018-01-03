@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import io.reactivex.Observable;
+import retrofit2.http.DELETE;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
@@ -40,4 +41,10 @@ public interface APIInterface {
     @POST("auth/register")
     Observable<User> register(@Field("username") String username, @Field("email") String email, @Field("password") String password);
 
+    @FormUrlEncoded
+    @POST("subscription")
+    Observable<Void> createSubscription(@Field("stripeToken") String stripeToken, @Field("planType") String planType);
+
+    @DELETE("subscription")
+    Observable<Void> cancelSubscription();
 }
