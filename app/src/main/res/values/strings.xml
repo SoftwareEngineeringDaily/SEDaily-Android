@@ -1,45 +1,50 @@
 <resources>
-  <string name="app_name">SoftwareEngineeringDaily</string>
-  <string name="item_title">SoftwareEngineeringDaily</string>
-  <string name="title_activity_podcast_detail">PodcastDetailActivity</string>
-  <string name="title_activity_login_register">LoginRegisterActivity</string>
-  <string name="playback_controller">PlaybackController</string>
-  <string name="search_hint">Search</string>
-  <string name="zero">0</string>
-  <string name="titlePlaceHolder">Pets n More Adoption Drive</string>
-  <string name="datePlaceHolder">March 28—31</string>
+    <string name="app_name">SoftwareEngineeringDaily</string>
+    <string name="item_title">SoftwareEngineeringDaily</string>
+    <string name="title_activity_podcast_detail">PodcastDetailActivity</string>
+    <string name="title_activity_login_register">LoginRegisterActivity</string>
+    <string name="playback_controller">PlaybackController</string>
+    <string name="search_hint">Search</string>
+    <string name="zero">0</string>
+    <string name="titlePlaceHolder">Pets n More Adoption Drive</string>
+    <string name="datePlaceHolder">March 28—31</string>
 
-  <string name="logout">Logout</string>
-  <string name="search">Search</string>
-  <string name="label_pause">Pause</string>
-  <string name="label_play">Play</string>
-  <string name="open_source_info">Open Source Info</string>
-  <string name="download">Download</string>
-  <string name="downloading">Cancel Download</string>
-  <string name="remove_download">Remove</string>
-  <string name="confirm_remove_download">Do you really want to delete this download?</string>
-  <string name="speed">Speed</string>
-  <string name="speed_1x">1x</string>
+    <string name="logout">Logout</string>
+    <string name="search">Search</string>
+    <string name="label_pause">Pause</string>
+    <string name="label_play">Play</string>
+    <string name="open_source_info">Open Source Info</string>
+    <string name="download">Download</string>
+    <string name="downloading">Cancel Download</string>
+    <string name="remove_download">Remove</string>
+    <string name="confirm_remove_download">Do you really want to delete this download?</string>
+    <string name="speed">Speed</string>
+    <string name="speed_1x">1x</string>
+    <string name="subscribe">Subscribe</string>
 
 
-  <string name="just_for_you">Just For You</string>
-  <string name="greatest_hits">Greatest Hits</string>
-  <string name="latest">Latest</string>
+    <string name="just_for_you">Just For You</string>
+    <string name="greatest_hits">Greatest Hits</string>
+    <string name="latest">Latest</string>
 
-  <string name="currently_playing_song">Song currently playing</string>
-  <string name="currently_playing_artist">Artist of currently playing song</string>
-  <string name="currently_playing_extra_info">Extra info for currently playing song</string>
-  <string name="play_pause">play or pause</string>
+    <string name="currently_playing_song">Song currently playing</string>
+    <string name="currently_playing_artist">Artist of currently playing song</string>
+    <string name="currently_playing_extra_info">Extra info for currently playing song</string>
+    <string name="play_pause">play or pause</string>
 
-  // LoginReg
-  <string name="login">Login</string>
-  <string name="email">Email</string>
-  <string name="usernameOrEmail">Username or Email</string>
+    // LoginReg
+    <string name="login">Login</string>
+    <string name="email">Email</string>
+    <string name="usernameOrEmail">Username or Email</string>
 
-  // Accessibility
-  <string name="logo">Logo</string>
-  <string name="up_vote">Up Vote</string>
-  <string name="down_vote">Down Vote</string>
-  <string name="podcast_image">Main Podcast Image</string>
+    // Accessibility
+    <string name="logo">Logo</string>
+    <string name="up_vote">Up Vote</string>
+    <string name="down_vote">Down Vote</string>
+    <string name="podcast_image">Main Podcast Image</string>
+    <string name="title_activity_subscription">Subscription</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 
 </resources>

@@ -8,13 +8,19 @@
         app:showAsAction="never" />
 
     <item
-        android:id="@+id/action_logout"
+        android:id="@+id/action_subscribe"
         android:orderInCategory="101"
+        android:title="@string/subscribe"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_logout"
+        android:orderInCategory="102"
         android:title="@string/logout"
         app:showAsAction="never" />
 
     <item android:id="@+id/search"
-        android:orderInCategory="102"
+        android:orderInCategory="103"
         android:title="@string/search"
         android:icon="@android:drawable/ic_menu_search"
         app:showAsAction="collapseActionView|ifRoom"

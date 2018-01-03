@@ -11,12 +11,13 @@ import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import com.google.android.gms.oss.licenses.OssLicensesMenuActivity;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.auth.LoginRegisterActivity;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.data.repositories.FilterRepository;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.data.repositories.UserRepository;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.podcast.PodListFragment;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.podcast.RecentPodcastFragment;
+import com.koalatea.thehollidayinn.softwareengineeringdaily.subscription.SubscriptionActivity;
+
 import timber.log.Timber;
 
 public class MainActivity extends PlaybackControllerActivity
@@ -151,6 +152,9 @@ public class MainActivity extends PlaybackControllerActivity
             userRepository.setToken("");
             Intent intent = new Intent(this, MainActivity.class);
             startActivity(intent);
+        } else if (id == R.id.action_subscribe) {
+            Timber.v("keithtest-action_subscribe");
+            startActivity(new Intent(this, SubscriptionActivity.class));
         }
         //else if (id == R.id.opensource) {
             //Intent intent = new Intent(this, OssLicensesMenuActivity.class);
