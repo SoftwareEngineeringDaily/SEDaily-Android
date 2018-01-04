@@ -1,4 +1,4 @@
-package com.koalatea.thehollidayinn.softwareengineeringdaily.data.repositories;
+package com.koalatea.thehollidayinn.softwareengineeringdaily.repositories;
 
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -7,7 +7,7 @@ import android.os.Build;
 import android.support.v4.app.NotificationCompat;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.R;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.app.AppComponent;
-import com.koalatea.thehollidayinn.softwareengineeringdaily.app.SDEApp;
+import com.koalatea.thehollidayinn.softwareengineeringdaily.app.SEDApp;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.data.models.Post;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.downloads.DownloadTask;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.downloads.MP3FileManager;
@@ -68,7 +68,7 @@ public class PodcastDownloadsRepository {
       return false;
     }
 
-    File file = new MP3FileManager().getFileFromUrl(post.getMp3(), SDEApp.component().context());
+    File file = new MP3FileManager().getFileFromUrl(post.getMp3(), SEDApp.component().context());
     if (file.exists()) {
       this.filesLoaded.put(post.get_id(), true);
       return true;
@@ -82,7 +82,7 @@ public class PodcastDownloadsRepository {
   }
 
   public void displayDownloadNotification(Post post) {
-    AppComponent app = SDEApp.component();
+    AppComponent app = SEDApp.component();
 
     final int id = 1;
     mNotifyManager =
@@ -113,7 +113,7 @@ public class PodcastDownloadsRepository {
       return;
     }
 
-    File file = new MP3FileManager().getFileFromUrl(post.getMp3(), SDEApp.component().context());
+    File file = new MP3FileManager().getFileFromUrl(post.getMp3(), SEDApp.component().context());
     file.delete();
 
     removePodcastDownload(post.get_id());

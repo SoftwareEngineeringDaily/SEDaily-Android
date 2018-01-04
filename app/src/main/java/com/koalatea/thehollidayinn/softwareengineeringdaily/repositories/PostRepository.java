@@ -1,4 +1,4 @@
-package com.koalatea.thehollidayinn.softwareengineeringdaily.data.repositories;
+package com.koalatea.thehollidayinn.softwareengineeringdaily.repositories;
 
 import com.koalatea.thehollidayinn.softwareengineeringdaily.data.models.Post;
 

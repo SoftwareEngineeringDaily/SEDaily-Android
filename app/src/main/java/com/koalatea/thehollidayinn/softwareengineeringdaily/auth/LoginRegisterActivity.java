@@ -18,7 +18,7 @@ import com.koalatea.thehollidayinn.softwareengineeringdaily.R;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.data.models.User;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.data.remote.APIInterface;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.data.remote.ApiUtils;
-import com.koalatea.thehollidayinn.softwareengineeringdaily.data.repositories.UserRepository;
+import com.koalatea.thehollidayinn.softwareengineeringdaily.repositories.UserRepository;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;

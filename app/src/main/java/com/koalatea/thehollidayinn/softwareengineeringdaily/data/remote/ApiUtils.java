@@ -3,7 +3,7 @@ package com.koalatea.thehollidayinn.softwareengineeringdaily.data.remote;
 import android.content.Context;
 
 import com.koalatea.thehollidayinn.softwareengineeringdaily.BuildConfig;
-import com.koalatea.thehollidayinn.softwareengineeringdaily.data.repositories.UserRepository;
+import com.koalatea.thehollidayinn.softwareengineeringdaily.repositories.UserRepository;
 
 import java.io.IOException;
 
@@ -66,20 +66,5 @@ public class ApiUtils {
       .build();
 
     return retrofitAdapter.create(APIInterface.class);
-  }
-
-//  public static ErrorResponse getErrorResponse(HttpException error) {
-//    retrofit2.Response<?> response = error.response();
-//    Converter<ResponseBody, ?> errorConverter =
-//      gsonConverter.responseBodyConverter(ErrorResponse.class, new Annotation[0], retrofitAdapter);
-//    try {
-//      return (ErrorResponse) errorConverter.convert(response.errorBody());
-//    } catch (IOException e) {
-//      return new ErrorResponse();
-//    }
-//  }
-
-  public static class ErrorResponse {
-    public String message;
   }
 }

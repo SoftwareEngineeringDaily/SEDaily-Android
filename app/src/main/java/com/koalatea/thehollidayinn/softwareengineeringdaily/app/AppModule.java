@@ -5,12 +5,8 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
-import android.support.v4.util.ArrayMap;
 
-import com.google.firebase.analytics.FirebaseAnalytics;
-import com.koalatea.thehollidayinn.softwareengineeringdaily.presentation.PresenterCache;
-import com.koalatea.thehollidayinn.softwareengineeringdaily.presentation.base.MVPContract;
-import com.koalatea.thehollidayinn.softwareengineeringdaily.utils.LocalTextUtils;
+import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
@@ -21,39 +17,27 @@ import dagger.Provides;
 @Module
 public class AppModule {
 
-    private final SDEApp app;
+    private final SEDApp app;
 
-    public AppModule(@NonNull SDEApp app) {
+    public AppModule(@NonNull SEDApp app) {
         this.app = app;
     }
 
     @Provides
-    @AppScope
+    @Singleton
     Application providesApplication() {
         return this.app;
     }
 
     @Provides
-    @AppScope
+    @Singleton
     Context providesContext() {
         return this.app;
     }
 
     @Provides
-    @AppScope
+    @Singleton
     SharedPreferences providesSharedPreferences(@NonNull Context context) {
         return PreferenceManager.getDefaultSharedPreferences(context);
-    }
-
-    @Provides
-    @AppScope
-    LocalTextUtils providesLocalTextUtils() {
-        return new LocalTextUtils();
-    }
-
-    @Provides
-    @AppScope
-    PresenterCache providesPresenterCache() {
-        return new PresenterCache(new ArrayMap<String, MVPContract.Presenter>());
     }
 }

@@ -10,9 +10,8 @@ import android.widget.Button
 import android.widget.Toast
 
 import com.koalatea.thehollidayinn.softwareengineeringdaily.R
-import com.koalatea.thehollidayinn.softwareengineeringdaily.app.SDEApp
+import com.koalatea.thehollidayinn.softwareengineeringdaily.app.SEDApp
 import com.koalatea.thehollidayinn.softwareengineeringdaily.data.remote.APIInterface
-import com.koalatea.thehollidayinn.softwareengineeringdaily.data.remote.ApiUtils
 import com.stripe.android.Stripe
 import com.stripe.android.TokenCallback
 import com.stripe.android.model.Token
@@ -43,14 +42,14 @@ class PaymentFragment : Fragment() {
     private fun pay() {
         val cardToSave = mCardInputWidget.card
         if (cardToSave == null) {
-            Toast.makeText(SDEApp.component.context(),
+            Toast.makeText(SEDApp.component.context(),
                 "Invalid Card Data",
                 Toast.LENGTH_LONG
             ).show()
             return
         }
 
-        val stripe = Stripe(SDEApp.component.context(), "pk_live_Cfttsv5i5ZG5IBfrmllzNoSA")
+        val stripe = Stripe(SEDApp.component.context(), "pk_live_Cfttsv5i5ZG5IBfrmllzNoSA")
         stripe.createToken(
             cardToSave,
             object: TokenCallback {
@@ -59,7 +58,7 @@ class PaymentFragment : Fragment() {
                 }
 
                 override fun onError(error: Exception) {
-                    Toast.makeText(SDEApp.component.context(),
+                    Toast.makeText(SEDApp.component.context(),
                             error.toString(),
                             Toast.LENGTH_LONG
                     ).show()
@@ -69,13 +68,13 @@ class PaymentFragment : Fragment() {
     }
 
     private fun createSubscription(token: Token) {
-        val service: APIInterface = ApiUtils.getKibbleService(activity)
+        val service: APIInterface = SEDApp.component.kibblService()
         service.createSubscription(token.id, type)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(object: DisposableObserver<Void>() {
                 override fun onComplete() {
-                    Toast.makeText(SDEApp.component.context(),
+                    Toast.makeText(SEDApp.component.context(),
                             "Success!",
                             Toast.LENGTH_LONG
                     ).show()

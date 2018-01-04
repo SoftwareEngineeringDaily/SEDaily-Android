@@ -6,6 +6,7 @@ import android.support.annotation.VisibleForTesting;
 import com.akaita.java.rxjava2debug.RxJava2Debug;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.BuildConfig;
 
+import com.koalatea.thehollidayinn.softwareengineeringdaily.dagger.NetworkModule;
 import com.squareup.leakcanary.LeakCanary;
 import timber.log.Timber;
 
@@ -13,7 +14,7 @@ import timber.log.Timber;
  * Created by Kurian on 25-Sep-17.
  */
 
-public class SDEApp extends Application {
+public class SEDApp extends Application {
 
   @VisibleForTesting
   public static AppComponent component;
@@ -46,7 +47,9 @@ public class SDEApp extends Application {
 
   private void initDependencies() {
     if (component == null) {
-      component = DaggerAppComponent.builder().appModule(new AppModule(this)).build();
+      component = DaggerAppComponent.builder()
+              .appModule(new AppModule(this))
+              .build();
     }
   }
 

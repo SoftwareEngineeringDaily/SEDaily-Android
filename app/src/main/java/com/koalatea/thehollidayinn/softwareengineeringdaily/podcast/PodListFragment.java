@@ -17,9 +17,9 @@ import com.koalatea.thehollidayinn.softwareengineeringdaily.R;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.data.models.Post;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.data.remote.APIInterface;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.data.remote.ApiUtils;
-import com.koalatea.thehollidayinn.softwareengineeringdaily.data.repositories.FilterRepository;
-import com.koalatea.thehollidayinn.softwareengineeringdaily.data.repositories.PostRepository;
-import com.koalatea.thehollidayinn.softwareengineeringdaily.data.repositories.UserRepository;
+import com.koalatea.thehollidayinn.softwareengineeringdaily.repositories.FilterRepository;
+import com.koalatea.thehollidayinn.softwareengineeringdaily.repositories.PostRepository;
+import com.koalatea.thehollidayinn.softwareengineeringdaily.repositories.UserRepository;
 
 import java.util.HashMap;
 import java.util.List;
@@ -67,7 +67,7 @@ public class PodListFragment extends Fragment {
     LinearLayoutManager mLayoutManager = new LinearLayoutManager(this.getContext());
     recyclerView.setLayoutManager(mLayoutManager);
 
-    podcastAdapter = new PodcastAdapter(this);
+    podcastAdapter = new PodcastAdapter();
     recyclerView.setAdapter(podcastAdapter);
 
     skeletonScreen = Skeleton.bind(recyclerView)
@@ -175,7 +175,7 @@ public class PodListFragment extends Fragment {
         @Override
         public void onNext(List<Post> posts) {
 //          podcastAdapter.setPosts(posts);
-//          postRepository.setPosts(posts);
+          postRepository.setPosts(posts);
           podcastListViewModel.setPostList(posts);
           swipeRefreshLayout.setRefreshing(false);
         }

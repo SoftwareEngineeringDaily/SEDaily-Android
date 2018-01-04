@@ -12,8 +12,8 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.auth.LoginRegisterActivity;
-import com.koalatea.thehollidayinn.softwareengineeringdaily.data.repositories.FilterRepository;
-import com.koalatea.thehollidayinn.softwareengineeringdaily.data.repositories.UserRepository;
+import com.koalatea.thehollidayinn.softwareengineeringdaily.repositories.FilterRepository;
+import com.koalatea.thehollidayinn.softwareengineeringdaily.repositories.UserRepository;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.podcast.PodListFragment;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.podcast.RecentPodcastFragment;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.subscription.SubscriptionActivity;
@@ -145,8 +145,6 @@ public class MainActivity extends PlaybackControllerActivity
         if (id == R.id.action_toggle_login_register) {
             Intent intent = new Intent(this, LoginRegisterActivity.class);
             startActivity(intent);
-            //TODO clean up with MVP
-            //LoginFragment.show(getSupportFragmentManager());
             return true;
         } else if (id == R.id.action_logout) {
             userRepository.setToken("");

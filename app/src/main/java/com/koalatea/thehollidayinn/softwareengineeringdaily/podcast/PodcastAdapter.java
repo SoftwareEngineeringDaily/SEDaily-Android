@@ -10,6 +10,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.koalatea.thehollidayinn.softwareengineeringdaily.R;
+import com.koalatea.thehollidayinn.softwareengineeringdaily.app.SEDApp;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.data.models.Post;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.data.models.Title;
 import com.squareup.picasso.Picasso;
@@ -26,7 +27,6 @@ import butterknife.ButterKnife;
 
 class PodcastAdapter extends RecyclerView.Adapter<PodcastAdapter.ViewHolder> {
   private List<Post> posts = new ArrayList<>();
-  private PodListFragment context;
 
   static class ViewHolder extends RecyclerView.ViewHolder {
     @BindView(R.id.card_title)
@@ -39,11 +39,6 @@ class PodcastAdapter extends RecyclerView.Adapter<PodcastAdapter.ViewHolder> {
         super(v);
         ButterKnife.bind(this, v);
     }
-  }
-
-  PodcastAdapter(Fragment context) {
-    // @TODO: This is memory leak worthy. Fix it
-    this.context = (PodListFragment) context;
   }
 
   void setPosts(List<Post> posts) {
@@ -64,9 +59,9 @@ class PodcastAdapter extends RecyclerView.Adapter<PodcastAdapter.ViewHolder> {
         public void onClick(View v) {
           final int position = viewHolder.getAdapterPosition();
           Post post = posts.get(position);
-          Intent intent = new Intent(context.getActivity(), PodcastDetailActivity.class);
+          Intent intent = new Intent(SEDApp.component.context(), PodcastDetailActivity.class);
           intent.putExtra("POST_ID", post.get_id());
-          context.getActivity().startActivity(intent);
+          SEDApp.component.context().startActivity(intent);
         }
     });
 
@@ -83,7 +78,7 @@ class PodcastAdapter extends RecyclerView.Adapter<PodcastAdapter.ViewHolder> {
     if (post.getFeaturedImage() != null) {
       imageLink = post.getFeaturedImage();
     }
-    Picasso.with(context.getContext())
+    Picasso.with(SEDApp.component.context())
         .load(imageLink)
         .fit()
         .into(holder.imageView);

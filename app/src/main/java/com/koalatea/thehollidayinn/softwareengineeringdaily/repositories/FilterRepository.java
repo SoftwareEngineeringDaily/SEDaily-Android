@@ -1,4 +1,4 @@
-package com.koalatea.thehollidayinn.softwareengineeringdaily.data.repositories;
+package com.koalatea.thehollidayinn.softwareengineeringdaily.repositories;
 
 /*
  * Created by keithholliday on 9/16/17.

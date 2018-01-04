@@ -7,7 +7,7 @@ import android.support.v4.media.session.PlaybackStateCompat;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
-import com.koalatea.thehollidayinn.softwareengineeringdaily.app.SDEApp;
+import com.koalatea.thehollidayinn.softwareengineeringdaily.app.SEDApp;
 
 import java.lang.reflect.Type;
 import java.util.HashMap;
@@ -39,7 +39,7 @@ public class PodcastSessionStateManager {
 
   private PodcastSessionStateManager() {
     episodeProgress = new HashMap<>();
-    preferences = PreferenceManager.getDefaultSharedPreferences(SDEApp.component().context());
+    preferences = PreferenceManager.getDefaultSharedPreferences(SEDApp.component().context());
     gson = new GsonBuilder().create();
 
     String progressString = preferences.getString(PROGRESS_KEY, "");

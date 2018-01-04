@@ -17,17 +17,17 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import com.google.firebase.analytics.FirebaseAnalytics;
+
 import com.koalatea.thehollidayinn.softwareengineeringdaily.PlaybackControllerActivity;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.R;
-import com.koalatea.thehollidayinn.softwareengineeringdaily.app.SDEApp;
+import com.koalatea.thehollidayinn.softwareengineeringdaily.app.SEDApp;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.audio.MusicProvider;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.data.models.Post;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.data.remote.APIInterface;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.data.remote.ApiUtils;
-import com.koalatea.thehollidayinn.softwareengineeringdaily.data.repositories.PodcastDownloadsRepository;
-import com.koalatea.thehollidayinn.softwareengineeringdaily.data.repositories.PostRepository;
-import com.koalatea.thehollidayinn.softwareengineeringdaily.data.repositories.UserRepository;
+import com.koalatea.thehollidayinn.softwareengineeringdaily.repositories.PodcastDownloadsRepository;
+import com.koalatea.thehollidayinn.softwareengineeringdaily.repositories.PostRepository;
+import com.koalatea.thehollidayinn.softwareengineeringdaily.repositories.UserRepository;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.downloads.MP3FileManager;
 import java.io.File;
 
@@ -85,7 +85,7 @@ public class PodcastDetailActivity extends PlaybackControllerActivity {
     }
 
 
-    mService = ApiUtils.getKibbleService(this);
+    mService = SEDApp.component().kibblService();
     userRepository = UserRepository.getInstance(this);
 
     Intent intent = getIntent(); // gets the previously created intent
@@ -205,7 +205,7 @@ public class PodcastDetailActivity extends PlaybackControllerActivity {
       post.setDownvoted(false);
     }
 
-    SDEApp.component().analyticsFacade().trackUpVote(post.getId());
+    SEDApp.component().analyticsFacade().trackUpVote(post.getId());
     setVoteButtonStates();
     scoreText.setText(String.valueOf(newScore));
 
@@ -247,7 +247,7 @@ public class PodcastDetailActivity extends PlaybackControllerActivity {
       post.setUpvoted(false);
     }
 
-    SDEApp.component().analyticsFacade().trackDownVote(post.getId());
+    SEDApp.component().analyticsFacade().trackDownVote(post.getId());
     setVoteButtonStates();
     scoreText.setText(String.valueOf(newScore));
 
@@ -309,7 +309,7 @@ public class PodcastDetailActivity extends PlaybackControllerActivity {
       return;
     }
 
-    File file = new MP3FileManager().getFileFromUrl(post.getMp3(), SDEApp.component().context());
+    File file = new MP3FileManager().getFileFromUrl(post.getMp3(), SEDApp.component().context());
 
     String source = post.getMp3();
     String id = String.valueOf(source.hashCode());
