@@ -67,6 +67,9 @@ public class PodcastDetailActivity extends PlaybackControllerActivity {
   @BindView(R.id.description)
   WebView descriptionWebView;
 
+  @BindView(R.id.shareButton)
+  Button shareButton;
+
   private Post post;
   private APIInterface mService;
 
@@ -279,6 +282,16 @@ public class PodcastDetailActivity extends PlaybackControllerActivity {
           PodcastDownloadsRepository.getInstance().removeFileForPost(post);
         }})
       .setNegativeButton(android.R.string.no, null).show();
+  }
+
+  /*
+   * Open the share intent from the share button
+   */
+  @OnClick(R.id.shareButton)
+  public void openShareIntent() {
+    Intent intent = new Intent(Intent.ACTION_SEND);
+    intent.setType("text/plain");
+    startActivity(Intent.createChooser(intent, "Share with"));
   }
 
   public void setUpDownloadedState() {
