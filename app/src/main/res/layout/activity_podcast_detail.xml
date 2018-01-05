@@ -89,6 +89,17 @@
                 android:paddingRight="24dp"
                 android:paddingTop="@dimen/md_keylines">
 
+                <Button
+                    android:id="@+id/shareButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_marginEnd="10dp"
+                    android:layout_marginRight="10dp"
+                    android:layout_marginBottom="10dp"
+                    android:text="Share"
+                    android:contentDescription="Share this Episode"/>
+
                 <WebView
                     android:id="@+id/description"
                     android:layout_width="wrap_content"
