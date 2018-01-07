@@ -23,17 +23,17 @@ class PlanFragment : Fragment() {
         monthlyPlan.setOnClickListener({ selectMonthlyPlan() })
 
         val yearlyPlan: Button = rootView.findViewById(R.id.yearlyButton)
-        yearlyPlan.setOnClickListener({ selectMonthlyPlan() })
+        yearlyPlan.setOnClickListener({ selectYearlyPlan() })
 
         return rootView
     }
 
     private fun selectMonthlyPlan () {
-        mListener?.onPlanSelected("sed_monthly_subscription");
+        mListener?.onPlanSelected("monthly");
     }
 
     private fun selectYearlyPlan () {
-        mListener?.onPlanSelected("sed_yearly_subscription");
+        mListener?.onPlanSelected("yearly");
     }
 
     override fun onAttach(context: Context?) {

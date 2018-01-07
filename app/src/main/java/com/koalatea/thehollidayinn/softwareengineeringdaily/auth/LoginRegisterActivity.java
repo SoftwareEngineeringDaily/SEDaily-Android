@@ -15,9 +15,9 @@ import android.widget.TextView;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.MainActivity;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.R;
+import com.koalatea.thehollidayinn.softwareengineeringdaily.app.SEDApp;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.data.models.User;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.data.remote.APIInterface;
-import com.koalatea.thehollidayinn.softwareengineeringdaily.data.remote.ApiUtils;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.repositories.UserRepository;
 
 import butterknife.BindView;
@@ -26,6 +26,7 @@ import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.observers.DisposableObserver;
 import io.reactivex.schedulers.Schedulers;
+import timber.log.Timber;
 
 public class LoginRegisterActivity extends AppCompatActivity {
     private Boolean register = false;
@@ -156,15 +157,8 @@ public class LoginRegisterActivity extends AppCompatActivity {
 
                 @Override
                 public void onError(Throwable e) {
-//                    HttpException exception = (HttpException) e;
-//                    Response response = exception.response();
-//                    try {
-//                        JSONObject jsonResponse = new JSONObject(response.errorBody().string());
-//                        displayMessage(jsonResponse.getString("message"));
-//                    } catch (IOException | JSONException e1) {
-//                        e1.printStackTrace();
-//                    }
-                    displayMessage("Incorrect username or password");
+                    Timber.v("keithtest" + e.getMessage());
+                    displayMessage(e.getMessage());
                 }
 
                 @Override
@@ -192,7 +186,7 @@ public class LoginRegisterActivity extends AppCompatActivity {
     }
 
     private Observable<User> getQuery (String username, String email, String password) {
-      APIInterface mService = ApiUtils.getKibbleService(this);
+      APIInterface mService = SEDApp.component.kibblService();
       if (register) {
         return mService.register(username, email, password);
       }

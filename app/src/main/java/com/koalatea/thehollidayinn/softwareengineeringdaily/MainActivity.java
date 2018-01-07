@@ -11,14 +11,21 @@ import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+
+import com.koalatea.thehollidayinn.softwareengineeringdaily.app.SEDApp;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.auth.LoginRegisterActivity;
+import com.koalatea.thehollidayinn.softwareengineeringdaily.data.models.SubscriptionResponse;
+import com.koalatea.thehollidayinn.softwareengineeringdaily.data.models.UserResponse;
+import com.koalatea.thehollidayinn.softwareengineeringdaily.data.remote.APIInterface;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.repositories.FilterRepository;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.repositories.UserRepository;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.podcast.PodListFragment;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.podcast.RecentPodcastFragment;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.subscription.SubscriptionActivity;
 
-import timber.log.Timber;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.observers.DisposableObserver;
+import io.reactivex.schedulers.Schedulers;
 
 public class MainActivity extends PlaybackControllerActivity
     implements SearchView.OnQueryTextListener {
@@ -28,7 +35,7 @@ public class MainActivity extends PlaybackControllerActivity
     private RecentPodcastFragment firstFragment;
     private PodListFragment secondPage;
     private PodListFragment thirdPage;
-
+    private Menu menu;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,12 +47,43 @@ public class MainActivity extends PlaybackControllerActivity
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
 
-        userRepository = UserRepository.getInstance(this);
+        userRepository = SEDApp.component.userRepository();
         filterRepository = FilterRepository.getInstance();
 
         setUpBottomNavigation();
 
         showInitialPage();
+    }
+
+    private void loadMe () {
+        APIInterface apiInterface = SEDApp.component.kibblService();
+        apiInterface.me()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new DisposableObserver<UserResponse>() {
+                    @Override
+                    public void onNext(UserResponse userResponse) {
+                        displaySubscribedView(userResponse);
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+
+                    }
+
+                    @Override
+                    public void onComplete() {
+
+                    }
+                });
+    }
+
+    private void displaySubscribedView (UserResponse userResponse) {
+        SubscriptionResponse subscriptionResponse = userResponse.getSubscription();
+        if (subscriptionResponse != null && subscriptionResponse.active) {
+            menu.findItem(R.id.action_subscribe).setTitle("View Subscription");
+            userRepository.setHasPremium(true);
+        }
     }
 
     private void showInitialPage () {
@@ -102,13 +140,17 @@ public class MainActivity extends PlaybackControllerActivity
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+        this.menu = menu;
+
         getMenuInflater().inflate(R.menu.menu_main, menu);
         if (userRepository.getToken() != null && !userRepository.getToken().isEmpty()) {
             menu.findItem(R.id.action_toggle_login_register).setVisible(false);
             menu.findItem(R.id.action_logout).setVisible(true);
+            menu.findItem(R.id.action_subscribe).setVisible(true);
         } else {
             menu.findItem(R.id.action_toggle_login_register).setVisible(true);
             menu.findItem(R.id.action_logout).setVisible(false);
+            menu.findItem(R.id.action_subscribe).setVisible(false);
         }
 
         // Associate searchable configuration with the SearchView
@@ -135,6 +177,9 @@ public class MainActivity extends PlaybackControllerActivity
                 }
             });
 
+        // Do this after the menu is loaded
+        loadMe();
+
         return true;
     }
 
@@ -151,7 +196,6 @@ public class MainActivity extends PlaybackControllerActivity
             Intent intent = new Intent(this, MainActivity.class);
             startActivity(intent);
         } else if (id == R.id.action_subscribe) {
-            Timber.v("keithtest-action_subscribe");
             startActivity(new Intent(this, SubscriptionActivity.class));
         }
         //else if (id == R.id.opensource) {

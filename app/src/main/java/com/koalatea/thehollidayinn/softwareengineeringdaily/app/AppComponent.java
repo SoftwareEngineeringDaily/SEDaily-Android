@@ -6,6 +6,8 @@ import com.koalatea.thehollidayinn.softwareengineeringdaily.analytics.AnalyticsF
 import com.koalatea.thehollidayinn.softwareengineeringdaily.analytics.AnalyticsModule;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.dagger.NetworkModule;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.data.remote.APIInterface;
+import com.koalatea.thehollidayinn.softwareengineeringdaily.repositories.RepositoryModule;
+import com.koalatea.thehollidayinn.softwareengineeringdaily.repositories.UserRepository;
 
 import javax.inject.Singleton;
 
@@ -18,9 +20,11 @@ import dagger.Component;
 @Component(modules = {
         AppModule.class,
         AnalyticsModule.class,
-        NetworkModule.class})
+        NetworkModule.class,
+        RepositoryModule.class})
 public interface AppComponent {
     Context context();
     AnalyticsFacade analyticsFacade();
     APIInterface kibblService();
+    UserRepository userRepository();
 }

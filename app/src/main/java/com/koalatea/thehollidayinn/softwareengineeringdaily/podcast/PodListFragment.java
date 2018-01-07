@@ -1,6 +1,7 @@
 package com.koalatea.thehollidayinn.softwareengineeringdaily.podcast;
 
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -14,9 +15,9 @@ import android.view.ViewGroup;
 import com.ethanhua.skeleton.RecyclerViewSkeletonScreen;
 import com.ethanhua.skeleton.Skeleton;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.R;
+import com.koalatea.thehollidayinn.softwareengineeringdaily.app.SEDApp;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.data.models.Post;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.data.remote.APIInterface;
-import com.koalatea.thehollidayinn.softwareengineeringdaily.data.remote.ApiUtils;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.repositories.FilterRepository;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.repositories.PostRepository;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.repositories.UserRepository;
@@ -51,7 +52,6 @@ public class PodListFragment extends Fragment {
     f.title = title;
     f.tagId = tagId;
     f.setArguments(args);
-
     return f;
   }
 
@@ -118,6 +118,24 @@ public class PodListFragment extends Fragment {
     };
     FilterRepository filterRepository = FilterRepository.getInstance();
     filterRepository.getModelChanges().subscribe(myDisposableObserver);
+
+    podcastAdapter.getPositionClicks()
+      .subscribeOn(Schedulers.io())
+      .observeOn(AndroidSchedulers.mainThread())
+      .subscribe(new DisposableObserver<Post>() {
+        @Override
+        public void onComplete() {}
+        @Override
+        public void onError(Throwable e) {
+          Log.v(TAG, e.toString());
+        }
+        @Override
+        public void onNext(Post post) {
+          Intent intent = new Intent(getActivity(), PodcastDetailActivity.class);
+          intent.putExtra("POST_ID", post.get_id());
+          getActivity().startActivity(intent);
+        }
+      });
   }
 
   @Override
@@ -136,7 +154,7 @@ public class PodListFragment extends Fragment {
   }
 
   private void getPosts(String search) {
-    APIInterface mService = ApiUtils.getKibbleService(getActivity());
+    APIInterface mService = SEDApp.component.kibblService();
 
     // @TODO: Replace tmp with query
 

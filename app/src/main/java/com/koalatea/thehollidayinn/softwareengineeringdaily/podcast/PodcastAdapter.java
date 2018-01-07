@@ -20,6 +20,8 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import io.reactivex.Observable;
+import io.reactivex.subjects.PublishSubject;
 
 /*
  * Created by krh12 on 5/22/2017.
@@ -27,6 +29,7 @@ import butterknife.ButterKnife;
 
 class PodcastAdapter extends RecyclerView.Adapter<PodcastAdapter.ViewHolder> {
   private List<Post> posts = new ArrayList<>();
+  private final PublishSubject<Post> onClickSubject = PublishSubject.create();
 
   static class ViewHolder extends RecyclerView.ViewHolder {
     @BindView(R.id.card_title)
@@ -54,15 +57,10 @@ class PodcastAdapter extends RecyclerView.Adapter<PodcastAdapter.ViewHolder> {
 
     final ViewHolder viewHolder = new ViewHolder(view);
 
-    view.setOnClickListener(new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-          final int position = viewHolder.getAdapterPosition();
-          Post post = posts.get(position);
-          Intent intent = new Intent(SEDApp.component.context(), PodcastDetailActivity.class);
-          intent.putExtra("POST_ID", post.get_id());
-          SEDApp.component.context().startActivity(intent);
-        }
+    view.setOnClickListener(v -> {
+      final int position = viewHolder.getAdapterPosition();
+      Post post = posts.get(position);
+      onClickSubject.onNext(post);
     });
 
     return viewHolder;
@@ -87,5 +85,9 @@ class PodcastAdapter extends RecyclerView.Adapter<PodcastAdapter.ViewHolder> {
   @Override
   public int getItemCount() {
     return posts.size();
+  }
+
+  public Observable<Post> getPositionClicks() {
+    return onClickSubject;
   }
 }

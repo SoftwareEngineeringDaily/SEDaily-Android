@@ -16,8 +16,9 @@ import com.stripe.android.Stripe
 import com.stripe.android.TokenCallback
 import com.stripe.android.model.Token
 import com.stripe.android.view.CardInputWidget
+import io.reactivex.CompletableObserver
 import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.observers.DisposableObserver
+import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 
 class PaymentFragment : Fragment() {
@@ -25,14 +26,15 @@ class PaymentFragment : Fragment() {
     private var mListener: OnFragmentInteractionListener? = null
     private var type: String = ""
     private lateinit var mCardInputWidget: CardInputWidget
+    private lateinit var payButton: Button
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
 
         val rootView = inflater.inflate(R.layout.fragment_payment, container, false)
 
-        val button: Button = rootView.findViewById(R.id.paymentButton)
-        button.setOnClickListener({ pay() })
+        payButton = rootView.findViewById(R.id.paymentButton)
+        payButton.setOnClickListener({ pay() })
 
         mCardInputWidget = rootView.findViewById(R.id.card_input_widget)
 
@@ -49,7 +51,9 @@ class PaymentFragment : Fragment() {
             return
         }
 
-        val stripe = Stripe(SEDApp.component.context(), "pk_live_Cfttsv5i5ZG5IBfrmllzNoSA")
+        payButton.isEnabled = false
+
+        val stripe = Stripe(SEDApp.component.context(), "pk_test_RayhhznsRXj6hqZ8SnKJY70Y")
         stripe.createToken(
             cardToSave,
             object: TokenCallback {
@@ -62,6 +66,7 @@ class PaymentFragment : Fragment() {
                             error.toString(),
                             Toast.LENGTH_LONG
                     ).show()
+                    payButton.isEnabled = true
                 }
             }
         )
@@ -72,21 +77,25 @@ class PaymentFragment : Fragment() {
         service.createSubscription(token.id, type)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(object: DisposableObserver<Void>() {
+            .subscribe(object: CompletableObserver {
+                override fun onSubscribe(d: Disposable) {
+                }
+
                 override fun onComplete() {
                     Toast.makeText(SEDApp.component.context(),
                             "Success!",
                             Toast.LENGTH_LONG
                     ).show()
-                    mListener?.paymentSuccess();
+                    payButton.isEnabled = true
+                    mListener?.paymentSuccess()
                 }
 
                 override fun onError(e: Throwable ) {
-//                        Log.v(TAG, e.toString());
-                }
-
-                override fun onNext(t: Void) {
-
+                    Toast.makeText(SEDApp.component.context(),
+                            e.message,
+                            Toast.LENGTH_LONG
+                    ).show()
+                    payButton.isEnabled = true
                 }
             })
     }

@@ -16,6 +16,7 @@ public class UserRepository {
     private boolean isSubscribedToNotifications = false;
     private String token = "";
     private final SharedPreferences preferences;
+    private Boolean hasPremium = false;
 
     private UserRepository(Context context) {
         preferences = PreferenceManager.getDefaultSharedPreferences(context);
@@ -52,5 +53,13 @@ public class UserRepository {
 
     public Boolean getSubscribed () {
         return this.isSubscribedToNotifications;
+    }
+
+    public Boolean getHasPremium() {
+        return hasPremium;
+    }
+
+    public void setHasPremium(Boolean hasPremium) {
+        this.hasPremium = hasPremium;
     }
 }

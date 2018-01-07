@@ -2,10 +2,12 @@ package com.koalatea.thehollidayinn.softwareengineeringdaily.data.remote;
 
 import com.koalatea.thehollidayinn.softwareengineeringdaily.data.models.Post;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.data.models.User;
+import com.koalatea.thehollidayinn.softwareengineeringdaily.data.models.UserResponse;
 
 import java.util.List;
 import java.util.Map;
 
+import io.reactivex.Completable;
 import io.reactivex.Observable;
 import retrofit2.http.DELETE;
 import retrofit2.http.Field;
@@ -43,8 +45,11 @@ public interface APIInterface {
 
     @FormUrlEncoded
     @POST("subscription")
-    Observable<Void> createSubscription(@Field("stripeToken") String stripeToken, @Field("planType") String planType);
+    Completable createSubscription(@Field("stripeToken") String stripeToken, @Field("planType") String planType);
 
     @DELETE("subscription")
-    Observable<Void> cancelSubscription();
+    Completable cancelSubscription();
+
+    @GET("users/me")
+    Observable<UserResponse> me();
 }
