@@ -289,8 +289,13 @@ public class PodcastDetailActivity extends PlaybackControllerActivity {
    */
   @OnClick(R.id.shareButton)
   public void openShareIntent() {
+    // Set up the share string for the intent
+    String shareContent = "Check out this episode from Software Engineering Daily: ";
+    shareContent += post.getLink();
+
     Intent intent = new Intent(Intent.ACTION_SEND);
     intent.setType("text/plain");
+    intent.putExtra(Intent.EXTRA_TEXT, shareContent);
     startActivity(Intent.createChooser(intent, "Share with"));
   }
 

@@ -20,63 +20,63 @@
             <RelativeLayout
                 android:id="@+id/actions"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:background="@color/white"
                 android:orientation="horizontal"
-                android:paddingTop="7dp"
                 android:paddingBottom="10dp"
                 android:paddingLeft="24dp"
-                android:paddingRight="24dp">
+                android:paddingRight="24dp"
+                android:paddingTop="7dp">
 
                 <ImageView
                     android:id="@+id/up_button"
                     android:layout_width="40dp"
                     android:layout_height="40dp"
-                    android:src="@drawable/ic_up_arrow"
-                    android:contentDescription="@string/up_vote" />
+                    android:contentDescription="@string/up_vote"
+                    android:src="@drawable/ic_up_arrow" />
 
                 <TextView
                     android:id="@+id/scoreTextView"
+                    style="@style/TextAppearance.AppCompat.Large"
                     android:layout_width="40dp"
                     android:layout_height="40dp"
-                    android:textAlignment="center"
-                    android:text="@string/zero"
-                    style="@style/TextAppearance.AppCompat.Large"
+                    android:layout_toEndOf="@+id/up_button"
                     android:layout_toRightOf="@+id/up_button"
-                    android:layout_toEndOf="@+id/up_button"/>
+                    android:text="@string/zero"
+                    android:textAlignment="center" />
 
                 <ImageView
                     android:id="@+id/down_button"
                     android:layout_width="40dp"
                     android:layout_height="40dp"
-                    android:src="@drawable/ic_down_arrow"
-                    android:layout_toRightOf="@+id/scoreTextView"
                     android:layout_toEndOf="@+id/scoreTextView"
-                    android:contentDescription="@string/down_vote" />
+                    android:layout_toRightOf="@+id/scoreTextView"
+                    android:contentDescription="@string/down_vote"
+                    android:src="@drawable/ic_down_arrow" />
 
                 <Button
                     android:id="@+id/deleteButton"
+                    style="@style/Widget.AppCompat.Button.Borderless"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginRight="10dp"
                     android:layout_marginEnd="10dp"
-                    android:textAlignment="center"
-                    android:text="@string/remove_download"
+                    android:layout_marginRight="10dp"
                     android:layout_toLeftOf="@+id/playButton"
                     android:layout_toStartOf="@+id/playButton"
-                    style="@style/Widget.AppCompat.Button.Borderless"/>
+                    android:text="@string/remove_download"
+                    android:textAlignment="center" />
 
                 <Button
                     android:id="@+id/playButton"
+                    style="@style/Widget.AppCompat.Button.Colored"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginRight="10dp"
-                    android:layout_marginEnd="10dp"
-                    android:textAlignment="center"
-                    android:text="@string/label_play"
-                    android:layout_alignParentRight="true"
                     android:layout_alignParentEnd="true"
-                    style="@style/Widget.AppCompat.Button.Colored"/>
+                    android:layout_alignParentRight="true"
+                    android:layout_marginEnd="10dp"
+                    android:layout_marginRight="10dp"
+                    android:text="@string/label_play"
+                    android:textAlignment="center" />
 
             </RelativeLayout>
 
@@ -91,14 +91,14 @@
 
                 <Button
                     android:id="@+id/shareButton"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_alignParentEnd="true"
+                    android:layout_marginBottom="10dp"
                     android:layout_marginEnd="10dp"
                     android:layout_marginRight="10dp"
-                    android:layout_marginBottom="10dp"
-                    android:text="Share"
-                    android:contentDescription="Share this Episode"/>
+                    android:contentDescription="Share this Episode"
+                    android:text="Share This Episode" />
 
                 <WebView
                     android:id="@+id/description"
