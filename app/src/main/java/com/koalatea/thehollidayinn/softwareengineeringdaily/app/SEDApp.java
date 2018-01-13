@@ -6,7 +6,6 @@ import android.support.annotation.VisibleForTesting;
 import com.akaita.java.rxjava2debug.RxJava2Debug;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.BuildConfig;
 
-import com.koalatea.thehollidayinn.softwareengineeringdaily.dagger.NetworkModule;
 import com.squareup.leakcanary.LeakCanary;
 import timber.log.Timber;
 

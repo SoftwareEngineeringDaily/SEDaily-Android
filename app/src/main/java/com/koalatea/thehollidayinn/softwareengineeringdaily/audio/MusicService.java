@@ -29,7 +29,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-import timber.log.Timber;
 
 public class MusicService extends MediaBrowserServiceCompat {
     private static final String TAG = "MusicService";
@@ -128,7 +127,8 @@ public class MusicService extends MediaBrowserServiceCompat {
         try {
             mediaNotificationHelper = new MediaNotificationHelper(this);
         } catch (RemoteException e) {
-            e.printStackTrace();
+            // @TODO Had a report of no method printStackTrace and this was the only call... not sure why
+//            e.printStackTrace();
         }
     }
 

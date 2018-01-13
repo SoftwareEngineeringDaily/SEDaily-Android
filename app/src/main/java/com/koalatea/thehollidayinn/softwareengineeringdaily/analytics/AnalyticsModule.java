@@ -3,7 +3,6 @@ package com.koalatea.thehollidayinn.softwareengineeringdaily.analytics;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import com.google.firebase.analytics.FirebaseAnalytics;
-import com.koalatea.thehollidayinn.softwareengineeringdaily.app.AppScope;
 
 import javax.inject.Singleton;
 

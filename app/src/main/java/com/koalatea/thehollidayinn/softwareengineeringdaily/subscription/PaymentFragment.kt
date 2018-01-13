@@ -53,7 +53,7 @@ class PaymentFragment : Fragment() {
 
         payButton.isEnabled = false
 
-        val stripe = Stripe(SEDApp.component.context(), "pk_test_RayhhznsRXj6hqZ8SnKJY70Y")
+        val stripe = Stripe(SEDApp.component.context(), "pk_live_Cfttsv5i5ZG5IBfrmllzNoSA")
         stripe.createToken(
             cardToSave,
             object: TokenCallback {

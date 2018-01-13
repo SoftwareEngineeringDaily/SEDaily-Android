@@ -1,7 +1,6 @@
 package com.koalatea.thehollidayinn.softwareengineeringdaily;
 
 import android.content.ComponentName;
-import android.os.Bundle;
 import android.os.RemoteException;
 import android.support.annotation.Nullable;
 import android.support.v4.media.MediaBrowserCompat;

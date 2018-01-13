@@ -13,8 +13,8 @@ android {
         applicationId "com.koalatea.thehollidayinn.softwareengineeringdaily"
         minSdkVersion rootProject.minSdkVersion
         targetSdkVersion rootProject.targetSdkVersion
-        versionCode 15
-        versionName "1.3.2"
+        versionCode 17
+        versionName "1.4"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
         //Note this will be deprecated soon....

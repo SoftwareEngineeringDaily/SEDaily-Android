@@ -41,7 +41,7 @@ ext {
   architectureComponents = '1.0.0'
   constraintlayoutVersion = '1.0.2'
   //Kotlin
-  kotlinVersion = '1.2.0'
+  kotlinVersion = '1.2.10'
   //Firebase
   firebaseServicesVersion = '11.6.2'
   //Architecture

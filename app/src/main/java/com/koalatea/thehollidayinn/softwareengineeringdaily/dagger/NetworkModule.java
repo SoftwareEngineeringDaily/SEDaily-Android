@@ -6,7 +6,6 @@ import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.BuildConfig;
-import com.koalatea.thehollidayinn.softwareengineeringdaily.app.AppScope;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.app.SEDApp;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.data.remote.APIInterface;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.repositories.UserRepository;
@@ -33,12 +32,12 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 @Module
 public class NetworkModule {
-//    String baseUrl =  "https://software-enginnering-daily-api.herokuapp.com/api/";
+    String baseUrl =  "https://software-enginnering-daily-api.herokuapp.com/api/";
     // Staging
 //    String baseUrl = "https://sedaily-backend-staging.herokuapp.com/api/";
 
     // Local
-    String baseUrl = "http://192.168.1.251:4040/api/";
+//    String baseUrl = "http://192.168.1.251:4040/api/";
 
 //    public NetworkModule(String baseUrl) {
 //        this.baseUrl = baseUrl;

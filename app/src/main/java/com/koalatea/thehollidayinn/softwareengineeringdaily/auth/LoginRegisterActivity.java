@@ -26,7 +26,8 @@ import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.observers.DisposableObserver;
 import io.reactivex.schedulers.Schedulers;
-import timber.log.Timber;
+import retrofit2.HttpException;
+import retrofit2.Response;
 
 public class LoginRegisterActivity extends AppCompatActivity {
     private Boolean register = false;
@@ -156,9 +157,19 @@ public class LoginRegisterActivity extends AppCompatActivity {
                 }
 
                 @Override
-                public void onError(Throwable e) {
-                    Timber.v("keithtest" + e.getMessage());
-                    displayMessage(e.getMessage());
+                public void onError(Throwable error) {
+                    try {
+                        // We had non-200 http error
+                        if (error instanceof HttpException) {
+                            HttpException httpException = (HttpException) error;
+                            Response response = httpException.response();
+                            displayMessage(response.errorBody().string());
+                        } else {
+                            displayMessage(error.getMessage());
+                        }
+                    } catch (Exception e) {
+                        displayMessage(e.getMessage());
+                    }
                 }
 
                 @Override
