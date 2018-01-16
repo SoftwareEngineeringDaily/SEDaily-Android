@@ -4,7 +4,10 @@
     <item
         android:id="@+id/menu_item_share"
         android:actionProviderClass="android.widget.ShareActionProvider"
+        android:enabled="true"
+        android:icon="?attr/actionModeShareDrawable"
         android:showAsAction="ifRoom"
         android:title="Share"
+        android:visible="true"
         app:showAsAction="ifRoom" />
 </menu>
