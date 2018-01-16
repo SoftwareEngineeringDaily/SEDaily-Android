@@ -10,7 +10,9 @@ import android.support.v4.media.MediaMetadataCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.MenuInflater;
 import android.view.View;
+import android.view.Menu;
 import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -85,6 +87,7 @@ public class PodcastDetailActivity extends PlaybackControllerActivity {
       toolbar.setTitle("");
       setSupportActionBar(toolbar);
       getSupportActionBar().setDisplayShowTitleEnabled(false); // @TODO: This doesn't seem to work
+//      toolbar.inflateMenu(R.menu.podcast_detail_menu);
     }
 
 
@@ -117,6 +120,13 @@ public class PodcastDetailActivity extends PlaybackControllerActivity {
             .subscribe(myDisposableObserver);
   }
 
+  @Override
+  public boolean onCreateOptionsMenu(Menu menu) {
+    MenuInflater inflater = getMenuInflater();
+    inflater.inflate(R.menu.podcast_detail_menu, menu);
+    return true;
+  }
+  
   @Override
   public void onStop() {
     super.onStop();
