@@ -4,6 +4,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.v4.app.ShareCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.MediaMetadataCompat;
@@ -13,6 +14,7 @@ import android.util.Log;
 import android.view.MenuInflater;
 import android.view.View;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -87,7 +89,6 @@ public class PodcastDetailActivity extends PlaybackControllerActivity {
       toolbar.setTitle("");
       setSupportActionBar(toolbar);
       getSupportActionBar().setDisplayShowTitleEnabled(false); // @TODO: This doesn't seem to work
-//      toolbar.inflateMenu(R.menu.podcast_detail_menu);
     }
 
 
@@ -126,7 +127,34 @@ public class PodcastDetailActivity extends PlaybackControllerActivity {
     inflater.inflate(R.menu.podcast_detail_menu, menu);
     return true;
   }
-  
+
+  @Override
+  public boolean onOptionsItemSelected(MenuItem item) {
+    switch(item.getItemId()) {
+      case R.id.menu_item_share:
+        startShareIntent();
+        break;
+    }
+
+    return super.onOptionsItemSelected(item);
+  }
+
+  /*
+   * Start a share intent
+   */
+  public void startShareIntent() {
+    String shareContent = "Check out this episode of Software Engineering Daily: ";
+    shareContent += post.getLink();
+
+    Intent shareIntent = ShareCompat.IntentBuilder.from(this)
+            .setText(shareContent)
+            .setType("text/plain")
+            .setChooserTitle("Share Podcast")
+            .createChooserIntent();
+
+    startActivity(shareIntent);
+  }
+
   @Override
   public void onStop() {
     super.onStop();
@@ -292,22 +320,6 @@ public class PodcastDetailActivity extends PlaybackControllerActivity {
           PodcastDownloadsRepository.getInstance().removeFileForPost(post);
         }})
       .setNegativeButton(android.R.string.no, null).show();
-  }
-
-  /*
-   * Open the share intent from the share button
-   */
-  @OnClick(R.id.shareButton)
-  public void openShareIntent() {
-    // Set up the share string for the intent
-    String shareContent = "Check out this episode of Software Engineering Daily: ";
-    shareContent += post.getLink();
-
-    Intent intent = new Intent(Intent.ACTION_SEND);
-    intent.setType("text/plain");
-    intent.putExtra(Intent.EXTRA_TEXT, shareContent);
-    startActivity(Intent.createChooser(intent, "Share with"));
-    return;
   }
 
   public void setUpDownloadedState() {
