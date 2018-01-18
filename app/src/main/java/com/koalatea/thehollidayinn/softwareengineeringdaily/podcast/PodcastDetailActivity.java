@@ -71,9 +71,6 @@ public class PodcastDetailActivity extends PlaybackControllerActivity {
   @BindView(R.id.description)
   WebView descriptionWebView;
 
-  @BindView(R.id.shareButton)
-  Button shareButton;
-
   private Post post;
   private APIInterface mService;
 
