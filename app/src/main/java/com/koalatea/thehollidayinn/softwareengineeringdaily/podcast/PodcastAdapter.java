@@ -20,6 +20,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.reactivex.Observable;
 import io.reactivex.subjects.PublishSubject;
+import timber.log.Timber;
 
 /*
  * Created by krh12 on 5/22/2017.
@@ -74,6 +75,7 @@ class PodcastAdapter extends RecyclerView.Adapter<PodcastAdapter.ViewHolder> {
     if (post.getFeaturedImage() != null) {
       imageLink = post.getFeaturedImage();
     }
+    Timber.v("keithtest" + String.valueOf(post.getFeaturedImage()));
     Picasso.with(SEDApp.component.context())
         .load(imageLink)
         .fit()

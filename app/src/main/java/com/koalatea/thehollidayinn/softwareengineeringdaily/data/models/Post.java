@@ -1,5 +1,7 @@
 package com.koalatea.thehollidayinn.softwareengineeringdaily.data.models;
 
+import com.google.gson.annotations.SerializedName;
+
 import java.util.Date;
 
 /*
@@ -18,6 +20,7 @@ public class Post {
     private Boolean upvoted;
     private Boolean downvoted;
     private String mp3;
+    @SerializedName("featuredImage")
     private String featuredImage;
 
     public String get_id() {

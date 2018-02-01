@@ -85,7 +85,7 @@ public class NetworkModule {
         if (BuildConfig.DEBUG) {
             clientbuilder.addInterceptor(logging);
         }
-        clientbuilder.cache(cache);
+//        clientbuilder.cache(cache);
 
         return clientbuilder.build();
     }
