@@ -79,7 +79,6 @@ public class MusicService extends MediaBrowserServiceCompat {
     @Override
     public void onCreate() {
         super.onCreate();
-        Log.d(TAG, "onCreate");
 
         mMusicProvider = MusicProvider.getInstance();
 

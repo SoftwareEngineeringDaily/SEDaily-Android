@@ -309,27 +309,41 @@ public class PodcastDetailActivity extends PlaybackControllerActivity {
       return;
     }
 
-    File file = new MP3FileManager().getFileFromUrl(post.getMp3(), SEDApp.component().context());
+    playMedia();
+  }
+
+  public void playMedia () {
+    if (post == null || post.getMp3() == null || post.getMp3().isEmpty()) {
+      return;
+    }
 
     String source = post.getMp3();
     String id = String.valueOf(source.hashCode());
 
+    String mediaUri = source;
+    if (PodcastDownloadsRepository.getInstance().isPodcastDownloaded(post)) {
+      File file = new MP3FileManager().getFileFromUrl(post.getMp3(), SEDApp.component().context());
+      mediaUri = file.getAbsolutePath();
+    }
+
     MusicProvider mMusicProvider = MusicProvider.getInstance();
     MediaMetadataCompat item = mMusicProvider.getMusic(id);
 
+
+
     if (item == null) {
       item = new MediaMetadataCompat.Builder()
-        .putString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID, id)
-        .putString(MediaMetadataCompat.METADATA_KEY_MEDIA_URI, file.getAbsolutePath())
-        .putString(MediaMetadataCompat.METADATA_KEY_TITLE, post.getTitle().getRendered())
-        .build();
+              .putString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID, id)
+              .putString(MediaMetadataCompat.METADATA_KEY_MEDIA_URI, mediaUri)
+              .putString(MediaMetadataCompat.METADATA_KEY_TITLE, post.getTitle().getRendered())
+              .build();
 
       mMusicProvider.updateMusic(id, item);
     }
 
     MediaBrowserCompat.MediaItem bItem =
-      new MediaBrowserCompat.MediaItem(item.getDescription(),
-        MediaBrowserCompat.MediaItem.FLAG_PLAYABLE);
+            new MediaBrowserCompat.MediaItem(item.getDescription(),
+                    MediaBrowserCompat.MediaItem.FLAG_PLAYABLE);
 
     boolean isSameMedia = id.equals(getPlayingMediaId());
     onMediaItemSelected(bItem, isSameMedia);
