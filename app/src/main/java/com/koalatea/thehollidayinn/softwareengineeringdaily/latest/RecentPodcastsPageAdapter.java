@@ -1,8 +1,10 @@
-package com.koalatea.thehollidayinn.softwareengineeringdaily.podcast;
+package com.koalatea.thehollidayinn.softwareengineeringdaily.latest;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+
+import com.koalatea.thehollidayinn.softwareengineeringdaily.podcast.PodListFragment;
 
 import java.util.ArrayList;
 import java.util.Arrays;

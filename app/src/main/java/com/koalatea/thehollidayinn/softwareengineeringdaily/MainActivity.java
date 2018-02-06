@@ -5,23 +5,34 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.design.widget.BottomNavigationView;
+import android.support.design.widget.TabLayout;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 
 import com.koalatea.thehollidayinn.softwareengineeringdaily.app.SEDApp;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.auth.LoginRegisterActivity;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.data.models.SubscriptionResponse;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.data.models.UserResponse;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.data.remote.APIInterface;
+import com.koalatea.thehollidayinn.softwareengineeringdaily.podcast.TopRecListFragment;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.repositories.FilterRepository;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.repositories.UserRepository;
-import com.koalatea.thehollidayinn.softwareengineeringdaily.podcast.PodListFragment;
-import com.koalatea.thehollidayinn.softwareengineeringdaily.podcast.RecentPodcastFragment;
+import com.koalatea.thehollidayinn.softwareengineeringdaily.latest.RecentPodcastFragment;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.subscription.SubscriptionActivity;
+import com.mikepenz.google_material_typeface_library.GoogleMaterial;
+import com.mikepenz.materialdrawer.AccountHeader;
+import com.mikepenz.materialdrawer.AccountHeaderBuilder;
+import com.mikepenz.materialdrawer.Drawer;
+import com.mikepenz.materialdrawer.DrawerBuilder;
+import com.mikepenz.materialdrawer.model.DividerDrawerItem;
+import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
+import com.mikepenz.materialdrawer.model.ProfileDrawerItem;
+import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
+import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.observers.DisposableObserver;
@@ -33,9 +44,14 @@ public class MainActivity extends PlaybackControllerActivity
     private FilterRepository filterRepository;
 
     private RecentPodcastFragment firstFragment;
-    private PodListFragment secondPage;
-    private PodListFragment thirdPage;
+    private TopRecListFragment secondPage;
+    private TopRecListFragment thirdPage;
     private Menu menu;
+    private Drawer drawer;
+    private TabLayout tabLayout;
+    private Toolbar toolbar;
+    private SecondaryDrawerItem subscribeItem;
+    private SecondaryDrawerItem loginItem;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,14 +59,14 @@ public class MainActivity extends PlaybackControllerActivity
         setContentView(R.layout.activity_main);
 
         this.setUp();
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayShowTitleEnabled(false);
 
         userRepository = SEDApp.component.userRepository();
         filterRepository = FilterRepository.getInstance();
 
-        setUpBottomNavigation();
+        toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        tabLayout = findViewById(R.id.tabs);
+        setUpDrawer(toolbar);
 
         showInitialPage();
     }
@@ -81,7 +97,7 @@ public class MainActivity extends PlaybackControllerActivity
     private void displaySubscribedView (UserResponse userResponse) {
         SubscriptionResponse subscriptionResponse = userResponse.getSubscription();
         if (subscriptionResponse != null && subscriptionResponse.active) {
-            menu.findItem(R.id.action_subscribe).setTitle("View Subscription");
+            subscribeItem.getName().setText("View Subscription");
             userRepository.setHasPremium(true);
         }
     }
@@ -91,47 +107,114 @@ public class MainActivity extends PlaybackControllerActivity
             firstFragment = RecentPodcastFragment.newInstance();
         }
 
+        toolbar.setTitle("Latest");
+
         this.getSupportFragmentManager()
                 .beginTransaction()
                 .replace(R.id.fragment_container, firstFragment)
                 .commit();
     }
 
-    private void setUpBottomNavigation() {
-        BottomNavigationView bottomNavigationView = (BottomNavigationView)
-                findViewById(R.id.bottom_navigation);
+    public void setUpDrawer(Toolbar toolbar) {
+        PrimaryDrawerItem item1 = new PrimaryDrawerItem().withIdentifier(1).withIcon(GoogleMaterial.Icon.gmd_mic).withName(R.string.latest);
+        SecondaryDrawerItem item2 = new SecondaryDrawerItem().withIdentifier(2).withIcon(GoogleMaterial.Icon.gmd_assessment).withName(R.string.greatest_hits);
+        SecondaryDrawerItem item3 = new SecondaryDrawerItem().withIdentifier(3).withIcon(GoogleMaterial.Icon.gmd_show_chart).withName(R.string.just_for_you);
 
-        bottomNavigationView.setOnNavigationItemSelectedListener(
-                new BottomNavigationView.OnNavigationItemSelectedListener() {
+        loginItem = new SecondaryDrawerItem().withIdentifier(4).withIcon(GoogleMaterial.Icon.gmd_perm_identity).withName(R.string.login);
+
+        subscribeItem = new SecondaryDrawerItem().withIdentifier(5).withIcon(GoogleMaterial.Icon.gmd_monetization_on).withName(R.string.subscribe);
+
+        AccountHeaderBuilder accountHeaderBuilder = new AccountHeaderBuilder()
+                .withActivity(this)
+                .withHeaderBackground(R.drawable.gradient);
+
+        if (!userRepository.getToken().isEmpty()) {
+            loginItem.getName().setText(getString(R.string.logout));
+            accountHeaderBuilder.addProfiles(
+                new ProfileDrawerItem()
+                        .withName("Logged-In")
+//                        .withEmail("mikepenz@gmail.com")
+                        .withIcon(getResources()
+                        .getDrawable(R.drawable.sedaily_logo))
+            );
+        }
+
+        AccountHeader headerResult = accountHeaderBuilder
+//                .withOnAccountHeaderListener(new AccountHeader.OnAccountHeaderListener() {
+//                    @Override
+//                    public boolean onProfileChanged(View view, IProfile profile, boolean currentProfile) {
+//                        return false;
+//                    }
+//                })
+                .build();
+
+        drawer = new DrawerBuilder()
+                .withActivity(this)
+                .withToolbar(toolbar)
+                .withAccountHeader(headerResult)
+                .addDrawerItems(
+                        item1,
+                        item2,
+                        item3,
+                        new DividerDrawerItem(),
+                        loginItem,
+                        subscribeItem
+                )
+                .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
                     @Override
-                    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                        return navigationItemSelected(item);
+                    public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
+                        navigationItemSelected(drawerItem);
+                        drawer.closeDrawer();
+                        return false;
                     }
-                });
+                })
+                .build();
     }
 
-    private Boolean navigationItemSelected(@NonNull MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.action_favorites:
+    private Boolean navigationItemSelected(@NonNull IDrawerItem item) {
+        switch ((int) item.getIdentifier()) {
+            case 1:
+                tabLayout.setVisibility(View.VISIBLE);
                 showInitialPage();
                 break;
-            case R.id.action_schedules:
+            case 2:
                 if (secondPage == null) {
-                    secondPage = PodListFragment.newInstance("Greatest Hits", "");
+                    secondPage = TopRecListFragment.newInstance("Greatest Hits", "");
                 }
+
+                toolbar.setTitle("Greatest Hits");
+                tabLayout.setVisibility(View.GONE);
+
                 this.getSupportFragmentManager()
                         .beginTransaction()
                         .replace(R.id.fragment_container, secondPage)
                         .commit();
                 break;
-            case R.id.action_music:
+            case 3:
                 if (thirdPage == null) {
-                    thirdPage = PodListFragment.newInstance("Just For You", "");
+                    thirdPage = TopRecListFragment.newInstance("Just For You", "");
                 }
+
+                toolbar.setTitle("Just For You");
+                tabLayout.setVisibility(View.GONE);
+
                 this.getSupportFragmentManager()
                         .beginTransaction()
                         .replace(R.id.fragment_container, thirdPage)
                         .commit();
+                break;
+            case 4:
+                if (!userRepository.getToken().isEmpty()) {
+                    userRepository.setToken("");
+                    Intent intent = new Intent(this, MainActivity.class);
+                    startActivity(intent);
+                } else {
+                    Intent intent = new Intent(this, LoginRegisterActivity.class);
+                    startActivity(intent);
+                }
+                break;
+            case 5:
+                startActivity(new Intent(this, SubscriptionActivity.class));
                 break;
         }
 
@@ -143,15 +226,6 @@ public class MainActivity extends PlaybackControllerActivity
         this.menu = menu;
 
         getMenuInflater().inflate(R.menu.menu_main, menu);
-        if (userRepository.getToken() != null && !userRepository.getToken().isEmpty()) {
-            menu.findItem(R.id.action_toggle_login_register).setVisible(false);
-            menu.findItem(R.id.action_logout).setVisible(true);
-            menu.findItem(R.id.action_subscribe).setVisible(true);
-        } else {
-            menu.findItem(R.id.action_toggle_login_register).setVisible(true);
-            menu.findItem(R.id.action_logout).setVisible(false);
-            menu.findItem(R.id.action_subscribe).setVisible(false);
-        }
 
         // Associate searchable configuration with the SearchView
         SearchManager searchManager =
@@ -181,31 +255,6 @@ public class MainActivity extends PlaybackControllerActivity
         loadMe();
 
         return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-
-        if (id == R.id.action_toggle_login_register) {
-            Intent intent = new Intent(this, LoginRegisterActivity.class);
-            startActivity(intent);
-            return true;
-        } else if (id == R.id.action_logout) {
-            userRepository.setToken("");
-            Intent intent = new Intent(this, MainActivity.class);
-            startActivity(intent);
-        } else if (id == R.id.action_subscribe) {
-            startActivity(new Intent(this, SubscriptionActivity.class));
-        }
-        //else if (id == R.id.opensource) {
-            //Intent intent = new Intent(this, OssLicensesMenuActivity.class);
-            //String title = getString(R.string.open_source_info);
-            //intent.putExtra("title", title);
-            //startActivity(intent);
-        //}
-
-        return super.onOptionsItemSelected(item);
     }
 
     @Override

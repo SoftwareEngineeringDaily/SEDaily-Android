@@ -83,6 +83,7 @@ public class PodcastDetailActivity extends PlaybackControllerActivity {
       getSupportActionBar().setDisplayShowTitleEnabled(false); // @TODO: This doesn't seem to work
     }
 
+//    getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
     mService = SEDApp.component().kibblService();
     userRepository = UserRepository.getInstance(this);

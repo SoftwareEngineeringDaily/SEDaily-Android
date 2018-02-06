@@ -15,22 +15,13 @@ import android.view.ViewGroup;
 import com.ethanhua.skeleton.RecyclerViewSkeletonScreen;
 import com.ethanhua.skeleton.Skeleton;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.R;
-import com.koalatea.thehollidayinn.softwareengineeringdaily.app.SEDApp;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.data.models.Post;
-import com.koalatea.thehollidayinn.softwareengineeringdaily.data.remote.APIInterface;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.repositories.FilterRepository;
-import com.koalatea.thehollidayinn.softwareengineeringdaily.repositories.PostRepository;
-import com.koalatea.thehollidayinn.softwareengineeringdaily.repositories.UserRepository;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-
-import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.observers.DisposableObserver;
 import io.reactivex.schedulers.Schedulers;
-import timber.log.Timber;
 
 /*
  * Created by krh12 on 5/22/2017.
@@ -61,7 +52,7 @@ public class PodListFragment extends Fragment {
     View rootView = inflater.inflate(
       R.layout.fragment_podcast_horizontal, container, false);
 
-    RecyclerView recyclerView = (RecyclerView) rootView.findViewById(R.id.my_recycler_view);
+    RecyclerView recyclerView = rootView.findViewById(R.id.my_recycler_view);
     recyclerView.setHasFixedSize(true);
 
     LinearLayoutManager mLayoutManager = new LinearLayoutManager(this.getContext());
@@ -69,6 +60,23 @@ public class PodListFragment extends Fragment {
 
     podcastAdapter = new PodcastAdapter();
     recyclerView.setAdapter(podcastAdapter);
+    podcastAdapter.getPositionClicks()
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(new DisposableObserver<Post>() {
+              @Override
+              public void onComplete() {}
+              @Override
+              public void onError(Throwable e) {
+                Log.v(TAG, e.toString());
+              }
+              @Override
+              public void onNext(Post post) {
+                Intent intent = new Intent(getActivity(), PodcastDetailActivity.class);
+                intent.putExtra("POST_ID", post.get_id());
+                getActivity().startActivity(intent);
+              }
+            });
 
     skeletonScreen = Skeleton.bind(recyclerView)
         .adapter(podcastAdapter)
@@ -81,7 +89,7 @@ public class PodListFragment extends Fragment {
       new SwipeRefreshLayout.OnRefreshListener() {
         @Override
         public void onRefresh() {
-          getPosts("");
+          podcastListViewModel.getPosts("", title, tagId);
         }
       }
     );
@@ -90,7 +98,6 @@ public class PodListFragment extends Fragment {
             .of(this)
             .get(PodcastListViewModel.class);
     podcastListViewModel.getPostList().observe(this, posts -> {
-      Timber.v("podcastListViewModel" + tagId);
       if (posts != null) updatePosts(posts);
     });
 
@@ -107,7 +114,7 @@ public class PodListFragment extends Fragment {
     myDisposableObserver = new DisposableObserver<String>() {
       @Override
       public void onNext(String s) {
-        getPosts(s);
+        podcastListViewModel.getPosts(s, title, tagId);
       }
 
       @Override
@@ -118,30 +125,12 @@ public class PodListFragment extends Fragment {
     };
     FilterRepository filterRepository = FilterRepository.getInstance();
     filterRepository.getModelChanges().subscribe(myDisposableObserver);
-
-    podcastAdapter.getPositionClicks()
-      .subscribeOn(Schedulers.io())
-      .observeOn(AndroidSchedulers.mainThread())
-      .subscribe(new DisposableObserver<Post>() {
-        @Override
-        public void onComplete() {}
-        @Override
-        public void onError(Throwable e) {
-          Log.v(TAG, e.toString());
-        }
-        @Override
-        public void onNext(Post post) {
-          Intent intent = new Intent(getActivity(), PodcastDetailActivity.class);
-          intent.putExtra("POST_ID", post.get_id());
-          getActivity().startActivity(intent);
-        }
-      });
   }
 
   @Override
   public void onStart() {
     super.onStart();
-    this.getPosts("");
+    podcastListViewModel.getPosts("", title, tagId);
   }
 
   @Override
@@ -153,54 +142,9 @@ public class PodListFragment extends Fragment {
     }
   }
 
-  private void getPosts(String search) {
-    APIInterface mService = SEDApp.component.kibblService();
-
-    // @TODO: Replace tmp with query
-
-    Map<String, String> data = new HashMap<>();
-    Observable<List<Post>> query = mService.getPosts(data);
-
-    UserRepository userRepository = UserRepository.getInstance(this.getContext());
-    final PostRepository postRepository = PostRepository.getInstance();
-
-    if (this.title != null && this.title.equals("Greatest Hits")) {
-      data.put("type", "top");
-    } else if (this.title != null && this.title.equals("Just For You") && !userRepository.getToken().isEmpty()) {
-      query = mService.getRecommendations(data);
-    } else if (tagId != null && !tagId.isEmpty()) {
-      data.put("categories", tagId);
-    }
-
-    if (!search.isEmpty()) {
-      data.put("search", search);
-    }
-
-    query
-      .subscribeOn(Schedulers.io())
-      .observeOn(AndroidSchedulers.mainThread())
-      .subscribe(new DisposableObserver<List<Post>>() {
-        @Override
-        public void onComplete() {
-          skeletonScreen.hide();
-        }
-
-        @Override
-        public void onError(Throwable e) {
-            Log.v(TAG, e.toString());
-        }
-
-        @Override
-        public void onNext(List<Post> posts) {
-//          podcastAdapter.setPosts(posts);
-          postRepository.setPosts(posts);
-          podcastListViewModel.setPostList(posts);
-          swipeRefreshLayout.setRefreshing(false);
-        }
-      });
-  }
-
   private void updatePosts(List<Post> postList) {
     podcastAdapter.setPosts(postList);
+    swipeRefreshLayout.setRefreshing(false);
+    skeletonScreen.hide();
   }
 }
