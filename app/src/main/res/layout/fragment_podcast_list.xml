@@ -48,7 +48,7 @@
                 android:text="@string/item_title" />
 
             <TextView
-                android:id="@+id/song_artist"
+                android:id="@+id/card_desc"
                 style="@style/TextAppearance.AppCompat.Widget.ActionMode.Subtitle"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"

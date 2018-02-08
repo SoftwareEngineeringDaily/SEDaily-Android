@@ -47,7 +47,7 @@
         android:layout_marginBottom="50dp"
         app:cardElevation="8dp">
 
-        <fragment android:name="com.koalatea.thehollidayinn.softwareengineeringdaily.mediaui.PlaybackControlsFragment"
+        <fragment android:name="com.koalatea.thehollidayinn.softwareengineeringdaily.playbar.PlaybarFragment"
             android:id="@+id/fragment_playback_controls"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

@@ -12,19 +12,18 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
 import com.koalatea.thehollidayinn.softwareengineeringdaily.audio.MusicService;
-import com.koalatea.thehollidayinn.softwareengineeringdaily.mediaui.PlaybackControlsFragment;
+import com.koalatea.thehollidayinn.softwareengineeringdaily.playbar.PlaybarFragment;
 
 /*
  * Created by keithholliday on 9/27/17.
  */
 
 // @TODO: Some of this needs to be moved to the fragment
-// @TODO: Abstract the business logic for Clean Architecture
 
 public class PlaybackControllerActivity extends AppCompatActivity {
     private static final String TAG = "PlaybackController";
     private MediaBrowserCompat mMediaBrowser;
-    private PlaybackControlsFragment mControlsFragment;
+    private PlaybarFragment mControlsFragment;
     private String mCurrentMediaId = "";
 
     private final MediaBrowserCompat.ConnectionCallback mConnectionCallbacks =
@@ -78,7 +77,7 @@ public class PlaybackControllerActivity extends AppCompatActivity {
     public void onStart() {
         super.onStart();
         if (mControlsFragment == null) {
-            mControlsFragment = (PlaybackControlsFragment) getSupportFragmentManager()
+            mControlsFragment = (PlaybarFragment) getSupportFragmentManager()
                     .findFragmentById(R.id.fragment_playback_controls);
         }
         mMediaBrowser.connect();
