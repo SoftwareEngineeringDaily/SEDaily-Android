@@ -3,6 +3,8 @@
 
 [![Build Status](https://travis-ci.org/SoftwareEngineeringDaily/software-engineering-daily-api.svg?branch=develop)](https://travis-ci.org/SoftwareEngineeringDaily/software-engineering-daily-api)
 [![codecov](https://codecov.io/gh/SoftwareEngineeringDaily/SEDaily-Android/branch/develop/graph/badge.svg)](https://codecov.io/gh/SoftwareEngineeringDaily/SEDaily-Android)
+[![codebeat badge](https://codebeat.co/badges/a5d6976a-9163-491b-8618-0673b703529a)](https://codebeat.co/projects/github-com-softwareengineeringdaily-sedaily-android-develop)
+[![Help Contribute to Open Source](https://www.codetriage.com/softwareengineeringdaily/sedaily-android/badges/users.svg)](https://www.codetriage.com/softwareengineeringdaily/sedaily-android)
 
 # SEDaily-Android
 
