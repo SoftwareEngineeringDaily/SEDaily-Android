@@ -80,7 +80,7 @@ class PodcastAdapter extends RecyclerView.Adapter<PodcastAdapter.ViewHolder> {
     if (post.getFeaturedImage() != null) {
       imageLink = post.getFeaturedImage();
     }
-    Timber.v("keithtest" + String.valueOf(post.getFeaturedImage()));
+
     Picasso.with(SEDApp.component.context())
         .load(imageLink)
         .fit()

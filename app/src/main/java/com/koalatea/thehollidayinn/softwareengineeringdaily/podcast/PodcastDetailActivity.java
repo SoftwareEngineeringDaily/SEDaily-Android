@@ -2,6 +2,7 @@ package com.koalatea.thehollidayinn.softwareengineeringdaily.podcast;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.ShareCompat;
@@ -33,6 +34,8 @@ import com.koalatea.thehollidayinn.softwareengineeringdaily.repositories.Podcast
 import com.koalatea.thehollidayinn.softwareengineeringdaily.repositories.PostRepository;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.repositories.UserRepository;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.downloads.MP3FileManager;
+import com.mikepenz.google_material_typeface_library.GoogleMaterial;
+import com.mikepenz.iconics.IconicsDrawable;
 import com.ohoussein.playpause.PlayPauseView;
 
 import java.io.File;
@@ -53,9 +56,6 @@ public class PodcastDetailActivity extends PlaybackControllerActivity {
 
   @BindView(R.id.deleteButton)
   Button deleteButton;
-
-  @BindView(R.id.downloadButton)
-  Button downloadButton;
 
   @BindView(R.id.playButton)
   PlayPauseView playButton;
@@ -78,6 +78,7 @@ public class PodcastDetailActivity extends PlaybackControllerActivity {
 
   private Post post;
   private APIInterface mService;
+  private MenuItem downloadItem;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -117,12 +118,27 @@ public class PodcastDetailActivity extends PlaybackControllerActivity {
   public boolean onCreateOptionsMenu(Menu menu) {
     MenuInflater inflater = getMenuInflater();
     inflater.inflate(R.menu.podcast_detail_menu, menu);
+
+    downloadItem = menu.findItem(R.id.menu_item_download);
+    setUpNotDownloadedState();
+
+    // Share button
+    IconicsDrawable share = new IconicsDrawable(this)
+            .icon(GoogleMaterial.Icon.gmd_share)
+            .color(Color.WHITE)
+            .sizeDp(24);
+    menu.findItem(R.id.menu_item_share).setIcon(share);
+
     return true;
   }
 
   @Override
   public boolean onOptionsItemSelected(MenuItem item) {
     switch(item.getItemId()) {
+      case R.id.menu_item_download:
+        downloadMp3();
+        break;
+
       case R.id.menu_item_share:
         startShareIntent();
         break;
@@ -191,13 +207,20 @@ public class PodcastDetailActivity extends PlaybackControllerActivity {
     scoreText.setText(String.valueOf(post.getScore()));
     setVoteButtonStates();
 
-    if (!PodcastDownloadsRepository.getInstance().isPodcastDownloaded(post)) {
+    checkDownloadState();
+  }
+
+  private void checkDownloadState () {
+    PodcastDownloadsRepository podcastDownloadsRepository = PodcastDownloadsRepository.getInstance();
+
+    if (!podcastDownloadsRepository.isPodcastDownloaded(post)) {
       setUpNotDownloadedState();
+    } else {
+      setUpDownloadedState();
     }
 
-    if (PodcastDownloadsRepository.getInstance().isDownloading(post.get_id())) {
-      downloadButton.setText(R.string.downloading);
-      deleteButton.setVisibility(View.INVISIBLE);
+    if (podcastDownloadsRepository.isDownloading(post.get_id())) {
+      setUpDownloadedState();
     }
   }
 
@@ -301,6 +324,8 @@ public class PodcastDetailActivity extends PlaybackControllerActivity {
       });
   }
 
+  /* Downloads */
+
   @OnClick(R.id.deleteButton)
   public void confirmRemoveLocalDownload() {
     if (post == null) return;
@@ -336,12 +361,26 @@ public class PodcastDetailActivity extends PlaybackControllerActivity {
   }
 
   public void setUpDownloadedState() {
-    downloadButton.setText(R.string.label_play);
+    if (downloadItem != null) {
+      IconicsDrawable removeIcon = new IconicsDrawable(this)
+              .icon(GoogleMaterial.Icon.gmd_cancel)
+              .color(Color.WHITE)
+              .sizeDp(24);
+      downloadItem.setIcon(removeIcon);
+    }
+    
     deleteButton.setVisibility(View.VISIBLE);
   }
 
   public void setUpNotDownloadedState() {
-    downloadButton.setText(R.string.download);
+    if (downloadItem != null) {
+      IconicsDrawable download = new IconicsDrawable(this)
+              .icon(GoogleMaterial.Icon.gmd_cloud_download)
+              .color(Color.WHITE)
+              .sizeDp(24);
+      downloadItem.setIcon(download);
+    }
+
     deleteButton.setVisibility(View.INVISIBLE);
   }
 
@@ -360,19 +399,18 @@ public class PodcastDetailActivity extends PlaybackControllerActivity {
     playMedia();
   }
 
-  @OnClick(R.id.downloadButton)
   public void downloadMp3 () {
     if (!hasValidMp3()) return;
+    if (downloadItem == null) return;
 
-    // @TODO: Check download queue instead
-    if (downloadButton.getText().equals(getString(R.string.downloading))) {
-      PodcastDownloadsRepository.getInstance().cancelDownload(post);
-      return;
-    }
+    PodcastDownloadsRepository podcastDownloadsRepository = PodcastDownloadsRepository.getInstance();
 
-    if (!PodcastDownloadsRepository.getInstance().isPodcastDownloaded(post)) {
-      downloadButton.setText(R.string.downloading);
-      PodcastDownloadsRepository.getInstance().displayDownloadNotification(post);
+    if (podcastDownloadsRepository.isDownloading(post.get_id())) {
+      setUpNotDownloadedState();
+      podcastDownloadsRepository.cancelDownload(post);
+    } else {
+      setUpDownloadedState();
+      podcastDownloadsRepository.displayDownloadNotification(post);
     }
   }
 

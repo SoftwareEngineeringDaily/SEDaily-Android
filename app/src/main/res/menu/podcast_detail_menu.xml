@@ -2,11 +2,19 @@
 <menu xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:android="http://schemas.android.com/apk/res/android">
     <item
+        android:id="@+id/menu_item_download"
+        android:enabled="true"
+        android:icon="@drawable/ic_down_arrow"
+        app:showAsAction="ifRoom"
+        android:title="Download"
+        android:orderInCategory="100"
+        android:visible="true"/>
+
+    <item
         android:id="@+id/menu_item_share"
-        android:actionProviderClass="android.support.v7.widget.ShareActionProvider"
+        android:orderInCategory="101"
         android:enabled="true"
         android:icon="@android:drawable/ic_menu_share"
-        android:showAsAction="ifRoom"
         android:title="Share"
         android:visible="true"
         app:showAsAction="ifRoom" />

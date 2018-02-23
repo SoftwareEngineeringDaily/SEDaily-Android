@@ -88,7 +88,7 @@ public class PodcastDownloadsRepository {
     mNotifyManager =
         (NotificationManager) app.context().getSystemService(Context.NOTIFICATION_SERVICE);
 
-    String CHANNEL_ID = "my_channel_01";
+    String CHANNEL_ID = "sedaily_player_notifications";
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
       CharSequence name = app.context().getString(R.string.app_name);
       int importance = NotificationManager.IMPORTANCE_DEFAULT;
@@ -101,6 +101,8 @@ public class PodcastDownloadsRepository {
             .setContentTitle("Downloading " + post.getTitle().getRendered())
             .setContentText("Download in progress")
             .setSmallIcon(R.drawable.sedaily_logo);
+
+    mNotifyManager.notify(id, mBuilder.build());
 
     // execute this when the downloader must be fired
     downloadTask = new DownloadTask(mNotifyManager, mBuilder, post.get_id());

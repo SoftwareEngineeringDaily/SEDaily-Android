@@ -61,23 +61,9 @@
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="10dp"
                     android:layout_marginRight="10dp"
-                    android:layout_toLeftOf="@+id/downloadButton"
-                    android:layout_toStartOf="@+id/downloadButton"
-                    android:text="@string/remove_download"
-                    android:textAlignment="center" />
-
-                <Button
-                    android:id="@+id/downloadButton"
-                    style="@style/Widget.AppCompat.Button.Colored"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentEnd="true"
-                    android:layout_alignParentRight="true"
-                    android:layout_marginEnd="10dp"
-                    android:layout_marginRight="10dp"
                     android:layout_toLeftOf="@+id/playButton"
                     android:layout_toStartOf="@+id/playButton"
-                    android:text="@string/label_play"
+                    android:text="@string/remove_download"
                     android:textAlignment="center" />
 
                 <com.ohoussein.playpause.PlayPauseView
