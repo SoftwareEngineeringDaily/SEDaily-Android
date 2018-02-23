@@ -13,8 +13,8 @@ android {
         applicationId "com.koalatea.thehollidayinn.softwareengineeringdaily"
         minSdkVersion rootProject.minSdkVersion
         targetSdkVersion rootProject.targetSdkVersion
-        versionCode 18
-        versionName "1.4"
+        versionCode 19
+        versionName "1.4.1"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
         //Note this will be deprecated soon....
@@ -143,6 +143,7 @@ dependencies {
         transitive = true
     }
     implementation 'com.mikepenz:google-material-typeface:3.0.1.2.original@aar'
+    compile 'com.github.ohoussein.playpauseview:playpauseview:1.0.2'
 
     //Firebase
     implementation('com.crashlytics.sdk.android:crashlytics:2.7.1@aar') {

@@ -12,6 +12,7 @@ import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaControllerCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.text.format.DateUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -77,6 +78,7 @@ public class PlaybarFragment extends Fragment {
       }
     };
     private DisposableObserver speedSubscription;
+    private DisposableObserver mediaItemSubscription;
 
     // Receive callbacks from the MediaController. Here we update our state such as which queue
     // is being shown, the current title and description and the PlaybackState.
@@ -84,72 +86,76 @@ public class PlaybarFragment extends Fragment {
     private final MediaControllerCompat.Callback mCallback = new MediaControllerCompat.Callback() {
       @Override
       public void onPlaybackStateChanged(@NonNull PlaybackStateCompat state) {
-          handlePlaybackStateChange(state);
-          mLastPlaybackState = state;
+        handlePlaybackStateChange(state);
+        mLastPlaybackState = state;
 
-          switch (state.getState()) {
-              case PlaybackStateCompat.STATE_PLAYING:
-                  scheduleSeekbarUpdate();
-                  break;
-              case PlaybackStateCompat.STATE_PAUSED:
-                  stopSeekbarUpdate();
-                  break;
-              case PlaybackStateCompat.STATE_STOPPED:
-                  stopSeekbarUpdate();
-                  break;
-          }
+        PodcastSessionStateManager.getInstance().setLastPlaybackState(mLastPlaybackState);
+
+        switch (state.getState()) {
+          case PlaybackStateCompat.STATE_PLAYING:
+            scheduleSeekbarUpdate();
+            break;
+          case PlaybackStateCompat.STATE_PAUSED:
+            stopSeekbarUpdate();
+            break;
+          case PlaybackStateCompat.STATE_STOPPED:
+            stopSeekbarUpdate();
+            break;
+        }
       }
 
       @Override
       public void onMetadataChanged(MediaMetadataCompat metadata) {
-          if (metadata == null) {
-              return;
-          }
-          updateWithMeta(metadata);
+        if (metadata == null) {
+            return;
+        }
+
+        updateWithMeta(metadata);
       }
     };
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                    Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.fragment_playback_controls, container, false);
+      View rootView = inflater.inflate(R.layout.fragment_playback_controls, container, false);
 
-        ButterKnife.bind(this, rootView);
+      ButterKnife.bind(this, rootView);
 
-        playbarViewModel = ViewModelProviders
-              .of(this)
-              .get(PlaybarViewModel.class);
+      playbarViewModel = ViewModelProviders
+            .of(this)
+            .get(PlaybarViewModel.class);
 
-        playPause.setEnabled(true);
+      playPause.setEnabled(true);
 
-        mSeekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-              mStart.setText(DateUtils.formatElapsedTime(progress / 1000));
-            }
+      mSeekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+        @Override
+        public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+          mStart.setText(DateUtils.formatElapsedTime(progress / 1000));
+        }
 
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-                stopSeekbarUpdate();
-            }
+        @Override
+        public void onStartTrackingTouch(SeekBar seekBar) {
+            stopSeekbarUpdate();
+        }
 
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-                Activity activity = PlaybarFragment.this.getActivity(); // @TODO: can we use app context?
-                if (activity == null) {
-                    return;
-                }
-                MediaControllerCompat.getMediaController(activity)
-                        .getTransportControls()
-                        .seekTo(seekBar.getProgress());
-                scheduleSeekbarUpdate();
-            }
-        });
+        @Override
+        public void onStopTrackingTouch(SeekBar seekBar) {
+          Activity activity = PlaybarFragment.this.getActivity(); // @TODO: can we use app context?
+          if (activity == null) {
+              return;
+          }
+          MediaControllerCompat.getMediaController(activity)
+            .getTransportControls()
+            .seekTo(seekBar.getProgress());
+          scheduleSeekbarUpdate();
+        }
+      });
 
-        setSpeedText();
-        setUpSpeedSubscription();
+      setSpeedText();
+      setUpSpeedSubscription();
+      setUpMediaChangeSubscription();
 
-        return rootView;
+      return rootView;
     }
 
     @Override
@@ -167,6 +173,10 @@ public class PlaybarFragment extends Fragment {
         if (speedSubscription != null && speedSubscription.isDisposed()) {
           setUpSpeedSubscription();
         }
+
+        if (mediaItemSubscription != null && mediaItemSubscription.isDisposed()) {
+          setUpMediaChangeSubscription();
+        }
     }
 
     @Override
@@ -179,6 +189,10 @@ public class PlaybarFragment extends Fragment {
 
       if (speedSubscription != null) {
         speedSubscription.dispose();
+      }
+
+      if (mediaItemSubscription != null) {
+        mediaItemSubscription.dispose();
       }
 
       stopSeekbarUpdate();
@@ -360,12 +374,40 @@ public class PlaybarFragment extends Fragment {
                 setSpeedText();
             }
         };
+
         PodcastSessionStateManager
                 .getInstance()
                 .getSpeedChanges()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(speedSubscription);
+    }
+
+    private void setUpMediaChangeSubscription () {
+      mediaItemSubscription = new DisposableObserver<MediaMetadataCompat>() {
+        @Override
+        public void onNext(MediaMetadataCompat mediaMetadataCompat) {
+          Log.v("keithtest", "mediaMetadataCompat");
+          updateDuration(mediaMetadataCompat);
+        }
+
+        @Override
+        public void onError(Throwable e) {
+
+        }
+
+        @Override
+        public void onComplete() {
+
+        }
+      };
+
+      PodcastSessionStateManager
+              .getInstance()
+              .getMetadataChanges()
+              .subscribeOn(Schedulers.io())
+              .observeOn(AndroidSchedulers.mainThread())
+              .subscribe(mediaItemSubscription);
     }
 
     private int setSpeedTextView () {

@@ -2,6 +2,7 @@ package com.koalatea.thehollidayinn.softwareengineeringdaily.podcast;
 
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
+import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 
 import com.google.gson.Gson;
@@ -23,7 +24,9 @@ import io.reactivex.subjects.PublishSubject;
 // @TODO: This should probably be a viewmodal
 public class PodcastSessionStateManager {
   private static PodcastSessionStateManager instance = null;
+
   private final PublishSubject<Integer> speedChangeObservable = PublishSubject.create();
+  private final PublishSubject<MediaMetadataCompat> mediaMetaDataChange = PublishSubject.create();
 
   private final String PROGRESS_KEY = "sedaily-progress-key";
   private final SharedPreferences preferences;
@@ -33,6 +36,7 @@ public class PodcastSessionStateManager {
   private long previousSave = 0;
   private long currentProgress = 0;
   private int currentSpeed = 0;
+  private MediaMetadataCompat mediaMetadataCompat;
   private Map<String, Long> episodeProgress;
 
   private PlaybackStateCompat lastPlaybackState;
@@ -81,6 +85,11 @@ public class PodcastSessionStateManager {
     speedChangeObservable.onNext(this.currentSpeed);
   }
 
+  public void setMediaMetaData (MediaMetadataCompat mediaMetaData) {
+    this.mediaMetadataCompat = mediaMetaData;
+    mediaMetaDataChange.onNext(mediaMetaData);
+  }
+
   public void setProgressForEpisode(String _id, long currentProgress) {
     this.episodeProgress.put(_id, currentProgress);
 
@@ -109,6 +118,10 @@ public class PodcastSessionStateManager {
 
   public Observable<Integer> getSpeedChanges() {
     return speedChangeObservable;
+  }
+
+  public Observable<MediaMetadataCompat> getMetadataChanges() {
+    return mediaMetaDataChange;
   }
 
   public void setCurrentTitle(String title) {

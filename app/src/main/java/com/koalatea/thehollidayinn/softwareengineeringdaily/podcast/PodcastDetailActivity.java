@@ -8,6 +8,7 @@ import android.support.v4.app.ShareCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.MediaMetadataCompat;
+import android.support.v4.media.session.PlaybackStateCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -32,6 +33,8 @@ import com.koalatea.thehollidayinn.softwareengineeringdaily.repositories.Podcast
 import com.koalatea.thehollidayinn.softwareengineeringdaily.repositories.PostRepository;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.repositories.UserRepository;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.downloads.MP3FileManager;
+import com.ohoussein.playpause.PlayPauseView;
+
 import java.io.File;
 
 import butterknife.OnClick;
@@ -51,8 +54,11 @@ public class PodcastDetailActivity extends PlaybackControllerActivity {
   @BindView(R.id.deleteButton)
   Button deleteButton;
 
+  @BindView(R.id.downloadButton)
+  Button downloadButton;
+
   @BindView(R.id.playButton)
-  Button playButton;
+  PlayPauseView playButton;
 
   @BindView(R.id.toolbar)
   Toolbar toolbar;
@@ -97,6 +103,12 @@ public class PodcastDetailActivity extends PlaybackControllerActivity {
 
     postRepository = PostRepository.getInstance();
     loadPost(postId);
+
+    // Check playback state
+    PlaybackStateCompat playbackStateCompat = PodcastSessionStateManager.getInstance().getLastPlaybackState();
+    if (playbackStateCompat != null && playbackStateCompat.equals(PlaybackStateCompat.STATE_PLAYING)) {
+      playButton.toggle();
+    }
 
     myDisposableObserver = new DisposableObserver<String>() {
       @Override
@@ -201,7 +213,7 @@ public class PodcastDetailActivity extends PlaybackControllerActivity {
     }
 
     if (PodcastDownloadsRepository.getInstance().isDownloading(post.get_id())) {
-      playButton.setText(R.string.downloading);
+      downloadButton.setText(R.string.downloading);
       deleteButton.setVisibility(View.INVISIBLE);
     }
   }
@@ -320,40 +332,48 @@ public class PodcastDetailActivity extends PlaybackControllerActivity {
   }
 
   public void setUpDownloadedState() {
-    playButton.setText(R.string.label_play);
+    downloadButton.setText(R.string.label_play);
     deleteButton.setVisibility(View.VISIBLE);
   }
 
   public void setUpNotDownloadedState() {
-    playButton.setText(R.string.download);
+    downloadButton.setText(R.string.download);
     deleteButton.setVisibility(View.INVISIBLE);
+  }
+
+  private boolean hasValidMp3() {
+    if (post == null || post.getMp3() == null || post.getMp3().isEmpty()) {
+      return false;
+    }
+
+    return true;
   }
 
   @OnClick(R.id.playButton)
   public void playClick () {
-    if (post == null || post.getMp3() == null || post.getMp3().isEmpty()) {
-      return;
-    }
+    if (!hasValidMp3()) return;
+    playButton.toggle();
+    playMedia();
+  }
+
+  @OnClick(R.id.downloadButton)
+  public void downloadMp3 () {
+    if (!hasValidMp3()) return;
 
     // @TODO: Check download queue instead
-    if (playButton.getText().equals(getString(R.string.downloading))) {
+    if (downloadButton.getText().equals(getString(R.string.downloading))) {
       PodcastDownloadsRepository.getInstance().cancelDownload(post);
       return;
     }
 
     if (!PodcastDownloadsRepository.getInstance().isPodcastDownloaded(post)) {
-      playButton.setText(R.string.downloading);
+      downloadButton.setText(R.string.downloading);
       PodcastDownloadsRepository.getInstance().displayDownloadNotification(post);
-      return;
     }
-
-    playMedia();
   }
 
   public void playMedia () {
-    if (post == null || post.getMp3() == null || post.getMp3().isEmpty()) {
-      return;
-    }
+    if (!hasValidMp3()) return;
 
     String source = post.getMp3();
     String id = String.valueOf(source.hashCode());
@@ -366,8 +386,6 @@ public class PodcastDetailActivity extends PlaybackControllerActivity {
 
     MusicProvider mMusicProvider = MusicProvider.getInstance();
     MediaMetadataCompat item = mMusicProvider.getMusic(id);
-
-
 
     if (item == null) {
       item = new MediaMetadataCompat.Builder()
