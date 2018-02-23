@@ -106,28 +106,11 @@ public class PodcastDetailActivity extends PlaybackControllerActivity {
 
     // Check playback state
     PlaybackStateCompat playbackStateCompat = PodcastSessionStateManager.getInstance().getLastPlaybackState();
-    if (playbackStateCompat != null && playbackStateCompat.equals(PlaybackStateCompat.STATE_PLAYING)) {
+    if (playbackStateCompat != null && playbackStateCompat.getState() == PlaybackStateCompat.STATE_PLAYING) {
       playButton.toggle();
     }
 
-    myDisposableObserver = new DisposableObserver<String>() {
-      @Override
-      public void onNext(String state) {
-        handleDownloadStateChange(state);
-      }
-
-      @Override
-      public void onComplete() { }
-
-      @Override
-      public void onError(Throwable e) { }
-    };
-    PodcastDownloadsRepository podcastDownloadsRepository = PodcastDownloadsRepository.getInstance();
-    podcastDownloadsRepository
-            .getDownloadChanges()
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(myDisposableObserver);
+    setUpDownloadObserver();
   }
 
   @Override
@@ -329,6 +312,27 @@ public class PodcastDetailActivity extends PlaybackControllerActivity {
           PodcastDownloadsRepository.getInstance().removeFileForPost(post);
         }})
       .setNegativeButton(android.R.string.no, null).show();
+  }
+
+  private void setUpDownloadObserver() {
+    myDisposableObserver = new DisposableObserver<String>() {
+      @Override
+      public void onNext(String state) {
+        handleDownloadStateChange(state);
+      }
+
+      @Override
+      public void onComplete() { }
+
+      @Override
+      public void onError(Throwable e) { }
+    };
+    PodcastDownloadsRepository podcastDownloadsRepository = PodcastDownloadsRepository.getInstance();
+    podcastDownloadsRepository
+            .getDownloadChanges()
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(myDisposableObserver);
   }
 
   public void setUpDownloadedState() {
