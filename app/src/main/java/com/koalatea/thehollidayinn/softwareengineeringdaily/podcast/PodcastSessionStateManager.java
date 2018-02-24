@@ -4,6 +4,7 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
+import android.util.Log;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -45,7 +46,6 @@ public class PodcastSessionStateManager {
     episodeProgress = new HashMap<>();
     preferences = PreferenceManager.getDefaultSharedPreferences(SEDApp.component().context());
     gson = new GsonBuilder().create();
-
     String progressString = preferences.getString(PROGRESS_KEY, "");
     if (!progressString.isEmpty()) {
       Type typeOfHashMap = new TypeToken<Map<String, Long>>() { }.getType();

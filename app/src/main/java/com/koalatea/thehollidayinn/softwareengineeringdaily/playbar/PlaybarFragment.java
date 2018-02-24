@@ -266,12 +266,14 @@ public class PlaybarFragment extends Fragment {
 
       String postTile = latest.getDescription().getTitle().toString();
       MediaControllerCompat controller = MediaControllerCompat.getMediaController(getActivity());
-      String activeTitle = PodcastSessionStateManager.getInstance().getCurrentTitle();
+
+      PodcastSessionStateManager psm = PodcastSessionStateManager.getInstance();
+      String activeTitle = psm.getCurrentTitle();
       if (controller != null && !postTile.isEmpty() && !postTile.equals(activeTitle)) {
-          PodcastSessionStateManager.getInstance().setCurrentTitle(postTile);
-          long currentPlayPosition = PodcastSessionStateManager.getInstance().getProgressForEpisode(postTile);
-          controller.getTransportControls().seekTo(currentPlayPosition);
-          mStart.setText(DateUtils.formatElapsedTime(currentPlayPosition / 1000));
+        psm.setCurrentTitle(postTile);
+        long currentPlayPosition = psm.getProgressForEpisode(postTile);
+        controller.getTransportControls().seekTo(currentPlayPosition);
+        mStart.setText(DateUtils.formatElapsedTime(currentPlayPosition / 1000));
       }
     }
 

@@ -186,7 +186,7 @@ class Playback implements AudioManager.OnAudioFocusChangeListener,
     }
 
     void seekTo(int position) {
-        Log.d(TAG, "seekTo called with " + position);
+        mCurrentPosition = position; // Always update. null check is not working
 
         if (mMediaPlayer == null) {
             // If we do not have a current media player, simply update the current position.
@@ -271,8 +271,6 @@ class Playback implements AudioManager.OnAudioFocusChangeListener,
             // If we were playing when we lost focus, we need to resume playing.
             if (mPlayOnFocusGain) {
                 if (mMediaPlayer != null && !mMediaPlayer.isPlaying()) {
-                    Log.d(TAG, "configMediaPlayerState startMediaPlayer. seeking to "
-                            + mCurrentPosition);
                     if (mCurrentPosition == mMediaPlayer.getCurrentPosition()) {
                         mMediaPlayer.start();
                         mState = PlaybackStateCompat.STATE_PLAYING;
