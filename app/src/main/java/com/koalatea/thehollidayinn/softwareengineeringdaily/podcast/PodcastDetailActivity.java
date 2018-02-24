@@ -120,7 +120,7 @@ public class PodcastDetailActivity extends PlaybackControllerActivity {
     inflater.inflate(R.menu.podcast_detail_menu, menu);
 
     downloadItem = menu.findItem(R.id.menu_item_download);
-    setUpNotDownloadedState();
+    checkDownloadState();
 
     // Share button
     IconicsDrawable share = new IconicsDrawable(this)
@@ -368,7 +368,7 @@ public class PodcastDetailActivity extends PlaybackControllerActivity {
               .sizeDp(24);
       downloadItem.setIcon(removeIcon);
     }
-    
+
     deleteButton.setVisibility(View.VISIBLE);
   }
 
