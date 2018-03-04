@@ -211,8 +211,11 @@ public class PodcastDetailActivity extends PlaybackControllerActivity {
   }
 
   private void checkDownloadState () {
-    PodcastDownloadsRepository podcastDownloadsRepository = PodcastDownloadsRepository.getInstance();
+    if (post == null) {
+      return;
+    }
 
+    PodcastDownloadsRepository podcastDownloadsRepository = PodcastDownloadsRepository.getInstance();
     if (!podcastDownloadsRepository.isPodcastDownloaded(post)) {
       setUpNotDownloadedState();
     } else {
