@@ -1,6 +1,7 @@
 package com.koalatea.thehollidayinn.softwareengineeringdaily;
 
 import android.app.SearchManager;
+import android.arch.persistence.room.Room;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -34,9 +35,14 @@ import com.mikepenz.materialdrawer.model.ProfileDrawerItem;
 import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 
+import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.observers.DisposableObserver;
 import io.reactivex.schedulers.Schedulers;
+
+import com.koalatea.thehollidayinn.softwareengineeringdaily.data.AppDatabase;
+import com.koalatea.thehollidayinn.softwareengineeringdaily.data.repositories.BookmarkDao;
+import com.koalatea.thehollidayinn.softwareengineeringdaily.podcast.PodListFragment;
 
 public class MainActivity extends PlaybackControllerActivity
     implements SearchView.OnQueryTextListener {
@@ -46,12 +52,15 @@ public class MainActivity extends PlaybackControllerActivity
     private RecentPodcastFragment firstFragment;
     private TopRecListFragment secondPage;
     private TopRecListFragment thirdPage;
+    private PodListFragment bookmarksFragment;
+
     private Menu menu;
     private Drawer drawer;
     private TabLayout tabLayout;
     private Toolbar toolbar;
     private SecondaryDrawerItem subscribeItem;
     private SecondaryDrawerItem loginItem;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -205,7 +214,7 @@ public class MainActivity extends PlaybackControllerActivity
                 break;
             case 4:
                 if (!userRepository.getToken().isEmpty()) {
-                    userRepository.setToken("");
+                    logout();
                     Intent intent = new Intent(this, MainActivity.class);
                     startActivity(intent);
                 } else {
@@ -216,9 +225,29 @@ public class MainActivity extends PlaybackControllerActivity
             case 5:
                 startActivity(new Intent(this, SubscriptionActivity.class));
                 break;
+            case 6:
+                if (bookmarksFragment == null) {
+                    bookmarksFragment = PodListFragment.newInstance("Bookmarks", "");
+                }
+                this.getSupportFragmentManager()
+                        .beginTransaction()
+                        .replace(R.id.fragment_container, bookmarksFragment)
+                        .commit();
+                break;
         }
 
         return true;
+    }
+
+    private void logout() {
+        userRepository.setToken("");
+        AppDatabase db = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "sed-db").build();
+        Observable.just(db)
+            .subscribeOn(Schedulers.io())
+            .subscribe(bookmarkdb -> {
+                BookmarkDao bookmarkDao = db.bookmarkDao();
+                bookmarkDao.deleteAll();
+            });
     }
 
     @Override

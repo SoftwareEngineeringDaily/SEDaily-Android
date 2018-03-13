@@ -2,6 +2,7 @@ package com.koalatea.thehollidayinn.softwareengineeringdaily.podcast;
 
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
+import android.arch.persistence.room.Room;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -15,10 +16,23 @@ import android.view.ViewGroup;
 import com.ethanhua.skeleton.RecyclerViewSkeletonScreen;
 import com.ethanhua.skeleton.Skeleton;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.R;
+import com.koalatea.thehollidayinn.softwareengineeringdaily.app.SEDApp;
+import com.koalatea.thehollidayinn.softwareengineeringdaily.data.AppDatabase;
+import com.koalatea.thehollidayinn.softwareengineeringdaily.data.models.Bookmark;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.data.models.Post;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.repositories.FilterRepository;
 
+import com.koalatea.thehollidayinn.softwareengineeringdaily.data.remote.APIInterface;
+import com.koalatea.thehollidayinn.softwareengineeringdaily.data.repositories.BookmarkDao;
+import com.koalatea.thehollidayinn.softwareengineeringdaily.repositories.PostRepository;
+import com.koalatea.thehollidayinn.softwareengineeringdaily.repositories.UserRepository;
+
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.observers.DisposableObserver;
 import io.reactivex.schedulers.Schedulers;
@@ -146,5 +160,62 @@ public class PodListFragment extends Fragment {
     podcastAdapter.setPosts(postList);
     swipeRefreshLayout.setRefreshing(false);
     skeletonScreen.hide();
+  }
+
+  private void getPosts(String search) {
+    APIInterface mService = SEDApp.component.kibblService();
+
+    // @TODO: Replace tmp with query
+
+    Map<String, String> data = new HashMap<>();
+    Observable<List<Post>> query = mService.getPosts(data);
+
+    UserRepository userRepository = SEDApp.component.userRepository();
+    PostRepository postRepository = PostRepository.getInstance();
+
+    if (this.title != null && this.title.equals("Greatest Hits")) {
+      data.put("type", "top");
+    } else if (this.title != null && this.title.equals("Just For You") && !userRepository.getToken().isEmpty()) {
+      query = mService.getRecommendations(data);
+    } else if (this.title != null && this.title.equals("Bookmarks") && !userRepository.getToken().isEmpty()) {
+      query = mService.getBookmarks();
+    } else if (tagId != null && !tagId.isEmpty()) {
+      data.put("categories", tagId);
+    }
+
+    if (!search.isEmpty()) {
+      data.put("search", search);
+    }
+
+    query
+      .subscribeOn(Schedulers.io())
+      .observeOn(AndroidSchedulers.mainThread())
+      .subscribe(new DisposableObserver<List<Post>>() {
+        @Override
+        public void onComplete() {
+          skeletonScreen.hide();
+        }
+
+        @Override
+        public void onError(Throwable e) {
+            Log.v(TAG, e.toString());
+        }
+
+        @Override
+        public void onNext(List<Post> posts) {
+          podcastAdapter.setPosts(posts);
+          postRepository.setPosts(posts);
+          if(title.equals("Bookmarks")) { // ensures consistency`
+            ArrayList<Bookmark> bookmarks = new ArrayList<>();
+            for(Post post: posts) {
+              bookmarks.add(new Bookmark(post));
+            }
+            AppDatabase db = Room.databaseBuilder(getContext(), AppDatabase.class, "sed-db").build();
+            BookmarkDao bookmarkDao = db.bookmarkDao();
+            bookmarkDao.insertAll(bookmarks);
+          }
+          swipeRefreshLayout.setRefreshing(false);
+        }
+      });
   }
 }

@@ -1,5 +1,6 @@
 package com.koalatea.thehollidayinn.softwareengineeringdaily.podcast;
 
+import android.arch.persistence.room.Room;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
@@ -23,16 +24,20 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 
 import com.koalatea.thehollidayinn.softwareengineeringdaily.PlaybackControllerActivity;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.R;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.app.SEDApp;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.audio.MusicProvider;
+import com.koalatea.thehollidayinn.softwareengineeringdaily.data.AppDatabase;
+import com.koalatea.thehollidayinn.softwareengineeringdaily.data.models.Bookmark;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.data.models.Post;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.data.remote.APIInterface;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.repositories.PodcastDownloadsRepository;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.repositories.PostRepository;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.repositories.UserRepository;
+import com.koalatea.thehollidayinn.softwareengineeringdaily.data.repositories.BookmarkDao;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.downloads.MP3FileManager;
 import com.mikepenz.google_material_typeface_library.GoogleMaterial;
 import com.mikepenz.iconics.IconicsDrawable;
@@ -40,7 +45,7 @@ import com.ohoussein.playpause.PlayPauseView;
 
 import java.io.File;
 
-import butterknife.OnClick;
+import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.observers.DisposableObserver;
 import io.reactivex.schedulers.Schedulers;
@@ -76,9 +81,13 @@ public class PodcastDetailActivity extends PlaybackControllerActivity {
   @BindView(R.id.description)
   WebView descriptionWebView;
 
+  @BindView(R.id.bookmark_button)
+  ImageView bookmarkButton;
+
   private Post post;
   private APIInterface mService;
   private MenuItem downloadItem;
+  private Boolean bookmarked = false;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -112,6 +121,23 @@ public class PodcastDetailActivity extends PlaybackControllerActivity {
     }
 
     setUpDownloadObserver();
+  }
+
+  private void checkForBookMarks(String postId) {
+    AppDatabase db = Room.databaseBuilder(getApplicationContext(),
+            AppDatabase.class, "sed-db").build();
+
+    Observable.just(db)
+      .subscribeOn(Schedulers.io())
+      .subscribe(bookmarkdb -> {
+        BookmarkDao bookmarkDao = bookmarkdb.bookmarkDao();
+        Bookmark bookmark = bookmarkDao.loadById(postId);
+
+        if (bookmark != null) {  // the post has been bookmarked before
+          bookmarkButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_bookmark_set));
+          bookmarked = true;
+        }
+      });
   }
 
   @Override
@@ -208,6 +234,7 @@ public class PodcastDetailActivity extends PlaybackControllerActivity {
     setVoteButtonStates();
 
     checkDownloadState();
+    checkForBookMarks(postId);
   }
 
   private void checkDownloadState () {
@@ -458,5 +485,97 @@ public class PodcastDetailActivity extends PlaybackControllerActivity {
     } else {
       setUpNotDownloadedState();
     }
+  }
+
+  @OnClick(R.id.bookmark_button)
+  public void onClickBookmarkButton() {
+    if (post == null) return;
+
+    if(userRepository.getToken().isEmpty()) {
+      displayMessage("You must login to bookmark");
+      return;
+    }
+
+    if (bookmarked) {
+      removeBookmark(post);
+    } else {
+      addBookmark(post);
+    }
+  }
+
+  private void addBookmark(Post post) {
+    if (post == null) return;
+
+    bookmarked = true;
+    bookmarkButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_bookmark_set));
+
+    mService.addBookmark(post.get_id())
+      .subscribeOn(Schedulers.io())
+      .observeOn(AndroidSchedulers.mainThread())
+      .subscribe(new DisposableObserver<Void>() {
+        @Override
+        public void onComplete() {
+        }
+        @Override
+        public void onError(Throwable e) {
+          Log.v(TAG, e.toString());
+        }
+
+        @Override
+        public void onNext(Void posts) {
+        }
+      });
+
+    AppDatabase db = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "sed-db")
+            .build();
+
+    Observable.just(db)
+      .subscribeOn(Schedulers.io())
+      .subscribe(bookmarkdb -> {
+        BookmarkDao bookmarkDao = db.bookmarkDao();
+        Bookmark bookmarkFound = bookmarkDao.loadById(post.get_id());
+        Log.v("keithtest", String.valueOf(bookmarkFound));
+        if (bookmarkFound != null) return;
+
+        Bookmark bookmark = new Bookmark(post);
+        bookmarkDao.insertOne(bookmark);
+      });
+
+  }
+
+  private void removeBookmark(Post post) {
+    if (post == null) return;
+
+    bookmarked = false;
+    bookmarkButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_bookmark));
+
+    AppDatabase db = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "sed-db")
+            .build();
+
+    Observable.just(db)
+      .subscribeOn(Schedulers.io())
+      .subscribe(bookmarkdb -> {
+        BookmarkDao bookmarkDao = db.bookmarkDao();
+        Bookmark bookmark = bookmarkDao.loadById(post.get_id());
+        if (bookmark != null) bookmarkDao.delete(bookmark);
+      });
+
+    mService.removeBookmark(post.get_id())
+      .subscribeOn(Schedulers.io())
+      .observeOn(AndroidSchedulers.mainThread())
+      .subscribe(new DisposableObserver<Void>() {
+        @Override
+        public void onComplete() {
+        }
+
+        @Override
+        public void onError(Throwable e) {
+          Log.v(TAG, e.toString());
+        }
+
+        @Override
+        public void onNext(Void posts) {
+        }
+      });
   }
 }

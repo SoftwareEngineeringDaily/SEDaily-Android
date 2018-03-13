@@ -22,7 +22,6 @@ import retrofit2.http.QueryMap;
  */
 
 public interface APIInterface {
-
     @GET("posts")
     Observable<List<Post>> getPosts(@QueryMap Map<String, String> options);
 
@@ -52,4 +51,13 @@ public interface APIInterface {
 
     @GET("users/me")
     Observable<UserResponse> me();
+
+    @GET("favorites")
+    Observable<List<Post>> getBookmarks();
+
+    @POST("posts/{postid}/favorite")
+    Observable<Void> addBookmark(@Path("postid") String postid);
+
+    @POST("posts/{postid}/unfavorite")
+    Observable<Void> removeBookmark(@Path("postid") String postid);
 }

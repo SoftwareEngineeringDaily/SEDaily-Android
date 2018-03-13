@@ -22,10 +22,11 @@
     <string name="speed_1x">1x</string>
     <string name="subscribe">Subscribe</string>
 
-
+    <!-- Nav -->
     <string name="just_for_you">Just For You</string>
     <string name="greatest_hits">Greatest Hits</string>
     <string name="latest">Latest</string>
+    <string name="bookmarks">Bookmarks</string>
 
     <string name="currently_playing_song">Song currently playing</string>
     <string name="currently_playing_artist">Artist of currently playing song</string>
