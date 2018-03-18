@@ -103,6 +103,10 @@ public class PodListFragment extends Fragment {
       new SwipeRefreshLayout.OnRefreshListener() {
         @Override
         public void onRefresh() {
+          if (title != null && title.equals("Bookmarks")) {
+            getPosts("");
+            return;
+          }
           podcastListViewModel.getPosts("", title, tagId);
         }
       }
@@ -128,6 +132,10 @@ public class PodListFragment extends Fragment {
     myDisposableObserver = new DisposableObserver<String>() {
       @Override
       public void onNext(String s) {
+        if (title != null && title.equals("Bookmarks")) {
+          getPosts("");
+          return;
+        }
         podcastListViewModel.getPosts(s, title, tagId);
       }
 
@@ -144,6 +152,10 @@ public class PodListFragment extends Fragment {
   @Override
   public void onStart() {
     super.onStart();
+    if (title != null && title.equals("Bookmarks")) {
+      getPosts("");
+      return;
+    }
     podcastListViewModel.getPosts("", title, tagId);
   }
 
@@ -177,7 +189,7 @@ public class PodListFragment extends Fragment {
       data.put("type", "top");
     } else if (this.title != null && this.title.equals("Just For You") && !userRepository.getToken().isEmpty()) {
       query = mService.getRecommendations(data);
-    } else if (this.title != null && this.title.equals("Bookmarks") && !userRepository.getToken().isEmpty()) {
+    } else if (this.title != null && this.title.equals("Bookmarks")) {
       query = mService.getBookmarks();
     } else if (tagId != null && !tagId.isEmpty()) {
       data.put("categories", tagId);
@@ -205,14 +217,22 @@ public class PodListFragment extends Fragment {
         public void onNext(List<Post> posts) {
           podcastAdapter.setPosts(posts);
           postRepository.setPosts(posts);
-          if(title.equals("Bookmarks")) { // ensures consistency`
+          if (title != null && title.equals("Bookmarks")) {
             ArrayList<Bookmark> bookmarks = new ArrayList<>();
             for(Post post: posts) {
               bookmarks.add(new Bookmark(post));
             }
+
             AppDatabase db = Room.databaseBuilder(getContext(), AppDatabase.class, "sed-db").build();
-            BookmarkDao bookmarkDao = db.bookmarkDao();
-            bookmarkDao.insertAll(bookmarks);
+            Observable.just(db)
+                    .subscribeOn(Schedulers.io())
+                    .subscribe(bookmarkdb -> {
+                      BookmarkDao bookmarkDao = db.bookmarkDao();
+                      bookmarkDao.insertAll(bookmarks);
+                    });
+
+            podcastListViewModel.setPostList(posts);
+            podcastAdapter.setPosts(posts);
           }
           swipeRefreshLayout.setRefreshing(false);
         }

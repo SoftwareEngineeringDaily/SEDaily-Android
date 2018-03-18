@@ -18,4 +18,13 @@
         android:title="Share"
         android:visible="true"
         app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/menu_item_bookmark"
+        android:orderInCategory="102"
+        android:enabled="true"
+        android:icon="@drawable/ic_bookmark"
+        android:title="Bookmark"
+        android:visible="true"
+        app:showAsAction="ifRoom" />
 </menu>

@@ -130,8 +130,9 @@ public class MainActivity extends PlaybackControllerActivity
         SecondaryDrawerItem item3 = new SecondaryDrawerItem().withIdentifier(3).withIcon(GoogleMaterial.Icon.gmd_show_chart).withName(R.string.just_for_you);
 
         loginItem = new SecondaryDrawerItem().withIdentifier(4).withIcon(GoogleMaterial.Icon.gmd_perm_identity).withName(R.string.login);
-
         subscribeItem = new SecondaryDrawerItem().withIdentifier(5).withIcon(GoogleMaterial.Icon.gmd_monetization_on).withName(R.string.subscribe);
+
+        SecondaryDrawerItem bookmarkItem = new SecondaryDrawerItem().withIdentifier(6).withIcon(GoogleMaterial.Icon.gmd_bookmark).withName(R.string.bookmarks);
 
         AccountHeaderBuilder accountHeaderBuilder = new AccountHeaderBuilder()
                 .withActivity(this)
@@ -165,6 +166,7 @@ public class MainActivity extends PlaybackControllerActivity
                         item1,
                         item2,
                         item3,
+                        bookmarkItem,
                         new DividerDrawerItem(),
                         loginItem,
                         subscribeItem
@@ -226,9 +228,12 @@ public class MainActivity extends PlaybackControllerActivity
                 startActivity(new Intent(this, SubscriptionActivity.class));
                 break;
             case 6:
+                tabLayout.setVisibility(View.GONE);
+
                 if (bookmarksFragment == null) {
                     bookmarksFragment = PodListFragment.newInstance("Bookmarks", "");
                 }
+
                 this.getSupportFragmentManager()
                         .beginTransaction()
                         .replace(R.id.fragment_container, bookmarksFragment)

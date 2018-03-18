@@ -81,12 +81,10 @@ public class PodcastDetailActivity extends PlaybackControllerActivity {
   @BindView(R.id.description)
   WebView descriptionWebView;
 
-  @BindView(R.id.bookmark_button)
-  ImageView bookmarkButton;
-
   private Post post;
   private APIInterface mService;
   private MenuItem downloadItem;
+  private MenuItem bookmarkItem;
   private Boolean bookmarked = false;
 
   @Override
@@ -123,7 +121,13 @@ public class PodcastDetailActivity extends PlaybackControllerActivity {
     setUpDownloadObserver();
   }
 
-  private void checkForBookMarks(String postId) {
+  private void checkForBookMarks() {
+    if (post == null) {
+      return;
+    }
+
+    String postId = post.get_id();
+
     AppDatabase db = Room.databaseBuilder(getApplicationContext(),
             AppDatabase.class, "sed-db").build();
 
@@ -134,10 +138,25 @@ public class PodcastDetailActivity extends PlaybackControllerActivity {
         Bookmark bookmark = bookmarkDao.loadById(postId);
 
         if (bookmark != null) {  // the post has been bookmarked before
-          bookmarkButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_bookmark_set));
+          if (bookmarkItem != null) {
+            runOnUiThread(new Runnable() {
+              @Override
+              public void run() {
+                markBookmarked();
+              }
+            });
+          }
           bookmarked = true;
         }
       });
+  }
+
+  private void markBookmarked () {
+    IconicsDrawable bookmarkIcon = new IconicsDrawable(this)
+            .icon(GoogleMaterial.Icon.gmd_bookmark)
+            .color(getResources().getColor(R.color.accent))
+            .sizeDp(24);
+    bookmarkItem.setIcon(bookmarkIcon);
   }
 
   @Override
@@ -147,6 +166,16 @@ public class PodcastDetailActivity extends PlaybackControllerActivity {
 
     downloadItem = menu.findItem(R.id.menu_item_download);
     checkDownloadState();
+
+    bookmarkItem = menu.findItem(R.id.menu_item_bookmark);
+    if (bookmarkItem != null) {
+      IconicsDrawable bookmarkIcon = new IconicsDrawable(this)
+              .icon(GoogleMaterial.Icon.gmd_bookmark)
+              .color(getResources().getColor(R.color.white))
+              .sizeDp(24);
+      bookmarkItem.setIcon(bookmarkIcon);
+    }
+    checkForBookMarks();
 
     // Share button
     IconicsDrawable share = new IconicsDrawable(this)
@@ -164,9 +193,11 @@ public class PodcastDetailActivity extends PlaybackControllerActivity {
       case R.id.menu_item_download:
         downloadMp3();
         break;
-
       case R.id.menu_item_share:
         startShareIntent();
+        break;
+      case R.id.menu_item_bookmark:
+        onClickBookmarkButton();
         break;
     }
 
@@ -234,7 +265,7 @@ public class PodcastDetailActivity extends PlaybackControllerActivity {
     setVoteButtonStates();
 
     checkDownloadState();
-    checkForBookMarks(postId);
+    checkForBookMarks();
   }
 
   private void checkDownloadState () {
@@ -487,7 +518,6 @@ public class PodcastDetailActivity extends PlaybackControllerActivity {
     }
   }
 
-  @OnClick(R.id.bookmark_button)
   public void onClickBookmarkButton() {
     if (post == null) return;
 
@@ -507,7 +537,13 @@ public class PodcastDetailActivity extends PlaybackControllerActivity {
     if (post == null) return;
 
     bookmarked = true;
-    bookmarkButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_bookmark_set));
+    if (bookmarkItem != null) {
+      IconicsDrawable bookmarkIcon = new IconicsDrawable(this)
+              .icon(GoogleMaterial.Icon.gmd_bookmark)
+              .color(getResources().getColor(R.color.accent))
+              .sizeDp(24);
+      bookmarkItem.setIcon(bookmarkIcon);
+    }
 
     mService.addBookmark(post.get_id())
       .subscribeOn(Schedulers.io())
@@ -534,7 +570,7 @@ public class PodcastDetailActivity extends PlaybackControllerActivity {
       .subscribe(bookmarkdb -> {
         BookmarkDao bookmarkDao = db.bookmarkDao();
         Bookmark bookmarkFound = bookmarkDao.loadById(post.get_id());
-        Log.v("keithtest", String.valueOf(bookmarkFound));
+
         if (bookmarkFound != null) return;
 
         Bookmark bookmark = new Bookmark(post);
@@ -547,7 +583,13 @@ public class PodcastDetailActivity extends PlaybackControllerActivity {
     if (post == null) return;
 
     bookmarked = false;
-    bookmarkButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_bookmark));
+    if (bookmarkItem != null) {
+      IconicsDrawable bookmarkIcon = new IconicsDrawable(this)
+              .icon(GoogleMaterial.Icon.gmd_bookmark)
+              .color(getResources().getColor(R.color.white))
+              .sizeDp(24);
+      bookmarkItem.setIcon(bookmarkIcon);
+    }
 
     AppDatabase db = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "sed-db")
             .build();

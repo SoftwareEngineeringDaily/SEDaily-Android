@@ -52,7 +52,7 @@ public interface APIInterface {
     @GET("users/me")
     Observable<UserResponse> me();
 
-    @GET("favorites")
+    @GET("users/me/bookmarked")
     Observable<List<Post>> getBookmarks();
 
     @POST("posts/{postid}/favorite")

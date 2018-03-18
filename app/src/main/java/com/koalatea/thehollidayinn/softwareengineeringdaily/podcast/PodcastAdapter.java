@@ -1,6 +1,7 @@
 package com.koalatea.thehollidayinn.softwareengineeringdaily.podcast;
 
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -72,8 +73,11 @@ class PodcastAdapter extends RecyclerView.Adapter<PodcastAdapter.ViewHolder> {
   public void onBindViewHolder(ViewHolder holder, int position) {
     Post post = posts.get(position);
     Title postTitle = post.getTitle();
-    holder.mTextView.setText(postTitle.getRendered());
 
+    Log.v("keithtest", String.valueOf(post));
+    if (postTitle == null) return;
+
+    holder.mTextView.setText(postTitle.getRendered());
     holder.description.setText(postTitle.getRendered());
 
     String imageLink = "https://softwareengineeringdaily.com/wp-content/uploads/2015/08/sed21.png";
