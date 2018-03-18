@@ -228,6 +228,7 @@ public class MainActivity extends PlaybackControllerActivity
                 startActivity(new Intent(this, SubscriptionActivity.class));
                 break;
             case 6:
+                toolbar.setTitle("Bookmarks");
                 tabLayout.setVisibility(View.GONE);
 
                 if (bookmarksFragment == null) {

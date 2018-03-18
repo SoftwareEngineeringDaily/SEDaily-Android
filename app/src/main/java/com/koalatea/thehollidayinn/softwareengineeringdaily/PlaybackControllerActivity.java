@@ -164,20 +164,22 @@ public class PlaybackControllerActivity extends AppCompatActivity {
     }
 
     protected void onMediaItemSelected(MediaBrowserCompat.MediaItem item, boolean isSameMedia) {
-        if (item.isPlayable()) {
-            MediaControllerCompat controller = MediaControllerCompat.getMediaController(this);
-            MediaControllerCompat.TransportControls controls = controller.getTransportControls();
+        if (!item.isPlayable()) return;
 
-            if (isSameMedia) {
-                if (controller.getPlaybackState().getState() == PlaybackStateCompat.STATE_PLAYING) {
-                    controls.pause();
-                } else if (controller.getPlaybackState().getState() == PlaybackStateCompat.STATE_PAUSED) {
-                    controls.play();
-                }
-            } else {
-                controls.playFromMediaId(item.getMediaId(), null);
-                mCurrentMediaId = item.getMediaId();
+        MediaControllerCompat controller = MediaControllerCompat.getMediaController(this);
+        if (controller == null) return;
+
+        MediaControllerCompat.TransportControls controls = controller.getTransportControls();
+
+        if (isSameMedia) {
+            if (controller.getPlaybackState().getState() == PlaybackStateCompat.STATE_PLAYING) {
+                controls.pause();
+            } else if (controller.getPlaybackState().getState() == PlaybackStateCompat.STATE_PAUSED) {
+                controls.play();
             }
+        } else {
+            controls.playFromMediaId(item.getMediaId(), null);
+            mCurrentMediaId = item.getMediaId();
         }
     }
 
