@@ -71,6 +71,10 @@ android {
         main.java.srcDirs += 'src/main/java'
         main.java.srcDirs += 'src/main/kotlin'
     }
+
+    lintOptions {
+        htmlReport true
+    }
 }
 
 jacocoAndroidUnitTestReport {
@@ -109,7 +113,7 @@ dependencies {
     implementation "com.android.support:cardview-v7:$rootProject.supportLibraryVersion"
     implementation "com.android.support:recyclerview-v7:$rootProject.supportLibraryVersion"
     implementation "android.arch.lifecycle:extensions:$rootProject.architectureComponents"
-    kapt "android.arch.lifecycle:compiler:$rootProject.architectureComponents"
+    kapt "android.arch.lifecycle:common-java8:$rootProject.architectureComponents"
     //Kotlin
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jre8:$rootProject.kotlinVersion"
     //Rx Java
