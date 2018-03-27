@@ -1,7 +1,6 @@
 package com.koalatea.thehollidayinn.softwareengineeringdaily;
 
 import android.content.ComponentName;
-import android.os.Bundle;
 import android.os.RemoteException;
 import android.support.annotation.Nullable;
 import android.support.v4.media.MediaBrowserCompat;
@@ -13,19 +12,18 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
 import com.koalatea.thehollidayinn.softwareengineeringdaily.audio.MusicService;
-import com.koalatea.thehollidayinn.softwareengineeringdaily.mediaui.PlaybackControlsFragment;
+import com.koalatea.thehollidayinn.softwareengineeringdaily.playbar.PlaybarFragment;
 
 /*
  * Created by keithholliday on 9/27/17.
  */
 
 // @TODO: Some of this needs to be moved to the fragment
-// @TODO: Abstract the business logic for Clean Architecture
 
 public class PlaybackControllerActivity extends AppCompatActivity {
     private static final String TAG = "PlaybackController";
     private MediaBrowserCompat mMediaBrowser;
-    private PlaybackControlsFragment mControlsFragment;
+    private PlaybarFragment mControlsFragment;
     private String mCurrentMediaId = "";
 
     private final MediaBrowserCompat.ConnectionCallback mConnectionCallbacks =
@@ -79,7 +77,7 @@ public class PlaybackControllerActivity extends AppCompatActivity {
     public void onStart() {
         super.onStart();
         if (mControlsFragment == null) {
-            mControlsFragment = (PlaybackControlsFragment) getSupportFragmentManager()
+            mControlsFragment = (PlaybarFragment) getSupportFragmentManager()
                     .findFragmentById(R.id.fragment_playback_controls);
         }
         mMediaBrowser.connect();
@@ -166,20 +164,22 @@ public class PlaybackControllerActivity extends AppCompatActivity {
     }
 
     protected void onMediaItemSelected(MediaBrowserCompat.MediaItem item, boolean isSameMedia) {
-        if (item.isPlayable()) {
-            MediaControllerCompat controller = MediaControllerCompat.getMediaController(this);
-            MediaControllerCompat.TransportControls controls = controller.getTransportControls();
+        if (!item.isPlayable()) return;
 
-            if (isSameMedia) {
-                if (controller.getPlaybackState().getState() == PlaybackStateCompat.STATE_PLAYING) {
-                    controls.pause();
-                } else if (controller.getPlaybackState().getState() == PlaybackStateCompat.STATE_PAUSED) {
-                    controls.play();
-                }
-            } else {
-                controls.playFromMediaId(item.getMediaId(), null);
-                mCurrentMediaId = item.getMediaId();
+        MediaControllerCompat controller = MediaControllerCompat.getMediaController(this);
+        if (controller == null) return;
+
+        MediaControllerCompat.TransportControls controls = controller.getTransportControls();
+
+        if (isSameMedia) {
+            if (controller.getPlaybackState().getState() == PlaybackStateCompat.STATE_PLAYING) {
+                controls.pause();
+            } else if (controller.getPlaybackState().getState() == PlaybackStateCompat.STATE_PAUSED) {
+                controls.play();
             }
+        } else {
+            controls.playFromMediaId(item.getMediaId(), null);
+            mCurrentMediaId = item.getMediaId();
         }
     }
 

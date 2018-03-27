@@ -4,25 +4,8 @@ package com.koalatea.thehollidayinn.softwareengineeringdaily.audio;
   Created by krh12 on 6/16/2017.
  */
 
-/*
- * Copyright (C) 2014 The Android Open Source Project
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 import android.content.Context;
 import android.media.AudioManager;
-import android.media.MediaMetadataRetriever;
 import android.media.MediaPlayer;
 import android.net.wifi.WifiManager;
 import android.os.PowerManager;
@@ -33,6 +16,8 @@ import android.text.TextUtils;
 import android.util.Log;
 
 import com.google.firebase.crash.FirebaseCrash;
+import com.koalatea.thehollidayinn.softwareengineeringdaily.podcast.PodcastSessionStateManager;
+
 import java.io.IOException;
 
 
@@ -86,6 +71,8 @@ class Playback implements AudioManager.OnAudioFocusChangeListener,
     private volatile int mCurrentPosition;
     private volatile String mCurrentMediaId;
 
+    private MediaSessionCompat.QueueItem currentItem;
+
     // Type of audio focus we have:
     private int mAudioFocus = AUDIO_NO_FOCUS_NO_DUCK;
     private final AudioManager mAudioManager;
@@ -134,6 +121,7 @@ class Playback implements AudioManager.OnAudioFocusChangeListener,
     }
 
     void play(MediaSessionCompat.QueueItem item) {
+        currentItem = item;
         mPlayOnFocusGain = true;
         tryToGetAudioFocus();
         String mediaId = item.getDescription().getMediaId();
@@ -172,45 +160,6 @@ class Playback implements AudioManager.OnAudioFocusChangeListener,
                 // Wifi lock, which prevents the Wifi radio from going to
                 // sleep while the song is playing.
                 mWifiLock.acquire();
-
-                // Add the duration since we are streaming
-                //long duration = mMediaPlayer.getDuration();
-                MediaMetadataRetriever metaRetriever = new MediaMetadataRetriever();
-                metaRetriever.setDataSource(source);
-                String duration =
-                  metaRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
-
-                long dur = 0;
-                if (duration != null) {
-                    dur = Long.parseLong(duration);
-                }
-
-                String oldSource = "";
-                if (item.getDescription() != null && item.getDescription().getMediaUri() != null) {
-                    oldSource = item.getDescription().getMediaUri().toString();
-
-                }
-
-                String title = "";
-                if (item.getDescription() != null && item.getDescription().getTitle() != null) {
-                    title = item.getDescription().getTitle().toString();
-                }
-
-
-                // @TODO: Abstract this to Podcast UseCase
-                MediaMetadataCompat updatedItem = new MediaMetadataCompat.Builder()
-                        .putString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID, currentMediaId)
-                        .putString(MediaMetadataCompat.METADATA_KEY_MEDIA_URI, oldSource)
-                        .putLong(MediaMetadataCompat.METADATA_KEY_DURATION, dur)
-                        .putString(MediaMetadataCompat.METADATA_KEY_TITLE, title)
-                        .build();
-
-                mMusicProvider.updateMusic(currentMediaId, updatedItem);
-
-                if (mCallback != null) {
-                    mCallback.onPlaybackStatusChanged(mState);
-                }
-
             } catch (IOException ioException) {
                 Log.e(TAG, "Exception playing song", ioException);
                 if (mCallback != null) {
@@ -237,7 +186,7 @@ class Playback implements AudioManager.OnAudioFocusChangeListener,
     }
 
     void seekTo(int position) {
-        Log.d(TAG, "seekTo called with " + position);
+        mCurrentPosition = position; // Always update. null check is not working
 
         if (mMediaPlayer == null) {
             // If we do not have a current media player, simply update the current position.
@@ -279,7 +228,6 @@ class Playback implements AudioManager.OnAudioFocusChangeListener,
      * Try to get the system audio focus.
      */
     private void tryToGetAudioFocus() {
-        Log.d(TAG, "tryToGetAudioFocus");
         int result = mAudioManager.requestAudioFocus(this, AudioManager.STREAM_MUSIC,
                 AudioManager.AUDIOFOCUS_GAIN);
         mAudioFocus = (result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED)
@@ -290,7 +238,6 @@ class Playback implements AudioManager.OnAudioFocusChangeListener,
      * Give up the audio focus.
      */
     private void giveUpAudioFocus() {
-        Log.d(TAG, "giveUpAudioFocus");
         if (mAudioManager.abandonAudioFocus(this) == AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
             mAudioFocus = AUDIO_NO_FOCUS_NO_DUCK;
         }
@@ -324,8 +271,6 @@ class Playback implements AudioManager.OnAudioFocusChangeListener,
             // If we were playing when we lost focus, we need to resume playing.
             if (mPlayOnFocusGain) {
                 if (mMediaPlayer != null && !mMediaPlayer.isPlaying()) {
-                    Log.d(TAG, "configMediaPlayerState startMediaPlayer. seeking to "
-                            + mCurrentPosition);
                     if (mCurrentPosition == mMediaPlayer.getCurrentPosition()) {
                         mMediaPlayer.start();
                         mState = PlaybackStateCompat.STATE_PLAYING;
@@ -414,10 +359,56 @@ class Playback implements AudioManager.OnAudioFocusChangeListener,
      */
     @Override
     public void onPrepared(MediaPlayer player) {
-        Log.d(TAG, "onPrepared from MediaPlayer");
         // The media player is done preparing. That means we can start playing if we
         // have audio focus.
         configMediaPlayerState();
+        sendMediaUpdate();
+    }
+
+    private void sendMediaUpdate () {
+        if (currentItem == null) return;
+
+        // Add the duration since we are streaming
+        long duration = mMediaPlayer.getDuration();
+
+//        MediaMetadataRetriever metaRetriever = new MediaMetadataRetriever();
+////        metaRetriever.setDataSource(source);
+//        String duration =
+//                metaRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
+
+//        long dur = 0;
+//        if (duration != null) {
+//            dur = Long.parseLong(duration);
+//        }
+
+        String mediaId = currentItem.getDescription().getMediaId();
+
+        String oldSource = "";
+        if (currentItem.getDescription() != null && currentItem.getDescription().getMediaUri() != null) {
+            oldSource = currentItem.getDescription().getMediaUri().toString();
+
+        }
+
+        String title = "";
+        if (currentItem.getDescription() != null && currentItem.getDescription().getTitle() != null) {
+            title = currentItem.getDescription().getTitle().toString();
+        }
+
+
+        // @TODO: Abstract this to Podcast UseCase
+        MediaMetadataCompat updatedItem = new MediaMetadataCompat.Builder()
+                .putString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID, mediaId)
+                .putString(MediaMetadataCompat.METADATA_KEY_MEDIA_URI, oldSource)
+                .putLong(MediaMetadataCompat.METADATA_KEY_DURATION, duration)
+                .putString(MediaMetadataCompat.METADATA_KEY_TITLE, title)
+                .build();
+
+        mMusicProvider.updateMusic(mediaId, updatedItem);
+        PodcastSessionStateManager.getInstance().setMediaMetaData(updatedItem);
+
+        if (mCallback != null) {
+            mCallback.onPlaybackStatusChanged(mState);
+        }
     }
 
     /**

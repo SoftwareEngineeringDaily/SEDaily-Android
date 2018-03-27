@@ -156,6 +156,7 @@ public class MediaNotificationHelper extends BroadcastReceiver {
                 .setColor(ContextCompat.getColor(mService, R.color.colorPrimaryDark))
                 .addAction(action)
                 .setShowWhen(false)
+                .setOnlyAlertOnce(true)
                 .setContentTitle(description.getTitle())
                 .setContentText(description.getSubtitle());
 
