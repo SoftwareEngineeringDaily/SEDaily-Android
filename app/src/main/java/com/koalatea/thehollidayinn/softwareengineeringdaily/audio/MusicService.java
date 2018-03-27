@@ -29,7 +29,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-import timber.log.Timber;
 
 public class MusicService extends MediaBrowserServiceCompat {
     private static final String TAG = "MusicService";
@@ -80,7 +79,6 @@ public class MusicService extends MediaBrowserServiceCompat {
     @Override
     public void onCreate() {
         super.onCreate();
-        Log.d(TAG, "onCreate");
 
         mMusicProvider = MusicProvider.getInstance();
 
@@ -128,7 +126,8 @@ public class MusicService extends MediaBrowserServiceCompat {
         try {
             mediaNotificationHelper = new MediaNotificationHelper(this);
         } catch (RemoteException e) {
-            e.printStackTrace();
+            // @TODO Had a report of no method printStackTrace and this was the only call... not sure why
+//            e.printStackTrace();
         }
     }
 
@@ -232,29 +231,16 @@ public class MusicService extends MediaBrowserServiceCompat {
 
         @Override
         public void onPlayFromMediaId(String mediaId, Bundle extras) {
-            Log.d(TAG, "playFromMediaId mediaId:" + mediaId + "  extras=" + extras);
-
-            // The mediaId used here is not the unique musicId. This one comes from the
-            // MediaBrowser, and is actually a "hierarchy-aware mediaID": a concatenation of
-            // the hierarchy in MediaBrowser and the actual unique musicID. This is necessary
-            // so we can build the correct playing queue, based on where the track was
-            // selected from.
             MediaMetadataCompat media = mMusicProvider.getMusic(mediaId);
-            Log.v(TAG, String.valueOf(media));
-            Log.v(TAG, String.valueOf(mediaId));
             if (media != null) {
                 mCurrentMedia =
                         new MediaSessionCompat.QueueItem(media.getDescription(), media.hashCode());
-
-                // play the music
                 handlePlayRequest();
             }
         }
 
         @Override
         public void onPlay() {
-            Log.d(TAG, "play");
-
             if (mCurrentMedia != null) {
                 handlePlayRequest();
             }
@@ -262,13 +248,11 @@ public class MusicService extends MediaBrowserServiceCompat {
 
         @Override
         public void onSeekTo(long position) {
-            Log.d(TAG, "onSeekTo:" + position);
             mPlayback.seekTo((int) position);
         }
 
         @Override
         public void onPause() {
-            Log.d(TAG, "pause. current state=" + mPlayback.getState());
             handlePauseRequest();
         }
 

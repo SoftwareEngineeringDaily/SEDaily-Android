@@ -1,8 +1,7 @@
 package com.koalatea.thehollidayinn.softwareengineeringdaily.podcast;
 
-import android.content.Intent;
-import android.support.v4.app.Fragment;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,6 +9,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.koalatea.thehollidayinn.softwareengineeringdaily.R;
+import com.koalatea.thehollidayinn.softwareengineeringdaily.app.SEDApp;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.data.models.Post;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.data.models.Title;
 import com.squareup.picasso.Picasso;
@@ -19,6 +19,9 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import io.reactivex.Observable;
+import io.reactivex.subjects.PublishSubject;
+import timber.log.Timber;
 
 /*
  * Created by krh12 on 5/22/2017.
@@ -26,7 +29,7 @@ import butterknife.ButterKnife;
 
 class PodcastAdapter extends RecyclerView.Adapter<PodcastAdapter.ViewHolder> {
   private List<Post> posts = new ArrayList<>();
-  private PodListFragment context;
+  private final PublishSubject<Post> onClickSubject = PublishSubject.create();
 
   static class ViewHolder extends RecyclerView.ViewHolder {
     @BindView(R.id.card_title)
@@ -35,15 +38,13 @@ class PodcastAdapter extends RecyclerView.Adapter<PodcastAdapter.ViewHolder> {
     @BindView(R.id.card_image)
     ImageView imageView;
 
+    @BindView(R.id.card_desc)
+    TextView description;
+
     private ViewHolder(View v) {
         super(v);
         ButterKnife.bind(this, v);
     }
-  }
-
-  PodcastAdapter(Fragment context) {
-    // @TODO: This is memory leak worthy. Fix it
-    this.context = (PodListFragment) context;
   }
 
   void setPosts(List<Post> posts) {
@@ -59,15 +60,10 @@ class PodcastAdapter extends RecyclerView.Adapter<PodcastAdapter.ViewHolder> {
 
     final ViewHolder viewHolder = new ViewHolder(view);
 
-    view.setOnClickListener(new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-          final int position = viewHolder.getAdapterPosition();
-          Post post = posts.get(position);
-          Intent intent = new Intent(context.getActivity(), PodcastDetailActivity.class);
-          intent.putExtra("POST_ID", post.get_id());
-          context.getActivity().startActivity(intent);
-        }
+    view.setOnClickListener(v -> {
+      final int position = viewHolder.getAdapterPosition();
+      Post post = posts.get(position);
+      onClickSubject.onNext(post);
     });
 
     return viewHolder;
@@ -77,13 +73,19 @@ class PodcastAdapter extends RecyclerView.Adapter<PodcastAdapter.ViewHolder> {
   public void onBindViewHolder(ViewHolder holder, int position) {
     Post post = posts.get(position);
     Title postTitle = post.getTitle();
+
+    Log.v("keithtest", String.valueOf(post));
+    if (postTitle == null) return;
+
     holder.mTextView.setText(postTitle.getRendered());
+    holder.description.setText(postTitle.getRendered());
 
     String imageLink = "https://softwareengineeringdaily.com/wp-content/uploads/2015/08/sed21.png";
     if (post.getFeaturedImage() != null) {
       imageLink = post.getFeaturedImage();
     }
-    Picasso.with(context.getContext())
+
+    Picasso.with(SEDApp.component.context())
         .load(imageLink)
         .fit()
         .into(holder.imageView);
@@ -92,5 +94,9 @@ class PodcastAdapter extends RecyclerView.Adapter<PodcastAdapter.ViewHolder> {
   @Override
   public int getItemCount() {
     return posts.size();
+  }
+
+  public Observable<Post> getPositionClicks() {
+    return onClickSubject;
   }
 }

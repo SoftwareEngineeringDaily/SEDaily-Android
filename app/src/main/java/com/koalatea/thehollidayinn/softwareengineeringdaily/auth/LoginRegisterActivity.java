@@ -1,5 +1,6 @@
 package com.koalatea.thehollidayinn.softwareengineeringdaily.auth;
 
+import android.arch.persistence.room.Room;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Build;
@@ -15,17 +16,26 @@ import android.widget.TextView;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.MainActivity;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.R;
+import com.koalatea.thehollidayinn.softwareengineeringdaily.app.SEDApp;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.data.models.User;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.data.remote.APIInterface;
-import com.koalatea.thehollidayinn.softwareengineeringdaily.data.remote.ApiUtils;
-import com.koalatea.thehollidayinn.softwareengineeringdaily.data.repositories.UserRepository;
+import com.koalatea.thehollidayinn.softwareengineeringdaily.repositories.UserRepository;
+import com.koalatea.thehollidayinn.softwareengineeringdaily.data.AppDatabase;
+import com.koalatea.thehollidayinn.softwareengineeringdaily.data.models.Bookmark;
+import com.koalatea.thehollidayinn.softwareengineeringdaily.data.models.Post;
+import com.koalatea.thehollidayinn.softwareengineeringdaily.data.repositories.BookmarkDao;
+import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.observers.DisposableObserver;
 import io.reactivex.schedulers.Schedulers;
+import retrofit2.HttpException;
+import retrofit2.Response;
 
 public class LoginRegisterActivity extends AppCompatActivity {
     private Boolean register = false;
@@ -155,25 +165,56 @@ public class LoginRegisterActivity extends AppCompatActivity {
                 }
 
                 @Override
-                public void onError(Throwable e) {
-//                    HttpException exception = (HttpException) e;
-//                    Response response = exception.response();
-//                    try {
-//                        JSONObject jsonResponse = new JSONObject(response.errorBody().string());
-//                        displayMessage(jsonResponse.getString("message"));
-//                    } catch (IOException | JSONException e1) {
-//                        e1.printStackTrace();
-//                    }
-                    displayMessage("Incorrect username or password");
+                public void onError(Throwable error) {
+                    try {
+                        // We had non-200 http error
+                        if (error instanceof HttpException) {
+                            HttpException httpException = (HttpException) error;
+                            Response response = httpException.response();
+                            displayMessage(response.errorBody().string());
+                        } else {
+                            displayMessage(error.getMessage());
+                        }
+                    } catch (Exception e) {
+                        displayMessage(e.getMessage());
+                    }
                 }
 
                 @Override
                 public void onNext(User user) {
                     userRepository.setToken(user.getToken());
+                    loadBookmarks();
                     Intent intent = new Intent(LoginRegisterActivity.this, MainActivity.class);
                     startActivity(intent);
                 }
             });
+    }
+
+    private void loadBookmarks() {
+      APIInterface service = SEDApp.component().kibblService();
+      service.getBookmarks()
+              .subscribeOn(Schedulers.io())
+              .subscribe(new DisposableObserver<List<Post>>() {
+                @Override
+                public void onComplete() {
+                }
+
+                @Override
+                public void onError(Throwable e) {
+                }
+
+                @Override
+                public void onNext(List<Post> posts) {
+                  ArrayList<Bookmark> bookmarks = new ArrayList<>();
+                  for(Post post: posts) {
+                    bookmarks.add(new Bookmark(post));
+                  }
+                  AppDatabase db = Room.databaseBuilder(getApplicationContext(),
+                          AppDatabase.class,"sed-db").build();
+                  BookmarkDao bookmarkDao = db.bookmarkDao();
+                  bookmarkDao.insertAll(bookmarks);
+                }
+              });
     }
 
     private void logLoginRegAnalytics(String username, String type) {
@@ -192,7 +233,7 @@ public class LoginRegisterActivity extends AppCompatActivity {
     }
 
     private Observable<User> getQuery (String username, String email, String password) {
-      APIInterface mService = ApiUtils.getKibbleService(this);
+      APIInterface mService = SEDApp.component.kibblService();
       if (register) {
         return mService.register(username, email, password);
       }

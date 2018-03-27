@@ -8,8 +8,8 @@ import android.os.PowerManager;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 import android.widget.Toast;
-import com.koalatea.thehollidayinn.softwareengineeringdaily.app.SDEApp;
-import com.koalatea.thehollidayinn.softwareengineeringdaily.data.repositories.PodcastDownloadsRepository;
+import com.koalatea.thehollidayinn.softwareengineeringdaily.app.SEDApp;
+import com.koalatea.thehollidayinn.softwareengineeringdaily.repositories.PodcastDownloadsRepository;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -31,7 +31,7 @@ public class DownloadTask extends AsyncTask<String, Integer, String> {
   private String podcastId;
 
   public DownloadTask(NotificationManager notificationManager, NotificationCompat.Builder mBuilder, String mPodcastId) {
-    this.context = SDEApp.component().context();
+    this.context = SEDApp.component().context();
     this.mNotifyManager = notificationManager;
     this.mBuilder = mBuilder;
     this.podcastId = mPodcastId;

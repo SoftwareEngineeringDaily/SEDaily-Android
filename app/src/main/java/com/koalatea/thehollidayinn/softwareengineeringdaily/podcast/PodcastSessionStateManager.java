@@ -2,12 +2,14 @@ package com.koalatea.thehollidayinn.softwareengineeringdaily.podcast;
 
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
+import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
+import android.util.Log;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
-import com.koalatea.thehollidayinn.softwareengineeringdaily.app.SDEApp;
+import com.koalatea.thehollidayinn.softwareengineeringdaily.app.SEDApp;
 
 import java.lang.reflect.Type;
 import java.util.HashMap;
@@ -23,7 +25,9 @@ import io.reactivex.subjects.PublishSubject;
 // @TODO: This should probably be a viewmodal
 public class PodcastSessionStateManager {
   private static PodcastSessionStateManager instance = null;
+
   private final PublishSubject<Integer> speedChangeObservable = PublishSubject.create();
+  private final PublishSubject<MediaMetadataCompat> mediaMetaDataChange = PublishSubject.create();
 
   private final String PROGRESS_KEY = "sedaily-progress-key";
   private final SharedPreferences preferences;
@@ -33,15 +37,15 @@ public class PodcastSessionStateManager {
   private long previousSave = 0;
   private long currentProgress = 0;
   private int currentSpeed = 0;
+  private MediaMetadataCompat mediaMetadataCompat;
   private Map<String, Long> episodeProgress;
 
   private PlaybackStateCompat lastPlaybackState;
 
   private PodcastSessionStateManager() {
     episodeProgress = new HashMap<>();
-    preferences = PreferenceManager.getDefaultSharedPreferences(SDEApp.component().context());
+    preferences = PreferenceManager.getDefaultSharedPreferences(SEDApp.component().context());
     gson = new GsonBuilder().create();
-
     String progressString = preferences.getString(PROGRESS_KEY, "");
     if (!progressString.isEmpty()) {
       Type typeOfHashMap = new TypeToken<Map<String, Long>>() { }.getType();
@@ -81,6 +85,11 @@ public class PodcastSessionStateManager {
     speedChangeObservable.onNext(this.currentSpeed);
   }
 
+  public void setMediaMetaData (MediaMetadataCompat mediaMetaData) {
+    this.mediaMetadataCompat = mediaMetaData;
+    mediaMetaDataChange.onNext(mediaMetaData);
+  }
+
   public void setProgressForEpisode(String _id, long currentProgress) {
     this.episodeProgress.put(_id, currentProgress);
 
@@ -109,6 +118,10 @@ public class PodcastSessionStateManager {
 
   public Observable<Integer> getSpeedChanges() {
     return speedChangeObservable;
+  }
+
+  public Observable<MediaMetadataCompat> getMetadataChanges() {
+    return mediaMetaDataChange;
   }
 
   public void setCurrentTitle(String title) {

@@ -54,6 +54,15 @@
                     android:contentDescription="@string/down_vote"
                     android:src="@drawable/ic_down_arrow" />
 
+                <ImageView
+                    android:id="@+id/bookmark_button"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_toRightOf="@id/down_button"
+                    android:layout_toEndOf="@id/down_button"
+                    android:src="@drawable/ic_bookmark"
+                    android:contentDescription="@string/bookmarks"/>
+
                 <Button
                     android:id="@+id/deleteButton"
                     style="@style/Widget.AppCompat.Button.Borderless"
@@ -66,17 +75,19 @@
                     android:text="@string/remove_download"
                     android:textAlignment="center" />
 
-                <Button
+                <com.ohoussein.playpause.PlayPauseView
                     android:id="@+id/playButton"
-                    style="@style/Widget.AppCompat.Button.Colored"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
                     android:layout_alignParentEnd="true"
                     android:layout_alignParentRight="true"
-                    android:layout_marginEnd="10dp"
-                    android:layout_marginRight="10dp"
-                    android:text="@string/label_play"
-                    android:textAlignment="center" />
+                    android:layout_centerVertical="true"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:foreground="?android:selectableItemBackground"
+                    app:fill_color="#fff"
+                    app:pause_bg="@color/primary"
+                    app:play_bg="@color/accent" />
 
             </RelativeLayout>
 
@@ -187,7 +198,7 @@
         android:layout_marginBottom="0dp"
         app:cardElevation="8dp">
 
-        <fragment android:name="com.koalatea.thehollidayinn.softwareengineeringdaily.mediaui.PlaybackControlsFragment"
+        <fragment android:name="com.koalatea.thehollidayinn.softwareengineeringdaily.playbar.PlaybarFragment"
             android:id="@+id/fragment_playback_controls"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

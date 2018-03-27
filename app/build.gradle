@@ -13,8 +13,9 @@ android {
         applicationId "com.koalatea.thehollidayinn.softwareengineeringdaily"
         minSdkVersion rootProject.minSdkVersion
         targetSdkVersion rootProject.targetSdkVersion
-        versionCode 15
-        versionName "1.3.2"
+        versionCode 22
+        versionName "1.5.0"
+        multiDexEnabled true
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
         //Note this will be deprecated soon....
@@ -74,11 +75,11 @@ android {
 }
 
 jacocoAndroidUnitTestReport {
-  csv.enabled false
-  html.enabled true
-  xml.enabled true
-  excludes += ['**/AutoValue_*.*',
-               '**/*JavascriptBridge.class']
+    csv.enabled false
+    html.enabled true
+    xml.enabled true
+    excludes += ['**/AutoValue_*.*',
+                 '**/*JavascriptBridge.class']
 }
 
 def build_param = "${build}"
@@ -101,15 +102,24 @@ if (build_param != "dev") {
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
 
+    compile 'com.android.support:multidex:1.0.2'
+
     // Android
-    implementation "com.android.support:design:$rootProject.supportLibraryVersion"
     implementation "com.android.support:design:$rootProject.supportLibraryVersion"
     implementation "com.android.support:appcompat-v7:$rootProject.supportLibraryVersion"
     implementation "com.android.support.constraint:constraint-layout:$rootProject.constraintlayoutVersion"
     implementation "com.android.support:cardview-v7:$rootProject.supportLibraryVersion"
     implementation "com.android.support:recyclerview-v7:$rootProject.supportLibraryVersion"
+
+    // Android Archiectecture
+    implementation 'com.android.support.constraint:constraint-layout:1.0.2'
+    implementation 'com.android.support:support-v4:27.0.2'
+    compile "android.arch.lifecycle:runtime:$rootProject.architectureComponents"
     implementation "android.arch.lifecycle:extensions:$rootProject.architectureComponents"
     kapt "android.arch.lifecycle:compiler:$rootProject.architectureComponents"
+    implementation "android.arch.persistence.room:runtime:1.1.0-alpha3"
+    kapt "android.arch.persistence.room:compiler:1.1.0-alpha3"
+
     //Kotlin
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jre8:$rootProject.kotlinVersion"
     //Rx Java
@@ -121,26 +131,36 @@ dependencies {
     implementation "com.squareup.retrofit2:retrofit:$rootProject.retrofit2Version"
     implementation "com.squareup.retrofit2:converter-gson:$rootProject.retrofit2Version"
     implementation "com.squareup.retrofit2:adapter-rxjava2:$rootProject.retrofit2Version"
+
     //Presentation
     implementation "com.squareup.picasso:picasso:$rootProject.picassoVersion"
     implementation "com.google.android.gms:play-services-oss-licenses:$rootProject.playVersion"
     implementation 'com.ethanhua:skeleton:1.0.0'
     implementation 'de.hdodenhof:circleimageview:2.2.0'
+
     //UI
     implementation "com.github.pchmn:MaterialChipsInput:$rootProject.materialChipsVersion"
     implementation "com.jakewharton:butterknife:$rootProject.butterknifeVersion"
     kapt "com.jakewharton:butterknife-compiler:$rootProject.butterknifeVersion"
     implementation "blue.aodev:material-values:$rootProject.materialValuesVersion"
+    implementation("com.mikepenz:materialdrawer:6.0.5@aar") {
+        transitive = true
+    }
+    implementation 'com.mikepenz:google-material-typeface:3.0.1.2.original@aar'
+    compile 'com.github.ohoussein.playpauseview:playpauseview:1.0.2'
+
     //Firebase
     implementation('com.crashlytics.sdk.android:crashlytics:2.7.1@aar') {
         transitive = true
     }
     implementation "com.google.firebase:firebase-core:$rootProject.firebaseServicesVersion"
     implementation "com.google.firebase:firebase-crash:$rootProject.firebaseServicesVersion"
-    //Architecture
+
+    //  Dagger
     implementation "com.google.dagger:dagger:$rootProject.daggerVersion"
     kapt "com.google.dagger:dagger-compiler:$rootProject.daggerVersion"
     kaptTest "com.google.dagger:dagger-compiler:$rootProject.daggerVersion"
+
     //Logging
     implementation "com.jakewharton.timber:timber:$rootProject.timberVersion"
     implementation "com.akaita.java:rxjava2-debug:$rootProject.rxjava2Debug"
@@ -153,6 +173,9 @@ dependencies {
     kapt "com.google.auto.value:auto-value:$rootProject.autoValueVersion"
     compileOnly "com.ryanharter.auto.value:auto-value-gson:$rootProject.autoValueGsonVersion"
     kapt "com.ryanharter.auto.value:auto-value-gson:$rootProject.autoValueGsonVersion"
+    //Payments
+    compile 'com.stripe:stripe-android:6.0.0'
+
     //Testing
     testImplementation "junit:junit:$rootProject.junitVersion"
     testImplementation "org.jetbrains.kotlin:kotlin-test-junit:$kotlinVersion"
@@ -160,7 +183,9 @@ dependencies {
     testImplementation "org.mockito:mockito-core:$rootProject.mockitoVersion"
     testImplementation "android.arch.core:core-testing:$rootProject.architectureComponents"
     androidTestImplementation("com.android.support.test.espresso:espresso-core:$rootProject.espressoVersion", {
-    exclude group: 'com.android.support', module: 'support-annotations'
-  })
+        exclude group: 'com.android.support', module: 'support-annotations'
+    })
 }
 apply plugin: 'com.google.gms.google-services'
+
+apply plugin: 'kotlin-android-extensions'
