@@ -1,6 +1,6 @@
 <resources>
-    <string name="app_name">SoftwareEngineeringDaily</string>
-    <string name="item_title">SoftwareEngineeringDaily</string>
+    <string name="app_name">Software Daily</string>
+    <string name="item_title">Software Daily</string>
     <string name="title_activity_podcast_detail">PodcastDetailActivity</string>
     <string name="title_activity_login_register">LoginRegisterActivity</string>
     <string name="playback_controller">PlaybackController</string>

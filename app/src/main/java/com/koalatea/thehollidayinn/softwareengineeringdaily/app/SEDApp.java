@@ -6,9 +6,11 @@ import android.support.annotation.VisibleForTesting;
 import com.akaita.java.rxjava2debug.RxJava2Debug;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.BuildConfig;
 
+import com.koalatea.thehollidayinn.softwareengineeringdaily.R;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.data.AppDatabase;
 import com.squareup.leakcanary.LeakCanary;
 import timber.log.Timber;
+import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
 
 /**
  * Created by Kurian on 25-Sep-17.
@@ -22,6 +24,13 @@ public class SEDApp extends Application {
   @Override
   public void onCreate() {
     super.onCreate();
+
+    CalligraphyConfig.initDefault(new CalligraphyConfig.Builder()
+            .setDefaultFontPath("Roboto-RobotoRegular.ttf")
+            .setFontAttrId(R.attr.fontPath)
+            .build()
+    );
+
     initLeakCanary();
     initDependencies();
     createLogger();

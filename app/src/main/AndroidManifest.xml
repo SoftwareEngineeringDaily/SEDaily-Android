@@ -46,16 +46,22 @@
             </intent-filter>
         </receiver>
 
+        <receiver android:name=".notifications.DailyAlarmReceiver"
+            android:enabled="false">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
+
         <activity
             android:name=".podcast.PodcastDetailActivity"
             android:label="@string/title_activity_podcast_detail"
-            android:theme="@style/AppTheme.NoActionBar"
-            android:parentActivityName=".MainActivity" >
+            android:parentActivityName=".MainActivity"
+            android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".MainActivity" />
         </activity>
-
         <activity
             android:name=".auth.LoginRegisterActivity"
             android:label="@string/title_activity_login_register"
@@ -73,7 +79,8 @@
         <activity
             android:name=".subscription.SubscriptionActivity"
             android:label="@string/title_activity_subscription"
-            android:theme="@style/AppTheme"></activity>
+            android:theme="@style/AppTheme" />
+        <activity android:name=".notifications.NotificationActivity"></activity>
     </application>
 
 </manifest>

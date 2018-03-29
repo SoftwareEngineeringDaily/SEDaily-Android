@@ -10,15 +10,25 @@
     <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:elevation="0dp"
         android:theme="@style/AppTheme.AppBarOverlay">
 
         <android.support.v7.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:background="@drawable/gradient"
+            android:background="@color/accent"
             app:elevation="0dp"
             app:popupTheme="@style/AppTheme.PopupOverlay">
+            <TextView
+                android:id="@+id/my_title"
+                android:text="@string/app_name"
+                android:textColor="@color/white"
+                android:textSize="20sp"
+                android:textStyle='bold'
+                android:textAllCaps="true"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
         </android.support.v7.widget.Toolbar>
 
         <android.support.design.widget.TabLayout
@@ -27,7 +37,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             app:tabMode="scrollable"
-            android:background="@drawable/gradient"
+            android:background="@color/accent"
             />
     </android.support.design.widget.AppBarLayout>
 
