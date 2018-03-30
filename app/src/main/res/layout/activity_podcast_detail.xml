@@ -86,7 +86,7 @@
                     android:focusable="true"
                     android:foreground="?android:selectableItemBackground"
                     app:fill_color="#fff"
-                    app:pause_bg="@color/primary"
+                    app:pause_bg="@color/accent"
                     app:play_bg="@color/accent" />
 
             </RelativeLayout>
