@@ -83,7 +83,8 @@
             android:id="@+id/textView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Would you like to enable notifications?"
+            android:layout_gravity="center_horizontal"
+            android:text="Daily notifications (MWF)"
             android:textAppearance="@android:style/TextAppearance.Material.Title" />
 
         <Switch
