@@ -72,6 +72,10 @@ android {
         main.java.srcDirs += 'src/main/java'
         main.java.srcDirs += 'src/main/kotlin'
     }
+
+    lintOptions {
+        htmlReport true
+    }
 }
 
 jacocoAndroidUnitTestReport {
@@ -116,7 +120,9 @@ dependencies {
     implementation 'com.android.support:support-v4:27.0.2'
     compile "android.arch.lifecycle:runtime:$rootProject.architectureComponents"
     implementation "android.arch.lifecycle:extensions:$rootProject.architectureComponents"
-    kapt "android.arch.lifecycle:compiler:$rootProject.architectureComponents"
+    kapt "android.arch.lifecycle:common-java8:$rootProject.architectureComponents"
+    
+    //Persistence
     implementation "android.arch.persistence.room:runtime:1.1.0-alpha3"
     kapt "android.arch.persistence.room:compiler:1.1.0-alpha3"
 
