@@ -74,7 +74,6 @@ class PodcastAdapter extends RecyclerView.Adapter<PodcastAdapter.ViewHolder> {
     Post post = posts.get(position);
     Title postTitle = post.getTitle();
 
-    Log.v("keithtest", String.valueOf(post));
     if (postTitle == null) return;
 
     holder.mTextView.setText(postTitle.getRendered());

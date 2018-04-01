@@ -154,6 +154,7 @@ dependencies {
     }
     implementation 'com.mikepenz:google-material-typeface:3.0.1.2.original@aar'
     compile 'com.github.ohoussein.playpauseview:playpauseview:1.0.2'
+    compile 'uk.co.chrisjenx:calligraphy:2.3.0'
 
     //Firebase
     implementation('com.crashlytics.sdk.android:crashlytics:2.7.1@aar') {

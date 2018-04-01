@@ -4,9 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context="com.koalatea.thehollidayinn.softwareengineeringdaily.subscription.SubscriptionActivity"
-    tools:showIn="@layout/activity_subscription">
+    tools:context="com.koalatea.thehollidayinn.softwareengineeringdaily.notifications.NotificationActivity">
 
     <android.support.design.widget.AppBarLayout
         android:id="@+id/appBarLayout"
@@ -32,11 +30,11 @@
                 android:background="?attr/colorAccent"
                 app:popupTheme="@style/AppTheme.PopupOverlay" >
                 <!--<TextView-->
-                <!--android:layout_width="wrap_content"-->
-                <!--android:layout_height="wrap_content"-->
-                <!--android:gravity="center"-->
-                <!--android:text="Notifications"-->
-                <!--android:textAppearance="@android:style/TextAppearance.Material.Title" />-->
+                    <!--android:layout_width="wrap_content"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:gravity="center"-->
+                    <!--android:text="Notifications"-->
+                    <!--android:textAppearance="@android:style/TextAppearance.Material.Title" />-->
             </android.support.v7.widget.Toolbar>
 
             <RelativeLayout
@@ -57,7 +55,7 @@
                     android:id="@+id/titleTextView"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Subscriptions"
+                    android:text="Notification Settings"
                     android:textSize="24sp" />
             </RelativeLayout>
 
@@ -65,11 +63,40 @@
 
     </android.support.design.widget.AppBarLayout>
 
-    <FrameLayout
-        android:id="@+id/fragment_container"
+    <android.support.v7.widget.CardView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_weight="1"
-        android:layout_marginTop="128dp" />
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="596dp"
+        android:layout_marginEnd="34dp"
+        android:layout_marginStart="35dp"
+        android:layout_marginTop="27dp"
+        android:padding="8dp"
+        app:contentPadding="8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.014"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/appBarLayout"
+        app:layout_constraintVertical_bias="0.043">
+
+        <TextView
+            android:id="@+id/textView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:text="Daily notifications (MWF)"
+            android:textAppearance="@android:style/TextAppearance.Material.Title" />
+
+        <Switch
+            android:id="@+id/switch1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="44dp"
+            android:text=""
+            app:layout_constraintTop_toBottomOf="@+id/textView"
+            tools:layout_editor_absoluteX="185dp" />
+
+    </android.support.v7.widget.CardView>
 
 </android.support.constraint.ConstraintLayout>

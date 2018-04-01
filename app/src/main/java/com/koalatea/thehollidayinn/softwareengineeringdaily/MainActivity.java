@@ -3,11 +3,15 @@ package com.koalatea.thehollidayinn.softwareengineeringdaily;
 import android.app.SearchManager;
 import android.arch.persistence.room.Room;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.MenuItemCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
@@ -19,12 +23,14 @@ import com.koalatea.thehollidayinn.softwareengineeringdaily.auth.LoginRegisterAc
 import com.koalatea.thehollidayinn.softwareengineeringdaily.data.models.SubscriptionResponse;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.data.models.UserResponse;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.data.remote.APIInterface;
+import com.koalatea.thehollidayinn.softwareengineeringdaily.notifications.NotificationActivity;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.podcast.TopRecListFragment;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.repositories.FilterRepository;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.repositories.UserRepository;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.latest.RecentPodcastFragment;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.subscription.SubscriptionActivity;
 import com.mikepenz.google_material_typeface_library.GoogleMaterial;
+import com.mikepenz.iconics.IconicsDrawable;
 import com.mikepenz.materialdrawer.AccountHeader;
 import com.mikepenz.materialdrawer.AccountHeaderBuilder;
 import com.mikepenz.materialdrawer.Drawer;
@@ -133,18 +139,29 @@ public class MainActivity extends PlaybackControllerActivity
         subscribeItem = new SecondaryDrawerItem().withIdentifier(5).withIcon(GoogleMaterial.Icon.gmd_monetization_on).withName(R.string.subscribe);
 
         SecondaryDrawerItem bookmarkItem = new SecondaryDrawerItem().withIdentifier(6).withIcon(GoogleMaterial.Icon.gmd_bookmark).withName(R.string.bookmarks);
+        SecondaryDrawerItem notificationItem = new SecondaryDrawerItem()
+                .withIdentifier(7)
+                .withIcon(GoogleMaterial.Icon.gmd_notifications)
+                .withName("Notifications");
 
         AccountHeaderBuilder accountHeaderBuilder = new AccountHeaderBuilder()
                 .withActivity(this)
-                .withHeaderBackground(R.drawable.gradient);
+                .withHeaderBackground(R.color.accent);
 
         if (!userRepository.getToken().isEmpty()) {
             loginItem.getName().setText(getString(R.string.logout));
             accountHeaderBuilder.addProfiles(
                 new ProfileDrawerItem()
-                        .withName("Logged-In")
+                    .withName("Logged In")
 //                        .withEmail("mikepenz@gmail.com")
-                        .withIcon(getResources()
+                    .withIcon(getResources()
+                    .getDrawable(R.drawable.sedaily_logo))
+            );
+        } else {
+            accountHeaderBuilder.addProfiles(
+                new ProfileDrawerItem()
+                    .withName("LoggedOut")
+                    .withIcon(getResources()
                         .getDrawable(R.drawable.sedaily_logo))
             );
         }
@@ -167,6 +184,7 @@ public class MainActivity extends PlaybackControllerActivity
                         item2,
                         item3,
                         bookmarkItem,
+                        notificationItem,
                         new DividerDrawerItem(),
                         loginItem,
                         subscribeItem
@@ -180,6 +198,27 @@ public class MainActivity extends PlaybackControllerActivity
                     }
                 })
                 .build();
+    }
+
+    private void displayMessage (String message) {
+        AlertDialog.Builder builder;
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            builder = new AlertDialog.Builder(this, android.R.style.Theme_Material_Dialog_Alert);
+        } else {
+            builder = new AlertDialog.Builder(this);
+        }
+
+        builder.setTitle("Error")
+                .setMessage(message)
+                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {}
+                })
+                .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {}
+                })
+                .setIcon(android.R.drawable.ic_dialog_alert)
+                .show();
     }
 
     private Boolean navigationItemSelected(@NonNull IDrawerItem item) {
@@ -228,6 +267,11 @@ public class MainActivity extends PlaybackControllerActivity
                 startActivity(new Intent(this, SubscriptionActivity.class));
                 break;
             case 6:
+                if (userRepository.getToken().isEmpty()) {
+                    displayMessage("You must login to use this feature");
+                    break;
+                }
+
                 toolbar.setTitle("Bookmarks");
                 tabLayout.setVisibility(View.GONE);
 
@@ -239,6 +283,9 @@ public class MainActivity extends PlaybackControllerActivity
                         .beginTransaction()
                         .replace(R.id.fragment_container, bookmarksFragment)
                         .commit();
+                break;
+            case 7:
+                startActivity(new Intent(this, NotificationActivity.class));
                 break;
         }
 
@@ -263,6 +310,13 @@ public class MainActivity extends PlaybackControllerActivity
         getMenuInflater().inflate(R.menu.menu_main, menu);
 
         // Associate searchable configuration with the SearchView
+        MenuItem searchItem = menu.findItem(R.id.search);
+        IconicsDrawable searchIcon = new IconicsDrawable(this)
+                .icon(GoogleMaterial.Icon.gmd_search)
+                .color(Color.WHITE)
+                .sizeDp(20);
+        searchItem.setIcon(searchIcon);
+
         SearchManager searchManager =
                 (SearchManager) getSystemService(Context.SEARCH_SERVICE);
         SearchView searchView =

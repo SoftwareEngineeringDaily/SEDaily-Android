@@ -86,7 +86,7 @@
                     android:focusable="true"
                     android:foreground="?android:selectableItemBackground"
                     app:fill_color="#fff"
-                    app:pause_bg="@color/primary"
+                    app:pause_bg="@color/accent"
                     app:play_bg="@color/accent" />
 
             </RelativeLayout>
@@ -124,7 +124,7 @@
             android:layout_height="match_parent"
             android:fitsSystemWindows="true"
             android:theme="@style/ThemeOverlay.AppCompat.Dark"
-            app:contentScrim="?attr/colorPrimary"
+            app:contentScrim="@color/accent"
             app:expandedTitleMarginStart="24dp"
             app:layout_scrollFlags="scroll|exitUntilCollapsed">
 
@@ -133,7 +133,7 @@
                 android:contentDescription="@string/podcast_image"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="@color/colorPrimary"
+                android:background="@color/accent"
                 android:fitsSystemWindows="true"
                 android:scaleType="centerCrop"
                 app:layout_collapseMode="parallax" />

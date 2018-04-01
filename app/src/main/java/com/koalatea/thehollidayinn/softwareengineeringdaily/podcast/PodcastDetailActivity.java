@@ -208,6 +208,7 @@ public class PodcastDetailActivity extends PlaybackControllerActivity {
    * Start a share intent
    */
   public void startShareIntent() {
+    if (post == null) return;
     String shareContent = "Check out this episode of Software Engineering Daily: ";
     shareContent += post.getLink();
 
