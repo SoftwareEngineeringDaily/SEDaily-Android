@@ -117,7 +117,7 @@ dependencies {
 
     // Android Archiectecture
     implementation 'com.android.support.constraint:constraint-layout:1.0.2'
-    implementation 'com.android.support:support-v4:27.0.2'
+    implementation "com.android.support:support-v4:$rootProject.supportLibraryVersion"
     compile "android.arch.lifecycle:runtime:$rootProject.architectureComponents"
     implementation "android.arch.lifecycle:extensions:$rootProject.architectureComponents"
     kapt "android.arch.lifecycle:common-java8:$rootProject.architectureComponents"
