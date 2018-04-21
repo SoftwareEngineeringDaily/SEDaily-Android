@@ -112,13 +112,18 @@ public class PodcastDetailActivity extends PlaybackControllerActivity {
     postRepository = PostRepository.getInstance();
     loadPost(postId);
 
-    // Check playback state
-    PlaybackStateCompat playbackStateCompat = PodcastSessionStateManager.getInstance().getLastPlaybackState();
-    if (playbackStateCompat != null && playbackStateCompat.getState() == PlaybackStateCompat.STATE_PLAYING) {
+    setUpDownloadObserver();
+  }
+
+  private void setUpPlayButtonState(String title) {
+    PodcastSessionStateManager podcastSessionStateManager = PodcastSessionStateManager.getInstance();
+    PlaybackStateCompat playbackStateCompat = podcastSessionStateManager.getLastPlaybackState();
+    String currentPLayingTitle = podcastSessionStateManager.getCurrentTitle();
+    boolean isSameMedia = currentPLayingTitle.equals(title);
+
+    if (playbackStateCompat != null && playbackStateCompat.getState() == PlaybackStateCompat.STATE_PLAYING && isSameMedia) {
       playButton.toggle();
     }
-
-    setUpDownloadObserver();
   }
 
   private void checkForBookMarks() {
@@ -256,7 +261,11 @@ public class PodcastDetailActivity extends PlaybackControllerActivity {
       return;
     }
 
-    titleTextView.setText(post.getTitle().getRendered());
+    String title = post.getTitle().getRendered();
+
+    setUpPlayButtonState(title);
+
+    titleTextView.setText(title);
     descriptionWebView.loadData(post.getContent().getRendered(), "text/html", "UTF-8");
 
     String dayString = android.text.format.DateFormat.format("MMMM dd, yyyy", post.getDate().getTime()).toString();
@@ -504,8 +513,11 @@ public class PodcastDetailActivity extends PlaybackControllerActivity {
     MediaBrowserCompat.MediaItem bItem =
             new MediaBrowserCompat.MediaItem(item.getDescription(),
                     MediaBrowserCompat.MediaItem.FLAG_PLAYABLE);
+    
+    PodcastSessionStateManager podcastSessionStateManager = PodcastSessionStateManager.getInstance();
+    String currentPLayingTitle = podcastSessionStateManager.getCurrentTitle();
+    boolean isSameMedia = currentPLayingTitle.equals(post.getTitle().getRendered());
 
-    boolean isSameMedia = id.equals(getPlayingMediaId());
     onMediaItemSelected(bItem, isSameMedia);
   }
 

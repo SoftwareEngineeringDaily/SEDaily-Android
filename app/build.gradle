@@ -13,8 +13,8 @@ android {
         applicationId "com.koalatea.thehollidayinn.softwareengineeringdaily"
         minSdkVersion rootProject.minSdkVersion
         targetSdkVersion rootProject.targetSdkVersion
-        versionCode 22
-        versionName "1.5.0"
+        versionCode 24
+        versionName "1.5.1"
         multiDexEnabled true
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
