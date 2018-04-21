@@ -177,6 +177,9 @@ dependencies {
     //Payments
     compile 'com.stripe:stripe-android:6.0.0'
 
+    // Rating
+    compile 'com.github.hotchemi:android-rate:1.0.1'
+
     //Testing
     testImplementation "junit:junit:$rootProject.junitVersion"
     testImplementation "org.jetbrains.kotlin:kotlin-test-junit:$kotlinVersion"
