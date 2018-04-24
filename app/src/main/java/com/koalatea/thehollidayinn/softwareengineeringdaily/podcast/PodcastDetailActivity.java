@@ -568,19 +568,6 @@ public class PodcastDetailActivity extends PlaybackControllerActivity {
     mService.removeBookmark(post.get_id())
       .subscribeOn(Schedulers.io())
       .observeOn(AndroidSchedulers.mainThread())
-      .subscribe(new DisposableObserver<Void>() {
-        @Override
-        public void onComplete() {
-        }
-
-        @Override
-        public void onError(Throwable e) {
-          Log.v(TAG, e.toString());
-        }
-
-        @Override
-        public void onNext(Void posts) {
-        }
-      });
+      .subscribe(ReactiveUtil.getEmptyObservable());
   }
 }
