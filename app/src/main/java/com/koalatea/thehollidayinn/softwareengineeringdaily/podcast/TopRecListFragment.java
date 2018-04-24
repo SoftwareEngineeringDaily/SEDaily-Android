@@ -19,6 +19,7 @@ import com.koalatea.thehollidayinn.softwareengineeringdaily.MainActivity;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.R;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.data.models.Post;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.repositories.FilterRepository;
+import com.koalatea.thehollidayinn.softwareengineeringdaily.util.ReactiveUtil;
 
 import java.util.List;
 
@@ -121,20 +122,7 @@ public class TopRecListFragment extends Fragment {
         podcastAdapter.getPositionClicks()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new DisposableObserver<Post>() {
-                    @Override
-                    public void onComplete() {}
-                    @Override
-                    public void onError(Throwable e) {
-                        Log.v(TAG, e.toString());
-                    }
-                    @Override
-                    public void onNext(Post post) {
-                        Intent intent = new Intent(getActivity(), PodcastDetailActivity.class);
-                        intent.putExtra("POST_ID", post.get_id());
-                        getActivity().startActivity(intent);
-                    }
-                });
+                .subscribe(ReactiveUtil.toDetailObservable(getActivity()));
     }
 
     @Override

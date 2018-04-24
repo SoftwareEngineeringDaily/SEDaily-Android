@@ -37,17 +37,17 @@ ext {
   compileSdkVersion = 27
   buildToolsVersion = '27.0.2'
   //Android
-  supportLibraryVersion = '27.1.0'
+  supportLibraryVersion = '27.1.1'
   architectureComponents = '1.1.1'
-  constraintlayoutVersion = '1.0.2'
-  androidRoomRersistenceVersion = '1.1.0-beta1'
+  constraintlayoutVersion = '1.1.0'
+  androidRoomRersistenceVersion = '1.1.0-beta3'
   //Kotlin
   kotlinVersion = '1.2.30'
   //Firebase
-  firebaseServicesVersion = '12.0.1'
+  firebaseServicesVersion = '15.0.0'
   //Architecture
   daggerVersion = '2.13'
-  playVersion = '12.0.1'
+  playVersion = '15.0.0'
   //UI
   butterknifeVersion = '8.8.1'
   materialChipsVersion = '1.0.8'
@@ -55,7 +55,7 @@ ext {
   picassoVersion = '2.5.2'
   //RxJava
   rxjava2Version = '2.1.4'
-  rxAndroid2Version = '2.0.1'
+  rxAndroid2Version = '2.0.2'
   //Networking
   retrofit2Version = '2.3.0'
   okhttp3Version = '3.9.0'
@@ -64,7 +64,7 @@ ext {
   autoValueVersion = '1.5.1'
   autoValueGsonVersion = '0.5.0'
   //Debugging & Logging
-  timberVersion = '4.5.1'
+  timberVersion = '4.6.0'
   leakCanaryVersion = '1.5.4'
   rxjava2Debug = '1.2.0'
   //Testing
