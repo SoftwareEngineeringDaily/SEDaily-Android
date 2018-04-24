@@ -68,7 +68,9 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="596dp"
         android:layout_marginEnd="34dp"
+        android:layout_marginRight="34dp"
         android:layout_marginStart="35dp"
+        android:layout_marginLeft="35dp"
         android:layout_marginTop="27dp"
         android:padding="8dp"
         app:contentPadding="8dp"
@@ -85,7 +87,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:text="Daily notifications (MWF)"
-            android:textAppearance="@android:style/TextAppearance.Material.Title" />
+            android:textAppearance="@style/TextAppearance.AppCompat.Title" />
 
         <Switch
             android:id="@+id/switch1"
