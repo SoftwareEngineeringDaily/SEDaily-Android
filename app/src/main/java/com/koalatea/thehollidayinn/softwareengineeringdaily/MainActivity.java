@@ -29,6 +29,7 @@ import com.koalatea.thehollidayinn.softwareengineeringdaily.repositories.FilterR
 import com.koalatea.thehollidayinn.softwareengineeringdaily.repositories.UserRepository;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.latest.RecentPodcastFragment;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.subscription.SubscriptionActivity;
+import com.koalatea.thehollidayinn.softwareengineeringdaily.util.AlertUtil;
 import com.mikepenz.google_material_typeface_library.GoogleMaterial;
 import com.mikepenz.iconics.IconicsDrawable;
 import com.mikepenz.materialdrawer.AccountHeader;
@@ -105,24 +106,24 @@ public class MainActivity extends PlaybackControllerActivity
     private void loadMe () {
         APIInterface apiInterface = SEDApp.component.kibblService();
         apiInterface.me()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new DisposableObserver<UserResponse>() {
-                    @Override
-                    public void onNext(UserResponse userResponse) {
-                        displaySubscribedView(userResponse);
-                    }
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(new DisposableObserver<UserResponse>() {
+                @Override
+                public void onNext(UserResponse userResponse) {
+                    displaySubscribedView(userResponse);
+                }
 
-                    @Override
-                    public void onError(Throwable e) {
+                @Override
+                public void onError(Throwable e) {
 
-                    }
+                }
 
-                    @Override
-                    public void onComplete() {
+                @Override
+                public void onComplete() {
 
-                    }
-                });
+                }
+            });
     }
 
     private void displaySubscribedView (UserResponse userResponse) {
@@ -216,27 +217,6 @@ public class MainActivity extends PlaybackControllerActivity
                 .build();
     }
 
-    private void displayMessage (String message) {
-        AlertDialog.Builder builder;
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            builder = new AlertDialog.Builder(this, android.R.style.Theme_Material_Dialog_Alert);
-        } else {
-            builder = new AlertDialog.Builder(this);
-        }
-
-        builder.setTitle("Error")
-                .setMessage(message)
-                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {}
-                })
-                .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {}
-                })
-                .setIcon(android.R.drawable.ic_dialog_alert)
-                .show();
-    }
-
     private Boolean navigationItemSelected(@NonNull IDrawerItem item) {
         switch ((int) item.getIdentifier()) {
             case 1:
@@ -284,7 +264,7 @@ public class MainActivity extends PlaybackControllerActivity
                 break;
             case 6:
                 if (userRepository.getToken().isEmpty()) {
-                    displayMessage("You must login to use this feature");
+                    AlertUtil.displayMessage(this, "You must login to use this feature");
                     break;
                 }
 

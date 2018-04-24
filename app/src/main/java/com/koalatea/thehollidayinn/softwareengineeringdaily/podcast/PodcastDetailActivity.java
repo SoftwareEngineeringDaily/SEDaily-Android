@@ -39,6 +39,7 @@ import com.koalatea.thehollidayinn.softwareengineeringdaily.repositories.PostRep
 import com.koalatea.thehollidayinn.softwareengineeringdaily.repositories.UserRepository;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.data.repositories.BookmarkDao;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.downloads.MP3FileManager;
+import com.koalatea.thehollidayinn.softwareengineeringdaily.util.AlertUtil;
 import com.mikepenz.google_material_typeface_library.GoogleMaterial;
 import com.mikepenz.iconics.IconicsDrawable;
 import com.ohoussein.playpause.PlayPauseView;
@@ -234,27 +235,6 @@ public class PodcastDetailActivity extends PlaybackControllerActivity {
     }
   }
 
-  private void displayMessage (String message) {
-    AlertDialog.Builder builder;
-
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      builder = new AlertDialog.Builder(this, android.R.style.Theme_Material_Dialog_Alert);
-    } else {
-      builder = new AlertDialog.Builder(this);
-    }
-
-    builder.setTitle("Error")
-      .setMessage(message)
-      .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-        public void onClick(DialogInterface dialog, int which) {}
-      })
-      .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
-        public void onClick(DialogInterface dialog, int which) {}
-      })
-      .setIcon(android.R.drawable.ic_dialog_alert)
-      .show();
-  }
-
   private void loadPost (final String postId) {
     post = postRepository.getPostById(postId);
     if (post == null) {
@@ -314,7 +294,7 @@ public class PodcastDetailActivity extends PlaybackControllerActivity {
     if (post == null) return;
 
     if (userRepository.getToken().isEmpty()) {
-      displayMessage("You must login to vote");
+      AlertUtil.displayMessage(this, "You must login to vote");
       return;
     }
 
@@ -356,7 +336,7 @@ public class PodcastDetailActivity extends PlaybackControllerActivity {
     if (post == null) return;
 
     if (userRepository.getToken().isEmpty()) {
-      displayMessage("You must login to vote");
+      AlertUtil.displayMessage(this,"You must login to vote");
       return;
     }
 
@@ -535,7 +515,7 @@ public class PodcastDetailActivity extends PlaybackControllerActivity {
     if (post == null) return;
 
     if(userRepository.getToken().isEmpty()) {
-      displayMessage("You must login to bookmark");
+      AlertUtil.displayMessage(this, "You must login to bookmark");
       return;
     }
 
