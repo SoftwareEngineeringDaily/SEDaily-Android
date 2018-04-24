@@ -13,8 +13,8 @@ android {
         applicationId "com.koalatea.thehollidayinn.softwareengineeringdaily"
         minSdkVersion rootProject.minSdkVersion
         targetSdkVersion rootProject.targetSdkVersion
-        versionCode 22
-        versionName "1.5.0"
+        versionCode 25
+        versionName "1.5.2"
         multiDexEnabled true
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
@@ -182,6 +182,9 @@ dependencies {
     kapt "com.ryanharter.auto.value:auto-value-gson:$rootProject.autoValueGsonVersion"
     //Payments
     compile 'com.stripe:stripe-android:6.0.0'
+
+    // Rating
+    compile 'com.github.hotchemi:android-rate:1.0.1'
 
     //Testing
     testImplementation "junit:junit:$rootProject.junitVersion"

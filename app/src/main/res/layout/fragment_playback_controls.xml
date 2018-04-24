@@ -40,11 +40,12 @@
                 android:layout_alignParentLeft="true"
                 android:gravity="center_vertical"
                 android:maxLines="1"
-                android:textColor="@color/colorPrimary" />
+                android:text="0:00"
+                android:textColor="@color/accent" />
 
             <SeekBar
                 android:id="@+id/seekBar1"
-                android:layout_width="fill_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
                 android:layout_gravity="center"
@@ -66,7 +67,8 @@
                 android:gravity="center_vertical"
                 android:layout_alignWithParentIfMissing="true"
                 android:maxLines="1"
-                android:textColor="@color/colorPrimary" />
+                android:text="0:00"
+                android:textColor="@color/accent" />
 
         </RelativeLayout>
 

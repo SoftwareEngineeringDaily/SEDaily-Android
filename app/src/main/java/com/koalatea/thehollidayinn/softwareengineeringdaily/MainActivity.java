@@ -41,6 +41,8 @@ import com.mikepenz.materialdrawer.model.ProfileDrawerItem;
 import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 
+import hotchemi.android.rate.AppRate;
+import hotchemi.android.rate.OnClickButtonListener;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.observers.DisposableObserver;
@@ -84,6 +86,20 @@ public class MainActivity extends PlaybackControllerActivity
         setUpDrawer(toolbar);
 
         showInitialPage();
+        setUpReviewWatch();
+    }
+
+    private void setUpReviewWatch() {
+        AppRate.with(this)
+            .setInstallDays(1) // default 10, 0 means install day.
+            .setLaunchTimes(3) // default 10
+            .setRemindInterval(2) // default 1
+            .setShowLaterButton(true) // default true
+            .setDebug(false) // default false
+            .monitor();
+
+        // Show a dialog if meets conditions
+        AppRate.showRateDialogIfMeetsConditions(this);
     }
 
     private void loadMe () {
