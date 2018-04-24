@@ -24,6 +24,8 @@ import com.koalatea.thehollidayinn.softwareengineeringdaily.data.AppDatabase;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.data.models.Bookmark;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.data.models.Post;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.data.repositories.BookmarkDao;
+import com.koalatea.thehollidayinn.softwareengineeringdaily.util.AlertUtil;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -118,30 +120,9 @@ public class LoginRegisterActivity extends AppCompatActivity {
     }
 
     private void displayMessage (String message) {
-        AlertDialog.Builder builder;
+      loginRegButton.setEnabled(true);
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            builder = new AlertDialog.Builder(this, android.R.style.Theme_Material_Dialog_Alert);
-        } else {
-            builder = new AlertDialog.Builder(this);
-        }
-
-        loginRegButton.setEnabled(true);
-
-        builder.setTitle("Error")
-          .setMessage(message)
-          .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-              public void onClick(DialogInterface dialog, int which) {
-            // continue with delete
-              }
-          })
-          .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
-              public void onClick(DialogInterface dialog, int which) {
-            // do nothing
-              }
-          })
-          .setIcon(android.R.drawable.ic_dialog_alert)
-          .show();
+      AlertUtil.displayMessage(this, message);
     }
 
     private void loginReg(String username, String email, String password) {
