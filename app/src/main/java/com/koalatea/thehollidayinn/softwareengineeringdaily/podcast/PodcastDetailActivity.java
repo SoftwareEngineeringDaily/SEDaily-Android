@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.RequiresPermission;
 import android.support.v4.app.ShareCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.media.MediaBrowserCompat;
@@ -39,6 +40,8 @@ import com.koalatea.thehollidayinn.softwareengineeringdaily.repositories.PostRep
 import com.koalatea.thehollidayinn.softwareengineeringdaily.repositories.UserRepository;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.data.repositories.BookmarkDao;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.downloads.MP3FileManager;
+import com.koalatea.thehollidayinn.softwareengineeringdaily.util.AlertUtil;
+import com.koalatea.thehollidayinn.softwareengineeringdaily.util.ReactiveUtil;
 import com.mikepenz.google_material_typeface_library.GoogleMaterial;
 import com.mikepenz.iconics.IconicsDrawable;
 import com.ohoussein.playpause.PlayPauseView;
@@ -234,27 +237,6 @@ public class PodcastDetailActivity extends PlaybackControllerActivity {
     }
   }
 
-  private void displayMessage (String message) {
-    AlertDialog.Builder builder;
-
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      builder = new AlertDialog.Builder(this, android.R.style.Theme_Material_Dialog_Alert);
-    } else {
-      builder = new AlertDialog.Builder(this);
-    }
-
-    builder.setTitle("Error")
-      .setMessage(message)
-      .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-        public void onClick(DialogInterface dialog, int which) {}
-      })
-      .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
-        public void onClick(DialogInterface dialog, int which) {}
-      })
-      .setIcon(android.R.drawable.ic_dialog_alert)
-      .show();
-  }
-
   private void loadPost (final String postId) {
     post = postRepository.getPostById(postId);
     if (post == null) {
@@ -314,7 +296,7 @@ public class PodcastDetailActivity extends PlaybackControllerActivity {
     if (post == null) return;
 
     if (userRepository.getToken().isEmpty()) {
-      displayMessage("You must login to vote");
+      AlertUtil.displayMessage(this, "You must login to vote");
       return;
     }
 
@@ -339,16 +321,7 @@ public class PodcastDetailActivity extends PlaybackControllerActivity {
     mService.upVote(post.get_id())
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(new DisposableObserver<Void>() {
-              @Override
-              public void onComplete() {}
-              @Override
-              public void onError(Throwable e) {
-                Log.v(TAG, e.toString());
-              }
-              @Override
-              public void onNext(Void posts) {}
-            });
+            .subscribe(ReactiveUtil.getEmptyObservable());
   }
 
   @OnClick(R.id.down_button)
@@ -356,7 +329,7 @@ public class PodcastDetailActivity extends PlaybackControllerActivity {
     if (post == null) return;
 
     if (userRepository.getToken().isEmpty()) {
-      displayMessage("You must login to vote");
+      AlertUtil.displayMessage(this,"You must login to vote");
       return;
     }
 
@@ -381,18 +354,7 @@ public class PodcastDetailActivity extends PlaybackControllerActivity {
     mService.downVote(post.get_id())
       .subscribeOn(Schedulers.io())
       .observeOn(AndroidSchedulers.mainThread())
-      .subscribe(new DisposableObserver<Void>() {
-        @Override
-        public void onComplete() {}
-
-        @Override
-        public void onError(Throwable e) {
-          Log.v(TAG, e.toString());
-        }
-
-        @Override
-        public void onNext(Void posts) {}
-      });
+      .subscribe(ReactiveUtil.getEmptyObservable());
   }
 
   /* Downloads */
@@ -535,7 +497,7 @@ public class PodcastDetailActivity extends PlaybackControllerActivity {
     if (post == null) return;
 
     if(userRepository.getToken().isEmpty()) {
-      displayMessage("You must login to bookmark");
+      AlertUtil.displayMessage(this, "You must login to bookmark");
       return;
     }
 
@@ -561,19 +523,7 @@ public class PodcastDetailActivity extends PlaybackControllerActivity {
     mService.addBookmark(post.get_id())
       .subscribeOn(Schedulers.io())
       .observeOn(AndroidSchedulers.mainThread())
-      .subscribe(new DisposableObserver<Void>() {
-        @Override
-        public void onComplete() {
-        }
-        @Override
-        public void onError(Throwable e) {
-          Log.v(TAG, e.toString());
-        }
-
-        @Override
-        public void onNext(Void posts) {
-        }
-      });
+      .subscribe(ReactiveUtil.getEmptyObservable());
 
     AppDatabase db = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "sed-db")
             .build();
@@ -618,19 +568,6 @@ public class PodcastDetailActivity extends PlaybackControllerActivity {
     mService.removeBookmark(post.get_id())
       .subscribeOn(Schedulers.io())
       .observeOn(AndroidSchedulers.mainThread())
-      .subscribe(new DisposableObserver<Void>() {
-        @Override
-        public void onComplete() {
-        }
-
-        @Override
-        public void onError(Throwable e) {
-          Log.v(TAG, e.toString());
-        }
-
-        @Override
-        public void onNext(Void posts) {
-        }
-      });
+      .subscribe(ReactiveUtil.getEmptyObservable());
   }
 }

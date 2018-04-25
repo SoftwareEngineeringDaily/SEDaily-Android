@@ -26,6 +26,7 @@ import com.koalatea.thehollidayinn.softwareengineeringdaily.data.remote.APIInter
 import com.koalatea.thehollidayinn.softwareengineeringdaily.data.repositories.BookmarkDao;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.repositories.PostRepository;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.repositories.UserRepository;
+import com.koalatea.thehollidayinn.softwareengineeringdaily.util.ReactiveUtil;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -77,20 +78,7 @@ public class PodListFragment extends Fragment {
     podcastAdapter.getPositionClicks()
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(new DisposableObserver<Post>() {
-              @Override
-              public void onComplete() {}
-              @Override
-              public void onError(Throwable e) {
-                Log.v(TAG, e.toString());
-              }
-              @Override
-              public void onNext(Post post) {
-                Intent intent = new Intent(getActivity(), PodcastDetailActivity.class);
-                intent.putExtra("POST_ID", post.get_id());
-                getActivity().startActivity(intent);
-              }
-            });
+            .subscribe(ReactiveUtil.toDetailObservable(getActivity()));
 
     skeletonScreen = Skeleton.bind(recyclerView)
         .adapter(podcastAdapter)
