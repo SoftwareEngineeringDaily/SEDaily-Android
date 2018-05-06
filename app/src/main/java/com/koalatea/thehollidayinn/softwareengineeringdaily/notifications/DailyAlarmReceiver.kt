@@ -42,7 +42,7 @@ class DailyAlarmReceiver: BroadcastReceiver() {
     fun showNotification(context: Context, title: String, content: String) {
         var alarmSound: Uri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
 
-        var notificationIntent: Intent  = Intent(context, MainActivity::class.java)
+        var notificationIntent = Intent(context, MainActivity::class.java)
         notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
 
         val stackBuilder = TaskStackBuilder.create(context)
