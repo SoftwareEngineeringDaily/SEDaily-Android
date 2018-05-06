@@ -8,7 +8,7 @@
 
 # SEDaily-Android
 
-A podcast for the Software Engineering Daily Podcast
+A player for the Software Engineering Daily Podcast
 
 ## Getting Started
 
