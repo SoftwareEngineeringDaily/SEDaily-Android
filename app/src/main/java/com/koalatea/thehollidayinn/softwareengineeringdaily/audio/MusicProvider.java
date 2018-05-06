@@ -100,6 +100,7 @@ public class MusicProvider {
     public void retrieveMediaAsync(final Callback callback) {
         if (mCurrentState == State.INITIALIZED) {
             // Already initialized, so call back immediately.
+            if (callback == null) return;
             callback.onMusicCatalogReady(true);
             return;
         }
