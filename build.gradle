@@ -12,11 +12,11 @@ buildscript {
   dependencies {
     // NOTE: Do not place your application dependencies here; they belong
     // in the individual module build.gradle files
-    classpath 'com.android.tools.build:gradle:3.0.1'
-    classpath 'com.google.gms:google-services:3.1.1'
-    classpath 'com.google.gms:oss-licenses:0.9.1'
+    classpath 'com.android.tools.build:gradle:3.1.2'
+    classpath 'com.google.gms:google-services:3.2.1'
+    classpath 'com.google.gms:oss-licenses:0.9.2'
     classpath 'org.jetbrains.kotlin:kotlin-gradle-plugin:1.2.31'
-    classpath 'io.fabric.tools:gradle:1.25.1'
+    classpath 'io.fabric.tools:gradle:1.25.3'
     classpath 'com.dicedmelon.gradle:jacoco-android:0.1.2'
   }
 }
@@ -32,22 +32,22 @@ allprojects {
 
 ext {
   //SDK and Tools
-  minSdkVersion = 16
+  minSdkVersion = 21
   targetSdkVersion = 27
   compileSdkVersion = 27
-  buildToolsVersion = '27.0.2'
+  buildToolsVersion = '27.0.3'
   //Android
   supportLibraryVersion = '27.1.1'
   architectureComponents = '1.1.1'
   constraintlayoutVersion = '1.1.0'
-  androidRoomRersistenceVersion = '1.1.0-beta3'
+  androidRoomRersistenceVersion = '1.1.0-rc1'
   //Kotlin
   kotlinVersion = '1.2.30'
   //Firebase
-  firebaseServicesVersion = '15.0.0'
+  firebaseServicesVersion = '15.0.2'
   //Architecture
   daggerVersion = '2.13'
-  playVersion = '15.0.0'
+  playVersion = '15.0.2'
   //UI
   butterknifeVersion = '8.8.1'
   materialChipsVersion = '1.0.8'

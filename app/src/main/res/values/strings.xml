@@ -48,4 +48,11 @@
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
 
+    <!-- MusicServices -->
+    <string name="error_no_metadata">No Meta</string>
+
+    <!-- Media Notification -->
+    <string name="notification_channel_description">sedaily_player_notifications</string>
+    <string name="label_next">Next</string>
+
 </resources>

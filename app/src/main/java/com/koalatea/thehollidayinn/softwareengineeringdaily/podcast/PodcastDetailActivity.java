@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.RequiresPermission;
 import android.support.v4.app.ShareCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.media.MediaBrowserCompat;
@@ -14,7 +13,6 @@ import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.MenuInflater;
 import android.view.View;
 import android.view.Menu;
@@ -460,21 +458,24 @@ public class PodcastDetailActivity extends PlaybackControllerActivity {
     }
 
     MusicProvider mMusicProvider = MusicProvider.getInstance();
-    MediaMetadataCompat item = mMusicProvider.getMusic(id);
+    MediaMetadataCompat item; // = mMusicProvider.getMusic(id);
 
-    if (item == null) {
-      item = new MediaMetadataCompat.Builder()
-              .putString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID, id)
-              .putString(MediaMetadataCompat.METADATA_KEY_MEDIA_URI, mediaUri)
-              .putString(MediaMetadataCompat.METADATA_KEY_TITLE, post.getTitle().getRendered())
-              .build();
+//    if (item == null) {
+    // @TODO: I'm pretty sure we can buld these somwhere else. The provider could read from the repository
+    item = new MediaMetadataCompat.Builder()
+            .putString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID, id)
+            .putString(MediaMetadataCompat.METADATA_KEY_MEDIA_URI, mediaUri)
+            .putString(MediaMetadataCompat.METADATA_KEY_TITLE, post.getTitle().getRendered())
+            .build();
 
-      mMusicProvider.updateMusic(id, item);
-    }
+//    mMusicProvider.updateMusic(id, item);
+//    }
 
     MediaBrowserCompat.MediaItem bItem =
             new MediaBrowserCompat.MediaItem(item.getDescription(),
                     MediaBrowserCompat.MediaItem.FLAG_PLAYABLE);
+
+    mMusicProvider.updateMusic(bItem.getMediaId(), item);
     
     PodcastSessionStateManager podcastSessionStateManager = PodcastSessionStateManager.getInstance();
     String currentPLayingTitle = podcastSessionStateManager.getCurrentTitle();
