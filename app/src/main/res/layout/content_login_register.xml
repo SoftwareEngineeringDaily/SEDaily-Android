@@ -69,4 +69,23 @@
         style="@style/Widget.AppCompat.Button.Borderless.Colored"
         android:layout_marginTop="30dp" />
 
+    <View
+        android:layout_width="fill_parent"
+        android:layout_height="2dp"
+        android:id="@+id/separator"
+        android:layout_below="@+id/toggleButton"
+        android:layout_marginLeft="32dp"
+        android:layout_marginRight="32dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="16dp"
+        android:background="@color/accent" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/forgotPassword"
+        android:text="@string/forgotPassword"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@+id/separator"
+        style="@style/Widget.AppCompat.Button.Borderless.Colored" />
 </RelativeLayout>

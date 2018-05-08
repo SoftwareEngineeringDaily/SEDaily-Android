@@ -33,10 +33,11 @@
     <string name="currently_playing_extra_info">Extra info for currently playing song</string>
     <string name="play_pause">play or pause</string>
 
-    // LoginReg
+    <!-- LoginReg -->
     <string name="login">Login</string>
     <string name="email">Email</string>
     <string name="usernameOrEmail">Username or Email</string>
+    <string name="forgotPassword">Forgot Password</string>
 
     // Accessibility
     <string name="logo">Logo</string>
