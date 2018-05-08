@@ -1,6 +1,7 @@
 package com.koalatea.thehollidayinn.softwareengineeringdaily.util;
 
 import android.app.Activity;
+import android.app.ActivityOptions;
 import android.content.Intent;
 import android.util.Log;
 
@@ -42,7 +43,13 @@ public class ReactiveUtil {
       public void onNext(Post post) {
         Intent intent = new Intent(activity, PodcastDetailActivity.class);
         intent.putExtra("POST_ID", post.get_id());
-        activity.startActivity(intent);
+
+        // @TODO: shared element
+//        val options = ActivityOptions
+//                .makeSceneTransitionAnimation(this, androidRobotView, "robot")
+
+        activity.startActivity(intent,
+                ActivityOptions.makeSceneTransitionAnimation(activity).toBundle());
       }
     };
   }

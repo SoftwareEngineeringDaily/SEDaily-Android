@@ -1,6 +1,7 @@
 package com.koalatea.thehollidayinn.softwareengineeringdaily.podcast;
 
 import android.arch.persistence.room.Room;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
@@ -52,7 +53,6 @@ import io.reactivex.observers.DisposableObserver;
 import io.reactivex.schedulers.Schedulers;
 
 public class PodcastDetailActivity extends PlaybackControllerActivity {
-  private static String TAG = "PodcastDetail";
   private PostRepository postRepository;
   private UserRepository userRepository;
   private DisposableObserver myDisposableObserver;
@@ -87,13 +87,16 @@ public class PodcastDetailActivity extends PlaybackControllerActivity {
   private MenuItem downloadItem;
   private MenuItem bookmarkItem;
   private Boolean bookmarked = false;
+  private PodcastDownloadsRepository podcastDownloadsRepository;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
+
     setContentView(R.layout.activity_podcast_detail);
     ButterKnife.bind(this);
 
+    podcastDownloadsRepository = PodcastDownloadsRepository.getInstance();
     setUp();
 
     if (toolbar != null) {
@@ -263,7 +266,6 @@ public class PodcastDetailActivity extends PlaybackControllerActivity {
       return;
     }
 
-    PodcastDownloadsRepository podcastDownloadsRepository = PodcastDownloadsRepository.getInstance();
     if (!podcastDownloadsRepository.isPodcastDownloaded(post)) {
       setUpNotDownloadedState();
     } else {
@@ -383,7 +385,6 @@ public class PodcastDetailActivity extends PlaybackControllerActivity {
       @Override
       public void onError(Throwable e) { }
     };
-    PodcastDownloadsRepository podcastDownloadsRepository = PodcastDownloadsRepository.getInstance();
     podcastDownloadsRepository
             .getDownloadChanges()
             .subscribeOn(Schedulers.io())
@@ -434,14 +435,12 @@ public class PodcastDetailActivity extends PlaybackControllerActivity {
     if (!hasValidMp3()) return;
     if (downloadItem == null) return;
 
-    PodcastDownloadsRepository podcastDownloadsRepository = PodcastDownloadsRepository.getInstance();
-
     if (podcastDownloadsRepository.isDownloading(post.get_id())) {
       setUpNotDownloadedState();
       podcastDownloadsRepository.cancelDownload(post);
     } else {
       setUpDownloadedState();
-      podcastDownloadsRepository.displayDownloadNotification(post);
+      podcastDownloadsRepository.downloadPostMP3(post);
     }
   }
 
@@ -452,8 +451,11 @@ public class PodcastDetailActivity extends PlaybackControllerActivity {
     String id = String.valueOf(source.hashCode());
 
     String mediaUri = source;
-    if (PodcastDownloadsRepository.getInstance().isPodcastDownloaded(post)) {
-      File file = new MP3FileManager().getFileFromUrl(post.getMp3(), SEDApp.component().context());
+    if (podcastDownloadsRepository.isPodcastDownloaded(post)) {
+      MP3FileManager mp3FileManager = new MP3FileManager();
+      Context context = SEDApp.component.context();
+      String filename = mp3FileManager.getFileNameFromUrl(post.getMp3());
+      File file = new File(mp3FileManager.getRootDirPath(context), filename);
       mediaUri = file.getAbsolutePath();
     }
 
@@ -486,7 +488,7 @@ public class PodcastDetailActivity extends PlaybackControllerActivity {
 
   private void handleDownloadStateChange (String state) {
     if (post == null) return;
-    Boolean downloaded = PodcastDownloadsRepository.getInstance().isPodcastDownloaded(post);
+    Boolean downloaded = podcastDownloadsRepository.isPodcastDownloaded(post);
     if (downloaded) {
       setUpDownloadedState();
     } else {

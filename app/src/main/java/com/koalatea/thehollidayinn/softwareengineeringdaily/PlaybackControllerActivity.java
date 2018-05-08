@@ -84,7 +84,11 @@ public class PlaybackControllerActivity extends AppCompatActivity {
 
         // Handle showing here?
 
-        mMediaBrowser.connect();
+        try {
+            mMediaBrowser.connect();
+        } catch (RuntimeException e) {
+            // @TODO: log?
+        }
     }
 
     @Override

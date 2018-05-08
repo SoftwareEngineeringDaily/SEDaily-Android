@@ -13,8 +13,8 @@ android {
         applicationId "com.koalatea.thehollidayinn.softwareengineeringdaily"
         minSdkVersion rootProject.minSdkVersion
         targetSdkVersion rootProject.targetSdkVersion
-        versionCode 25
-        versionName "1.5.2"
+        versionCode 26
+        versionName "1.5.3"
         multiDexEnabled true
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
@@ -106,7 +106,7 @@ if (build_param != "dev") {
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
 
-    compile 'com.android.support:multidex:1.0.3'
+    implementation 'com.android.support:multidex:1.0.3'
 
     // Android
     implementation "com.android.support:design:$rootProject.supportLibraryVersion"
@@ -118,7 +118,7 @@ dependencies {
     // Android Architecture
     implementation "com.android.support.constraint:constraint-layout:$rootProject.constraintlayoutVersion"
     implementation "com.android.support:support-v4:$rootProject.supportLibraryVersion"
-    compile "android.arch.lifecycle:runtime:$rootProject.architectureComponents"
+    implementation "android.arch.lifecycle:runtime:$rootProject.architectureComponents"
     implementation "android.arch.lifecycle:extensions:$rootProject.architectureComponents"
     kapt "android.arch.lifecycle:common-java8:$rootProject.architectureComponents"
 
@@ -147,6 +147,9 @@ dependencies {
     implementation 'com.ethanhua:skeleton:1.0.0'
     implementation 'de.hdodenhof:circleimageview:2.2.0'
 
+    // Downloads
+    implementation 'com.mindorks.android:prdownloader:0.4.0'
+
     //UI
     implementation "com.github.pchmn:MaterialChipsInput:$rootProject.materialChipsVersion"
     implementation "com.jakewharton:butterknife:$rootProject.butterknifeVersion"
@@ -156,8 +159,8 @@ dependencies {
         transitive = true
     }
     implementation 'com.mikepenz:google-material-typeface:3.0.1.2.original@aar'
-    compile 'com.github.ohoussein.playpauseview:playpauseview:1.0.2'
-    compile 'uk.co.chrisjenx:calligraphy:2.3.0'
+    implementation 'com.github.ohoussein.playpauseview:playpauseview:1.0.2'
+    implementation 'uk.co.chrisjenx:calligraphy:2.3.0'
 
     //Firebase
     implementation('com.crashlytics.sdk.android:crashlytics:2.7.1@aar') {
@@ -184,10 +187,10 @@ dependencies {
     compileOnly "com.ryanharter.auto.value:auto-value-gson:$rootProject.autoValueGsonVersion"
     kapt "com.ryanharter.auto.value:auto-value-gson:$rootProject.autoValueGsonVersion"
     //Payments
-    compile 'com.stripe:stripe-android:6.0.0'
+    implementation 'com.stripe:stripe-android:6.0.0'
 
     // Rating
-    compile 'com.github.hotchemi:android-rate:1.0.1'
+    implementation 'com.github.hotchemi:android-rate:1.0.1'
 
     //Testing
     testImplementation "junit:junit:$rootProject.junitVersion"

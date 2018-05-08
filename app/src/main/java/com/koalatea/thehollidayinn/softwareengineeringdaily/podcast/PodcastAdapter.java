@@ -1,7 +1,6 @@
 package com.koalatea.thehollidayinn.softwareengineeringdaily.podcast;
 
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,7 +20,6 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.reactivex.Observable;
 import io.reactivex.subjects.PublishSubject;
-import timber.log.Timber;
 
 /*
  * Created by krh12 on 5/22/2017.
@@ -63,6 +61,8 @@ class PodcastAdapter extends RecyclerView.Adapter<PodcastAdapter.ViewHolder> {
     view.setOnClickListener(v -> {
       final int position = viewHolder.getAdapterPosition();
       Post post = posts.get(position);
+
+      // @TODO: How to pass text view as well?
       onClickSubject.onNext(post);
     });
 
