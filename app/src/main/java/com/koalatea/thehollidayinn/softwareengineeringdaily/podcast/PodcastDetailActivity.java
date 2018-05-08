@@ -51,6 +51,7 @@ import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.observers.DisposableObserver;
 import io.reactivex.schedulers.Schedulers;
+import timber.log.Timber;
 
 public class PodcastDetailActivity extends PlaybackControllerActivity {
   private PostRepository postRepository;
@@ -189,7 +190,7 @@ public class PodcastDetailActivity extends PlaybackControllerActivity {
     // Share button
     IconicsDrawable share = new IconicsDrawable(this)
             .icon(GoogleMaterial.Icon.gmd_share)
-            .color(Color.WHITE)
+            .color(getResources().getColor(R.color.white))
             .sizeDp(24);
     menu.findItem(R.id.menu_item_share).setIcon(share);
 
