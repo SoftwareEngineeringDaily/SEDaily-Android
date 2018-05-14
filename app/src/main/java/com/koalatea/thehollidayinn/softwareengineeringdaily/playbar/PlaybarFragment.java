@@ -5,14 +5,12 @@ import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.SystemClock;
-import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaControllerCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.text.format.DateUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,7 +22,6 @@ import android.widget.TextView;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.R;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.audio.MusicProvider;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.mediaui.SpeedDialog;
-import com.koalatea.thehollidayinn.softwareengineeringdaily.podcast.PodcastListViewModel;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.podcast.PodcastSessionStateManager;
 
 import java.util.concurrent.Executors;
@@ -74,45 +71,11 @@ public class PlaybarFragment extends Fragment {
     private final Runnable mUpdateProgressTask = new Runnable() {
       @Override
       public void run() {
-          updateProgress();
+        updateProgress();
       }
     };
     private DisposableObserver speedSubscription;
     private DisposableObserver mediaItemSubscription;
-
-    // Receive callbacks from the MediaController. Here we update our state such as which queue
-    // is being shown, the current title and description and the PlaybackState.
-    // From: https://github.com/googlesamples/android-UniversalMusicPlayer/blob/39fa286313639b5ce069e755c18762aaa1f59ea9/mobile/src/main/java/com/example/android/uamp/ui/PlaybackControlsFragment.java
-    private final MediaControllerCompat.Callback mCallback = new MediaControllerCompat.Callback() {
-      @Override
-      public void onPlaybackStateChanged(@NonNull PlaybackStateCompat state) {
-        handlePlaybackStateChange(state);
-        mLastPlaybackState = state;
-
-        PodcastSessionStateManager.getInstance().setLastPlaybackState(mLastPlaybackState);
-
-        switch (state.getState()) {
-          case PlaybackStateCompat.STATE_PLAYING:
-            scheduleSeekbarUpdate();
-            break;
-          case PlaybackStateCompat.STATE_PAUSED:
-            stopSeekbarUpdate();
-            break;
-          case PlaybackStateCompat.STATE_STOPPED:
-            stopSeekbarUpdate();
-            break;
-        }
-      }
-
-      @Override
-      public void onMetadataChanged(MediaMetadataCompat metadata) {
-        if (metadata == null) {
-            return;
-        }
-
-        updateWithMeta(metadata);
-      }
-    };
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -182,10 +145,6 @@ public class PlaybarFragment extends Fragment {
     @Override
     public void onStop() {
       super.onStop();
-      MediaControllerCompat controller = MediaControllerCompat.getMediaController(getActivity());
-      if (controller != null) {
-          controller.unregisterCallback(mCallback);
-      }
 
       if (speedSubscription != null) {
         speedSubscription.dispose();
@@ -241,11 +200,10 @@ public class PlaybarFragment extends Fragment {
         if (controller != null) {
           updateWithMeta(controller.getMetadata());
           handlePlaybackStateChange(controller.getPlaybackState());
-          controller.registerCallback(mCallback);
         }
     }
 
-    private void updateWithMeta(MediaMetadataCompat metadata) {
+    public void updateWithMeta(MediaMetadataCompat metadata) {
       if (getActivity() == null) {
           // "onMetadataChanged called when getActivity null," +
           // "this should not happen if the callback was properly unregistered. Ignoring.");
@@ -307,14 +265,14 @@ public class PlaybarFragment extends Fragment {
     }
 
     /* Seek bar/Progress */
-
     private void updateDuration(MediaMetadataCompat metadata) {
       if (metadata == null) {
           return;
       }
 
-      MediaMetadataCompat latest = MusicProvider.getInstance().getMusic(metadata.getDescription().getMediaId());
-
+      String mediaId = metadata.getDescription().getMediaId();
+      MusicProvider provider = MusicProvider.getInstance();
+      MediaMetadataCompat latest = provider.getMusic(mediaId);
       if (latest == null) {
           return;
       }
@@ -326,15 +284,19 @@ public class PlaybarFragment extends Fragment {
 
     private void scheduleSeekbarUpdate() {
       stopSeekbarUpdate();
+
       if (!mExecutorService.isShutdown()) {
-          mScheduleFuture = mExecutorService.scheduleAtFixedRate(
-              new Runnable() {
-                  @Override
-                  public void run() {
-                    mHandler.post(mUpdateProgressTask);
-                  }
-              }, PROGRESS_UPDATE_INITIAL_INTERVAL,
-              PROGRESS_UPDATE_INTERNAL, TimeUnit.MILLISECONDS);
+        mScheduleFuture = mExecutorService.scheduleAtFixedRate(
+          new Runnable() {
+            @Override
+            public void run() {
+              mHandler.post(mUpdateProgressTask);
+            }
+          },
+          PROGRESS_UPDATE_INITIAL_INTERVAL,
+          PROGRESS_UPDATE_INTERNAL,
+          TimeUnit.MILLISECONDS
+        );
       }
     }
 
@@ -351,7 +313,6 @@ public class PlaybarFragment extends Fragment {
 
       // @TODO: Make reactive
       long currentPosition = playbarViewModel.setListenedProgress(mLastPlaybackState);
-
       mSeekbar.setProgress((int) currentPosition);
     }
 
@@ -389,7 +350,6 @@ public class PlaybarFragment extends Fragment {
       mediaItemSubscription = new DisposableObserver<MediaMetadataCompat>() {
         @Override
         public void onNext(MediaMetadataCompat mediaMetadataCompat) {
-          Log.v("keithtest", "mediaMetadataCompat");
           updateDuration(mediaMetadataCompat);
         }
 
@@ -424,5 +384,26 @@ public class PlaybarFragment extends Fragment {
 
         // @TODO: Make reactive
         playbarViewModel.sendSpeedChangeIntent(currentSpeed, getActivity());
+    }
+
+    public void handlePlaybackState(PlaybackStateCompat state) {
+      if (state == null) return;
+
+      handlePlaybackStateChange(state);
+      mLastPlaybackState = state;
+
+      PodcastSessionStateManager.getInstance().setLastPlaybackState(mLastPlaybackState);
+
+      switch (state.getState()) {
+        case PlaybackStateCompat.STATE_PLAYING:
+          scheduleSeekbarUpdate();
+          break;
+        case PlaybackStateCompat.STATE_PAUSED:
+          stopSeekbarUpdate();
+          break;
+        case PlaybackStateCompat.STATE_STOPPED:
+          stopSeekbarUpdate();
+          break;
+      }
     }
 }

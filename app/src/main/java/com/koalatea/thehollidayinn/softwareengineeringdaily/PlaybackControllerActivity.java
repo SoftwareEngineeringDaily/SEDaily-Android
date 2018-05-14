@@ -9,7 +9,6 @@ import android.support.v4.media.session.MediaControllerCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 
 import com.koalatea.thehollidayinn.softwareengineeringdaily.audio.MusicService;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.playbar.PlaybarFragment;
@@ -33,7 +32,7 @@ public class PlaybackControllerActivity extends AppCompatActivity {
                     try {
                         connectToSession(mMediaBrowser.getSessionToken());
                     } catch (RemoteException e) {
-                        Log.v(TAG, e.toString());
+                        hidePlaybackControls(null);
                     }
                 }
 
@@ -52,15 +51,17 @@ public class PlaybackControllerActivity extends AppCompatActivity {
             new MediaControllerCompat.Callback() {
                 @Override
                 public void onMetadataChanged(MediaMetadataCompat metadata) {
+                    updateWithMeta(metadata);
                 }
 
                 @Override
                 public void onPlaybackStateChanged(PlaybackStateCompat state) {
                     if (shouldShowControls()) {
-                        showPlaybackControls();
-                    } else {
-                        hidePlaybackControls();
+                        showPlaybackControls(state);
+                        return;
                     }
+
+                    hidePlaybackControls(state);
                 }
             };
 
@@ -80,17 +81,14 @@ public class PlaybackControllerActivity extends AppCompatActivity {
             mControlsFragment = (PlaybarFragment) getSupportFragmentManager()
                     .findFragmentById(R.id.fragment_playback_controls);
         }
-        mMediaBrowser.connect();
 
-    }
+        // Handle showing here?
 
-    @Override
-    public void onPause() {
-        super.onPause();
-        if (MediaControllerCompat.getMediaController(this) != null) {
-            MediaControllerCompat.getMediaController(this).unregisterCallback(controllerCallback);
+        try {
+            mMediaBrowser.connect();
+        } catch (RuntimeException e) {
+            // @TODO: log?
         }
-        mMediaBrowser.disconnect();
     }
 
     @Override
@@ -108,18 +106,24 @@ public class PlaybackControllerActivity extends AppCompatActivity {
         mMediaBrowser.disconnect();
     }
 
-    private void showPlaybackControls() {
+    private void showPlaybackControls(PlaybackStateCompat state) {
         // @TODO: check for network
         getSupportFragmentManager().beginTransaction()
+//                .setCustomAnimations(
+//                        R.animator.slide_in_from_bottom, R.animator.slide_out_to_bottom,
+//                        R.animator.slide_in_from_bottom, R.animator.slide_out_to_bottom)
                 .show(mControlsFragment)
                 .commitAllowingStateLoss();
 
+        mControlsFragment.handlePlaybackState(state);
     }
 
-    private void hidePlaybackControls() {
+    private void hidePlaybackControls(PlaybackStateCompat state) {
         getSupportFragmentManager().beginTransaction()
                 .hide(mControlsFragment)
                 .commitAllowingStateLoss();
+
+        mControlsFragment.handlePlaybackState(state);
     }
 
     /**
@@ -153,14 +157,16 @@ public class PlaybackControllerActivity extends AppCompatActivity {
         mediaController.registerCallback(controllerCallback);
 
         if (shouldShowControls()) {
-            showPlaybackControls();
+            showPlaybackControls(null);
         } else {
-            hidePlaybackControls();
+            hidePlaybackControls(null);
         }
 
         if (mControlsFragment != null) {
             mControlsFragment.onConnected();
         }
+
+//        @TODO: onMediaControllerConnected();
     }
 
     protected void onMediaItemSelected(MediaBrowserCompat.MediaItem item, boolean isSameMedia) {
@@ -189,5 +195,12 @@ public class PlaybackControllerActivity extends AppCompatActivity {
         //        && state.getState() == PlaybackStateCompat.STATE_PLAYING;
         //return isPlaying ? mCurrentMediaId : null;
         return mCurrentMediaId;
+    }
+
+    private void updateWithMeta(MediaMetadataCompat metadata) {
+        if (mControlsFragment == null) return;
+
+        // @TODO: Look back at the example form Google. We know too much about the fragment I think
+        mControlsFragment.updateWithMeta(metadata);
     }
 }

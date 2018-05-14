@@ -1,12 +1,11 @@
 package com.koalatea.thehollidayinn.softwareengineeringdaily.podcast;
 
 import android.arch.lifecycle.ViewModelProviders;
-import android.content.Intent;
 import android.arch.persistence.room.Room;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -70,7 +69,7 @@ public class PodListFragment extends Fragment {
     RecyclerView recyclerView = rootView.findViewById(R.id.my_recycler_view);
     recyclerView.setHasFixedSize(true);
 
-    LinearLayoutManager mLayoutManager = new LinearLayoutManager(this.getContext());
+    GridLayoutManager mLayoutManager = new GridLayoutManager(this.getContext(), 2);
     recyclerView.setLayoutManager(mLayoutManager);
 
     podcastAdapter = new PodcastAdapter();

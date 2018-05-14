@@ -1,7 +1,6 @@
 package com.koalatea.thehollidayinn.softwareengineeringdaily.podcast;
 
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,7 +20,6 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.reactivex.Observable;
 import io.reactivex.subjects.PublishSubject;
-import timber.log.Timber;
 
 /*
  * Created by krh12 on 5/22/2017.
@@ -38,8 +36,8 @@ class PodcastAdapter extends RecyclerView.Adapter<PodcastAdapter.ViewHolder> {
     @BindView(R.id.card_image)
     ImageView imageView;
 
-    @BindView(R.id.card_desc)
-    TextView description;
+//    @BindView(R.id.card_desc)
+//    TextView description;
 
     private ViewHolder(View v) {
         super(v);
@@ -56,13 +54,15 @@ class PodcastAdapter extends RecyclerView.Adapter<PodcastAdapter.ViewHolder> {
   public PodcastAdapter.ViewHolder onCreateViewHolder(ViewGroup parent,
                                                  int viewType) {
     final View view =  LayoutInflater.from(parent.getContext())
-      .inflate(R.layout.fragment_podcast_list, parent, false);
+      .inflate(R.layout.fragment_podcast_grid, parent, false);
 
     final ViewHolder viewHolder = new ViewHolder(view);
 
     view.setOnClickListener(v -> {
       final int position = viewHolder.getAdapterPosition();
       Post post = posts.get(position);
+
+      // @TODO: How to pass text view as well?
       onClickSubject.onNext(post);
     });
 
@@ -77,7 +77,7 @@ class PodcastAdapter extends RecyclerView.Adapter<PodcastAdapter.ViewHolder> {
     if (postTitle == null) return;
 
     holder.mTextView.setText(postTitle.getRendered());
-    holder.description.setText(postTitle.getRendered());
+//    holder.description.setText(postTitle.getRendered());
 
     String imageLink = "https://softwareengineeringdaily.com/wp-content/uploads/2015/08/sed21.png";
     if (post.getFeaturedImage() != null) {

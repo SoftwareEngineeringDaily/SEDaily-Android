@@ -5,26 +5,31 @@ import android.app.NotificationManager;
 import android.content.Context;
 import android.os.Build;
 import android.support.v4.app.NotificationCompat;
+
+import com.downloader.Error;
+import com.downloader.OnDownloadListener;
+import com.downloader.PRDownloader;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.R;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.app.AppComponent;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.app.SEDApp;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.data.models.Post;
-import com.koalatea.thehollidayinn.softwareengineeringdaily.downloads.DownloadTask;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.downloads.MP3FileManager;
+
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
 import io.reactivex.Observable;
 import io.reactivex.subjects.PublishSubject;
+import timber.log.Timber;
 
-/**
+/*
  * Created by keithholliday on 11/3/17.
  */
 
 public class PodcastDownloadsRepository {
-  private DownloadTask downloadTask;
   private NotificationManager mNotifyManager;
+  private NotificationCompat.Builder mBuilder;
 
   private static PodcastDownloadsRepository instance = null;
 
@@ -32,7 +37,10 @@ public class PodcastDownloadsRepository {
   private Map<String, Boolean> downloading = new HashMap<>();
   private final PublishSubject<String> changeObservable = PublishSubject.create();
 
+  private int currentDownloadId;
+
   private PodcastDownloadsRepository() {
+    PRDownloader.initialize(SEDApp.component.context());
   }
 
   public static PodcastDownloadsRepository getInstance() {
@@ -68,7 +76,11 @@ public class PodcastDownloadsRepository {
       return false;
     }
 
-    File file = new MP3FileManager().getFileFromUrl(post.getMp3(), SEDApp.component().context());
+    MP3FileManager mp3FileManager = new MP3FileManager();
+    Context context = SEDApp.component.context();
+    String filename = mp3FileManager.getFileNameFromUrl(post.getMp3());
+    File file = new File(mp3FileManager.getRootDirPath(context), filename);
+
     if (file.exists()) {
       this.filesLoaded.put(post.get_id(), true);
       return true;
@@ -81,33 +93,59 @@ public class PodcastDownloadsRepository {
     return changeObservable;
   }
 
-  public void displayDownloadNotification(Post post) {
+  public void downloadPostMP3(Post post) {
+    Context context = SEDApp.component.context();
+    MP3FileManager mp3FileManager = new MP3FileManager();
+    String file = mp3FileManager.getFileNameFromUrl(post.getMp3());
+
+    setPodcastDownload(post.get_id());
+
+    currentDownloadId = PRDownloader
+      .download(post.getMp3(), mp3FileManager.getRootDirPath(context), file)
+      .build()
+      .start(new OnDownloadListener() {
+        @Override
+        public void onDownloadComplete() {
+          hideNotification(currentDownloadId);
+        }
+
+        @Override
+        public void onError(Error error) {
+          hideNotification(currentDownloadId);
+        }
+      });
+
+    showDownloadNotification(currentDownloadId, post);
+  }
+
+  private void hideNotification(int download) {
+    mBuilder.setContentText("Download complete")
+            .setProgress(0,0,false);
+    mNotifyManager.notify(download, mBuilder.build());
+  }
+
+  private void showDownloadNotification(int downloadId, Post post) {
     AppComponent app = SEDApp.component();
 
-    final int id = 1;
     mNotifyManager =
-        (NotificationManager) app.context().getSystemService(Context.NOTIFICATION_SERVICE);
+            (NotificationManager) app.context().getSystemService(Context.NOTIFICATION_SERVICE);
 
     String CHANNEL_ID = "sedaily_player_notifications";
+
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
       CharSequence name = app.context().getString(R.string.app_name);
-      int importance = NotificationManager.IMPORTANCE_DEFAULT;
+      int importance = NotificationManager.IMPORTANCE_LOW;
       NotificationChannel mChannel = new NotificationChannel(CHANNEL_ID, name, importance);
       mNotifyManager.createNotificationChannel(mChannel);
     }
 
-    final NotificationCompat.Builder mBuilder =
-        new NotificationCompat.Builder(app.context(), CHANNEL_ID)
-            .setContentTitle("Downloading " + post.getTitle().getRendered())
-            .setContentText("Download in progress")
-            .setSmallIcon(R.drawable.sedaily_logo);
+    mBuilder =
+      new NotificationCompat.Builder(app.context(), CHANNEL_ID)
+        .setContentTitle("Downloading " + post.getTitle().getRendered())
+        .setContentText("Download in progress")
+        .setSmallIcon(R.drawable.sedaily_logo);
 
-    mNotifyManager.notify(id, mBuilder.build());
-
-    // execute this when the downloader must be fired
-    downloadTask = new DownloadTask(mNotifyManager, mBuilder, post.get_id());
-    downloadTask.execute(post.getMp3());
-    this.downloading.put(post.get_id(), true);
+    mNotifyManager.notify(downloadId, mBuilder.build());
   }
 
   public void removeFileForPost (Post post) {
@@ -124,7 +162,7 @@ public class PodcastDownloadsRepository {
   public void cancelDownload (Post post) {
     this.downloading.put(post.get_id(), false);
     removeFileForPost(post);
-    downloadTask.cancel(true);
+    PRDownloader.cancel(currentDownloadId);
     mNotifyManager.cancel(1);
   }
 }

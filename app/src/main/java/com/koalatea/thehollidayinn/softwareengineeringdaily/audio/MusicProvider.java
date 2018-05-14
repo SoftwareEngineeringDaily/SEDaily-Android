@@ -4,6 +4,8 @@ package com.koalatea.thehollidayinn.softwareengineeringdaily.audio;
   Created by krh12 on 6/16/2017.
  */
 
+// @TODO: Fix this to use local data
+
 import android.os.AsyncTask;
 import android.support.v4.media.MediaMetadataCompat;
 import android.util.Log;
@@ -22,14 +24,8 @@ import java.net.URLConnection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 
-/**
- * Utility class to get a list of MusicTrack's based on a server-side JSON
- * configuration.
- *
- * In a real application this class may pull data from a remote server, as we do here,
- * or potentially use {@link android.provider.MediaStore} to locate media files located on
- * the device.
- */
+import timber.log.Timber;
+
 public class MusicProvider {
 
     private static final String TAG = MusicProvider.class.getSimpleName();
@@ -62,9 +58,7 @@ public class MusicProvider {
 
     private static MusicProvider instance;
 
-    /**
-     * Callback used by MusicService.
-     */
+
     public interface Callback {
         void onMusicCatalogReady(boolean success);
     }
@@ -88,27 +82,13 @@ public class MusicProvider {
         return mMusicListById.values();
     }
 
-    /**
-     * Return the MediaMetadata for the given musicID.
-     *
-     * @param musicId The unique music ID.
-     */
     public MediaMetadataCompat getMusic(String musicId) {
         return mMusicListById.containsKey(musicId) ? mMusicListById.get(musicId) : null;
     }
 
-    /**
-     * Update the metadata associated with a musicId. If the musicId doesn't exist, the
-     * update is dropped. (That is, it does not create a new mediaId.)
-     * @param musicId The ID
-     * @param metadata New Metadata to associate with it
-     */
     public synchronized void updateMusic(String musicId, MediaMetadataCompat metadata) {
         // @TODO: Do we need to check this?
         //MediaMetadataCompat track = mMusicListById.get(musicId);
-        //if (track != null) {
-        //
-        //}
         mMusicListById.put(musicId, metadata);
     }
 
@@ -116,13 +96,11 @@ public class MusicProvider {
         return mCurrentState == State.INITIALIZED;
     }
 
-    /**
-     * Get the list of music tracks from a server and caches the track information
-     * for future reference, keying tracks by musicId and grouping by genre.
-     */
+
     public void retrieveMediaAsync(final Callback callback) {
         if (mCurrentState == State.INITIALIZED) {
             // Already initialized, so call back immediately.
+            if (callback == null) return;
             callback.onMusicCatalogReady(true);
             return;
         }
@@ -189,8 +167,6 @@ public class MusicProvider {
         int totalTrackCount = json.getInt(JSON_TOTAL_TRACK_COUNT);
         int duration = json.getInt(JSON_DURATION) * 1000; // ms
 
-        Log.d(TAG, "Found music track: " + json);
-
         // Media is stored relative to JSON file
         if (!source.startsWith("https")) {
             source = basePath + source;
@@ -220,12 +196,6 @@ public class MusicProvider {
                 .build();
     }
 
-    /**
-     * Download a JSON file from a server, parse the content and return the JSON
-     * object.
-     *
-     * @return result JSONObject containing the parsed representation.
-     */
     private JSONObject fetchJSONFromUrl(String urlString) {
         InputStream inputStream = null;
         try {

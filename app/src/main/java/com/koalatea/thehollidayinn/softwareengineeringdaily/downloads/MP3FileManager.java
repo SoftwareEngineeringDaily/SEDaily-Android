@@ -1,6 +1,9 @@
 package com.koalatea.thehollidayinn.softwareengineeringdaily.downloads;
 
 import android.content.Context;
+import android.os.Environment;
+import android.support.v4.content.ContextCompat;
+
 import java.io.File;
 
 /**
@@ -8,7 +11,17 @@ import java.io.File;
  */
 
 public class MP3FileManager {
-   public String getFileNameFromUrl(String urlString) {
+  public String getRootDirPath(Context context) {
+    if (Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())) {
+      File file = ContextCompat.getExternalFilesDirs(context.getApplicationContext(),
+              null)[0];
+      return file.getAbsolutePath();
+    } else {
+      return context.getApplicationContext().getFilesDir().getAbsolutePath();
+    }
+  }
+
+  public String getFileNameFromUrl(String urlString) {
     return urlString.substring(urlString.lastIndexOf('/') + 1, urlString.length());
   }
 

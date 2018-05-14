@@ -3,6 +3,7 @@ package com.koalatea.thehollidayinn.softwareengineeringdaily.auth;
 import android.arch.persistence.room.Room;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
@@ -32,6 +33,7 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
+import butterknife.OnClick;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.observers.DisposableObserver;
@@ -59,6 +61,9 @@ public class LoginRegisterActivity extends AppCompatActivity {
 
     @BindView(R.id.toggleButton)
     Button toggleButton;
+
+    @BindView(R.id.forgotPassword)
+    Button forgotPassword;
 
     private UserRepository userRepository;
     private FirebaseAnalytics mFirebaseAnalytics;
@@ -220,5 +225,11 @@ public class LoginRegisterActivity extends AppCompatActivity {
       }
 
       return mService.login(username, email, password);
+    }
+
+    @OnClick(R.id.forgotPassword)
+    public void forgotPasswordClick() {
+      Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://www.softwaredaily.com/forgot-password"));
+      startActivity(browserIntent);
     }
 }

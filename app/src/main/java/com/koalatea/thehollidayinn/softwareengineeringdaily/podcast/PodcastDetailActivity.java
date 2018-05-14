@@ -1,12 +1,12 @@
 package com.koalatea.thehollidayinn.softwareengineeringdaily.podcast;
 
 import android.arch.persistence.room.Room;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.RequiresPermission;
 import android.support.v4.app.ShareCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.media.MediaBrowserCompat;
@@ -14,7 +14,6 @@ import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.MenuInflater;
 import android.view.View;
 import android.view.Menu;
@@ -52,9 +51,9 @@ import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.observers.DisposableObserver;
 import io.reactivex.schedulers.Schedulers;
+import timber.log.Timber;
 
 public class PodcastDetailActivity extends PlaybackControllerActivity {
-  private static String TAG = "PodcastDetail";
   private PostRepository postRepository;
   private UserRepository userRepository;
   private DisposableObserver myDisposableObserver;
@@ -89,13 +88,16 @@ public class PodcastDetailActivity extends PlaybackControllerActivity {
   private MenuItem downloadItem;
   private MenuItem bookmarkItem;
   private Boolean bookmarked = false;
+  private PodcastDownloadsRepository podcastDownloadsRepository;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
+
     setContentView(R.layout.activity_podcast_detail);
     ButterKnife.bind(this);
 
+    podcastDownloadsRepository = PodcastDownloadsRepository.getInstance();
     setUp();
 
     if (toolbar != null) {
@@ -188,7 +190,7 @@ public class PodcastDetailActivity extends PlaybackControllerActivity {
     // Share button
     IconicsDrawable share = new IconicsDrawable(this)
             .icon(GoogleMaterial.Icon.gmd_share)
-            .color(Color.WHITE)
+            .color(getResources().getColor(R.color.white))
             .sizeDp(24);
     menu.findItem(R.id.menu_item_share).setIcon(share);
 
@@ -265,7 +267,6 @@ public class PodcastDetailActivity extends PlaybackControllerActivity {
       return;
     }
 
-    PodcastDownloadsRepository podcastDownloadsRepository = PodcastDownloadsRepository.getInstance();
     if (!podcastDownloadsRepository.isPodcastDownloaded(post)) {
       setUpNotDownloadedState();
     } else {
@@ -385,7 +386,6 @@ public class PodcastDetailActivity extends PlaybackControllerActivity {
       @Override
       public void onError(Throwable e) { }
     };
-    PodcastDownloadsRepository podcastDownloadsRepository = PodcastDownloadsRepository.getInstance();
     podcastDownloadsRepository
             .getDownloadChanges()
             .subscribeOn(Schedulers.io())
@@ -436,14 +436,12 @@ public class PodcastDetailActivity extends PlaybackControllerActivity {
     if (!hasValidMp3()) return;
     if (downloadItem == null) return;
 
-    PodcastDownloadsRepository podcastDownloadsRepository = PodcastDownloadsRepository.getInstance();
-
     if (podcastDownloadsRepository.isDownloading(post.get_id())) {
       setUpNotDownloadedState();
       podcastDownloadsRepository.cancelDownload(post);
     } else {
       setUpDownloadedState();
-      podcastDownloadsRepository.displayDownloadNotification(post);
+      podcastDownloadsRepository.downloadPostMP3(post);
     }
   }
 
@@ -454,27 +452,33 @@ public class PodcastDetailActivity extends PlaybackControllerActivity {
     String id = String.valueOf(source.hashCode());
 
     String mediaUri = source;
-    if (PodcastDownloadsRepository.getInstance().isPodcastDownloaded(post)) {
-      File file = new MP3FileManager().getFileFromUrl(post.getMp3(), SEDApp.component().context());
+    if (podcastDownloadsRepository.isPodcastDownloaded(post)) {
+      MP3FileManager mp3FileManager = new MP3FileManager();
+      Context context = SEDApp.component.context();
+      String filename = mp3FileManager.getFileNameFromUrl(post.getMp3());
+      File file = new File(mp3FileManager.getRootDirPath(context), filename);
       mediaUri = file.getAbsolutePath();
     }
 
     MusicProvider mMusicProvider = MusicProvider.getInstance();
-    MediaMetadataCompat item = mMusicProvider.getMusic(id);
+    MediaMetadataCompat item; // = mMusicProvider.getMusic(id);
 
-    if (item == null) {
-      item = new MediaMetadataCompat.Builder()
-              .putString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID, id)
-              .putString(MediaMetadataCompat.METADATA_KEY_MEDIA_URI, mediaUri)
-              .putString(MediaMetadataCompat.METADATA_KEY_TITLE, post.getTitle().getRendered())
-              .build();
+//    if (item == null) {
+    // @TODO: I'm pretty sure we can buld these somwhere else. The provider could read from the repository
+    item = new MediaMetadataCompat.Builder()
+            .putString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID, id)
+            .putString(MediaMetadataCompat.METADATA_KEY_MEDIA_URI, mediaUri)
+            .putString(MediaMetadataCompat.METADATA_KEY_TITLE, post.getTitle().getRendered())
+            .build();
 
-      mMusicProvider.updateMusic(id, item);
-    }
+//    mMusicProvider.updateMusic(id, item);
+//    }
 
     MediaBrowserCompat.MediaItem bItem =
             new MediaBrowserCompat.MediaItem(item.getDescription(),
                     MediaBrowserCompat.MediaItem.FLAG_PLAYABLE);
+
+    mMusicProvider.updateMusic(bItem.getMediaId(), item);
     
     PodcastSessionStateManager podcastSessionStateManager = PodcastSessionStateManager.getInstance();
     String currentPLayingTitle = podcastSessionStateManager.getCurrentTitle();
@@ -485,7 +489,7 @@ public class PodcastDetailActivity extends PlaybackControllerActivity {
 
   private void handleDownloadStateChange (String state) {
     if (post == null) return;
-    Boolean downloaded = PodcastDownloadsRepository.getInstance().isPodcastDownloaded(post);
+    Boolean downloaded = podcastDownloadsRepository.isPodcastDownloaded(post);
     if (downloaded) {
       setUpDownloadedState();
     } else {

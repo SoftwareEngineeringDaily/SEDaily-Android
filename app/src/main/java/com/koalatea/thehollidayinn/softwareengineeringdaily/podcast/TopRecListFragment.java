@@ -1,21 +1,18 @@
 package com.koalatea.thehollidayinn.softwareengineeringdaily.podcast;
 
 import android.arch.lifecycle.ViewModelProviders;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.ethanhua.skeleton.RecyclerViewSkeletonScreen;
 import com.ethanhua.skeleton.Skeleton;
-import com.koalatea.thehollidayinn.softwareengineeringdaily.MainActivity;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.R;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.data.models.Post;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.repositories.FilterRepository;
@@ -23,7 +20,6 @@ import com.koalatea.thehollidayinn.softwareengineeringdaily.util.ReactiveUtil;
 
 import java.util.List;
 
-import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.observers.DisposableObserver;
@@ -64,7 +60,7 @@ public class TopRecListFragment extends Fragment {
         RecyclerView recyclerView = (RecyclerView) rootView.findViewById(R.id.my_recycler_view);
         recyclerView.setHasFixedSize(true);
 
-        LinearLayoutManager mLayoutManager = new LinearLayoutManager(this.getContext());
+        GridLayoutManager mLayoutManager = new GridLayoutManager(this.getContext(), 2);
         recyclerView.setLayoutManager(mLayoutManager);
 
         podcastAdapter = new PodcastAdapter();

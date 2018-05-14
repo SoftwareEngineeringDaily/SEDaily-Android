@@ -70,17 +70,18 @@
             android:name=".PlaybackControllerActivity"
             android:label="@string/playback_controller"
             android:theme="@style/AppTheme" />
-        <activity
-            android:name="com.google.android.gms.oss.licenses.OssLicensesMenuActivity"
-            android:theme="@style/Theme.AppCompat.DayNight.DarkActionBar" />
-        <activity
-            android:name="com.google.android.gms.oss.licenses.OssLicensesActivity"
-            android:theme="@style/Theme.AppCompat.DayNight.DarkActionBar" />
+        <!--<activity-->
+            <!--android:name="com.google.android.gms.oss.licenses.OssLicensesMenuActivity"-->
+            <!--android:theme="@style/Theme.AppCompat.DayNight.DarkActionBar" />-->
+        <!--<activity-->
+            <!--android:name="com.google.android.gms.oss.licenses.OssLicensesActivity"-->
+            <!--android:theme="@style/Theme.AppCompat.DayNight.DarkActionBar" />-->
         <activity
             android:name=".subscription.SubscriptionActivity"
             android:label="@string/title_activity_subscription"
             android:theme="@style/AppTheme" />
-        <activity android:name=".notifications.NotificationActivity"></activity>
+
+        <activity android:name=".notifications.NotificationActivity" />
     </application>
 
 </manifest>
