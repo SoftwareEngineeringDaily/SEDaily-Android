@@ -14,6 +14,8 @@ import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
+import android.text.Html;
+import android.text.Spanned;
 import android.view.MenuInflater;
 import android.view.View;
 import android.view.Menu;
@@ -250,7 +252,13 @@ public class PodcastDetailActivity extends PlaybackControllerActivity {
     setUpPlayButtonState(title);
 
     titleTextView.setText(title);
-    descriptionWebView.loadData(post.getContent().getRendered(), "text/html", "UTF-8");
+
+    String webPostContent = post.getContent().getRendered();
+
+    webPostContent = webPostContent.replaceAll("<audio class=\"wp-audio-shortcode\".*</audio>", "");
+    webPostContent = webPostContent.replaceAll("<p class=\"powerpress_links powerpress_links_mp3\">.*Download</a></p>", "");
+
+    descriptionWebView.loadData(webPostContent, "text/html", "UTF-8");
 
     String dayString = android.text.format.DateFormat.format("MMMM dd, yyyy", post.getDate().getTime()).toString();
     secondaryTextView.setText(dayString);
