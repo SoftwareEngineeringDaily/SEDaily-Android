@@ -11,17 +11,15 @@ import android.preference.PreferenceManager;
 public class UserRepository {
     private static UserRepository instance = null;
 
-    private final String TOKEN_KEY = "token-key";
-    private final String SUBSCRIBED_KEY = "subscribe-key";
-    private boolean isSubscribedToNotifications = false;
-    private String token = "";
+    private boolean isSubscribedToNotifications;
+    private String token;
     private final SharedPreferences preferences;
     private Boolean hasPremium = false;
 
     private UserRepository(Context context) {
         preferences = PreferenceManager.getDefaultSharedPreferences(context);
-        this.token = preferences.getString(TOKEN_KEY, "");
-        this.isSubscribedToNotifications = preferences.getBoolean(SUBSCRIBED_KEY, false);
+        this.token = preferences.getString(RepoConstants.Companion.getTOKEN_KEY(), "");
+        this.isSubscribedToNotifications = preferences.getBoolean(RepoConstants.Companion.getSUBSCRIBED_KEY(), false);
     }
 
     public static UserRepository getInstance(Context context) {
@@ -35,7 +33,7 @@ public class UserRepository {
         this.token = token;
 
         SharedPreferences.Editor editor = preferences.edit();
-        editor.putString(TOKEN_KEY, token);
+        editor.putString(RepoConstants.Companion.getTOKEN_KEY(), token);
         editor.apply();
     }
 
@@ -47,7 +45,7 @@ public class UserRepository {
         this.isSubscribedToNotifications = isSubscribedToNotifications;
 
         SharedPreferences.Editor editor = preferences.edit();
-        editor.putBoolean(SUBSCRIBED_KEY, isSubscribedToNotifications);
+        editor.putBoolean(RepoConstants.Companion.getSUBSCRIBED_KEY(), isSubscribedToNotifications);
         editor.apply();
     }
 
