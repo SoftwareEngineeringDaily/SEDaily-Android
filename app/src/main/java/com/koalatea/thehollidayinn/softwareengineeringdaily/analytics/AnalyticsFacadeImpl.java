@@ -15,37 +15,31 @@ class AnalyticsFacadeImpl implements AnalyticsFacade {
     this.firebaseAnalytics = firebaseAnalytics;
   }
 
+  private void trackFirebaseBasic(String itemId, String name, String contentType) {
+    Bundle bundle = new Bundle();
+    bundle.putString(FirebaseAnalytics.Param.ITEM_ID, itemId);
+    bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, name);
+    bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, contentType);
+    firebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
+  }
+
   @Override
   public void trackUpVote(@NonNull String postId) {
-    Bundle bundle = new Bundle();
-    bundle.putString(FirebaseAnalytics.Param.ITEM_ID, postId);
-    bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, "UP");
-    bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, "VOTE");
-    firebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
+    trackFirebaseBasic(postId, "UP", "VOTE");
   }
 
   @Override
   public void trackDownVote(@NonNull String postId) {
-    Bundle bundle = new Bundle();
-    bundle.putString(FirebaseAnalytics.Param.ITEM_ID, postId);
-    bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, "DOWN");
-    bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, "VOTE");
-    firebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
+    trackFirebaseBasic(postId, "DOWN", "VOTE");
   }
 
   @Override
   public void trackRegistration(@NonNull String username) {
-    Bundle bundle = new Bundle();
-    bundle.putString(FirebaseAnalytics.Param.ITEM_ID, username);
-    bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, "Register");
-    firebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
+    trackFirebaseBasic(username, "Register", "Register");
   }
 
   @Override
   public void trackLogin(@NonNull String username) {
-    Bundle bundle = new Bundle();
-    bundle.putString(FirebaseAnalytics.Param.ITEM_ID, username);
-    bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, "Login");
-    firebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
+    trackFirebaseBasic(username, "Login", "Login");
   }
 }
