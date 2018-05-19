@@ -20,7 +20,6 @@ import com.koalatea.thehollidayinn.softwareengineeringdaily.playbar.PlaybarFragm
 // @TODO: Some of this needs to be moved to the fragment
 
 public class PlaybackControllerActivity extends AppCompatActivity {
-    private static final String TAG = "PlaybackController";
     private MediaBrowserCompat mMediaBrowser;
     private PlaybarFragment mControlsFragment;
     private String mCurrentMediaId = "";
@@ -129,12 +128,6 @@ public class PlaybackControllerActivity extends AppCompatActivity {
         mControlsFragment.handlePlaybackState(state);
     }
 
-    /**
-     * Check if the MediaSession is active and in a "playback-able" state
-     * (not NONE and not STOPPED).
-     *
-     * @return true if the MediaSession's state requires playback controls to be visible.
-     */
     private boolean shouldShowControls() {
         MediaControllerCompat mediaController = MediaControllerCompat.getMediaController(this);
         if (mediaController == null ||
@@ -180,24 +173,20 @@ public class PlaybackControllerActivity extends AppCompatActivity {
 
         MediaControllerCompat.TransportControls controls = controller.getTransportControls();
 
-        if (isSameMedia) {
-            if (controller.getPlaybackState().getState() == PlaybackStateCompat.STATE_PLAYING) {
-                controls.pause();
-            } else if (controller.getPlaybackState().getState() == PlaybackStateCompat.STATE_PAUSED) {
-                controls.play();
-            }
-        } else {
+        if (!isSameMedia) {
             controls.playFromMediaId(item.getMediaId(), null);
             mCurrentMediaId = item.getMediaId();
+            return;
         }
-    }
 
-    @Nullable protected String getPlayingMediaId() {
-      // @TODO this class need to watch set and media
-        //boolean isPlaying = state != null
-        //        && state.getState() == PlaybackStateCompat.STATE_PLAYING;
-        //return isPlaying ? mCurrentMediaId : null;
-        return mCurrentMediaId;
+        int state = controller.getPlaybackState().getState();
+
+        if (state == PlaybackStateCompat.STATE_PLAYING) {
+            controls.pause();
+            return;
+        }
+        
+        controls.play();
     }
 
     private void updateWithMeta(MediaMetadataCompat metadata) {
