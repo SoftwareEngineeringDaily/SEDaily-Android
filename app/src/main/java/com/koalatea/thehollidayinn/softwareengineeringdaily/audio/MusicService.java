@@ -115,7 +115,7 @@ public class MusicService extends MediaBrowserServiceCompat implements
     }
 
     private QueueManager loadQueueManager() {
-        QueueManager queueManager = new QueueManager(mMusicProvider, getResources(),
+        QueueManager queueManager = new QueueManager(mMusicProvider,
             new QueueManager.MetadataUpdateListener() {
                 @Override
                 public void onMetadataChanged(MediaMetadataCompat metadata) {

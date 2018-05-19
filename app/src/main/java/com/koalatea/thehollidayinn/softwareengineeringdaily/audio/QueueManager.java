@@ -24,17 +24,14 @@ import timber.log.Timber;
 public class QueueManager {
   private MusicProvider mMusicProvider;
   private MetadataUpdateListener mListener;
-  private Resources mResources;
 
   private List<MediaSessionCompat.QueueItem> mPlayingQueue;
   private int mCurrentIndex;
 
   public QueueManager(@NonNull MusicProvider musicProvider,
-                      @NonNull Resources resources,
                       @NonNull MetadataUpdateListener listener) {
     this.mMusicProvider = musicProvider;
     this.mListener = listener;
-    this.mResources = resources;
 
     mPlayingQueue = Collections.synchronizedList(new ArrayList<MediaSessionCompat.QueueItem>());
     mCurrentIndex = 0;
