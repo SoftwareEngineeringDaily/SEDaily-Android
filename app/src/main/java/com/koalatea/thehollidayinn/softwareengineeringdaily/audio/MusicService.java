@@ -29,8 +29,6 @@ import static com.koalatea.thehollidayinn.softwareengineeringdaily.audio.MusicPr
 
 public class MusicService extends MediaBrowserServiceCompat implements
         PlaybackManager.PlaybackServiceCallback {
-    private static final String TAG = "MusicService";
-
     // The action of the incoming Intent indicating that it contains a command
     // to be executed (see {@link #onStartCommand})
     public static final String ACTION_CMD = "com.koalatea.thehollidayinn.ACTION_CMD";
@@ -40,9 +38,6 @@ public class MusicService extends MediaBrowserServiceCompat implements
     // A value of a CMD_NAME key in the extras of the incoming Intent that
     // indicates that the music playback should be paused (see {@link #onStartCommand})
     public static final String CMD_PAUSE = "CMD_PAUSE";
-
-    // ID for our MediaNotification.
-    private static final int NOTIFICATION_ID = 412;
 
     // Request code for starting the UI.
     private static final int REQUEST_CODE = 99;
@@ -55,7 +50,6 @@ public class MusicService extends MediaBrowserServiceCompat implements
 
     private MediaSessionCompat mSession;
     private MediaNotificationManager mMediaNotificationManager;
-    private Bundle mSessionExtras;
     private final DelayedStopHandler mDelayedStopHandler = new DelayedStopHandler(this);
 
     @Override
@@ -63,24 +57,31 @@ public class MusicService extends MediaBrowserServiceCompat implements
         super.onCreate();
 
         loadMusicProvider();
+        createPlaybackManager();
+        createMediaSession();
+        setUpSessionPendingIntent();
+        createNotificationManager();
+
+        // @TODO: https://github.com/googlesamples/android-UniversalMusicPlayer/blob/master/mobile/src/main/java/com/example/android/uamp/MusicService.java#L230
+    }
+
+    private void createPlaybackManager() {
         QueueManager queueManager = loadQueueManager();
-
         // @TODO: Maybe package Validator
-
-//        mNotificationManager = NotificationManagerCompat.from(this);
         LocalPlayback mLocalPlayback = new LocalPlayback(this, mMusicProvider);
         mPlaybackManager = new PlaybackManager(this, getResources(), mMusicProvider, queueManager, mLocalPlayback);
+    }
 
-        // Start a new MediaSession.
-        mSession = new MediaSessionCompat(this, TAG);
+    private void createMediaSession() {
+        mSession = new MediaSessionCompat(this, "MusicService");
         setSessionToken(mSession.getSessionToken());
         mSession.setCallback(mPlaybackManager.getMediaSessionCallback());
         mSession.setFlags(MediaSessionCompat.FLAG_HANDLES_MEDIA_BUTTONS
                 | MediaSessionCompat.FLAG_HANDLES_TRANSPORT_CONTROLS);
+    }
 
-
+    private void setUpSessionPendingIntent() {
         Context context = getApplicationContext();
-
         // This is an Intent to launch the app's UI, used primarily by the ongoing notification.
         Intent intent = new Intent(context, MainActivity.class); // @TOOD: Now playing?
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -90,20 +91,20 @@ public class MusicService extends MediaBrowserServiceCompat implements
                 PendingIntent.FLAG_UPDATE_CURRENT);
         mSession.setSessionActivity(pi);
 
-        mSessionExtras = new Bundle();
-        // @TODO: Car and Wear
+        Bundle mSessionExtras = new Bundle();
         mSession.setExtras(mSessionExtras);
 
+        // @TODO: Do we need to do this here?
         mPlaybackManager.updatePlaybackState(null);
+    }
 
+    private void createNotificationManager() {
         try {
             mMediaNotificationManager = new MediaNotificationManager(this);
         } catch (RemoteException e) {
             // @TODO Had a report of no method printStackTrace and this was the only call... not sure why
 //            e.printStackTrace();
         }
-
-        // @TODO: https://github.com/googlesamples/android-UniversalMusicPlayer/blob/master/mobile/src/main/java/com/example/android/uamp/MusicService.java#L230
     }
 
     private void loadMusicProvider() {
@@ -147,23 +148,26 @@ public class MusicService extends MediaBrowserServiceCompat implements
     @Override
     public int onStartCommand(Intent startIntent, int flags, int startId) {
         if (startIntent != null) {
-            String action = startIntent.getAction();
-            String command = startIntent.getStringExtra(CMD_NAME);
-
-            if (ACTION_CMD.equals(action)) {
-                if (CMD_PAUSE.equals(command)) {
-                    mPlaybackManager.handlePauseRequest();
-                }
-
-                // @TODO: stop casting
-            } else {
-                MediaButtonReceiver.handleIntent(mSession, startIntent);
-            }
+            handleStartIntent(startIntent);
         }
 
         mDelayedStopHandler.removeCallbacksAndMessages(null);
         mDelayedStopHandler.sendEmptyMessageDelayed(0, STOP_DELAY);
         return START_STICKY;
+    }
+
+    private void handleStartIntent(Intent startIntent) {
+        String action = startIntent.getAction();
+        String command = startIntent.getStringExtra(CMD_NAME);
+
+        if (!ACTION_CMD.equals(action)) {
+            MediaButtonReceiver.handleIntent(mSession, startIntent);
+            return;
+        }
+
+        if (CMD_PAUSE.equals(command)) {
+            mPlaybackManager.handlePauseRequest();
+        }
     }
 
     @Override
