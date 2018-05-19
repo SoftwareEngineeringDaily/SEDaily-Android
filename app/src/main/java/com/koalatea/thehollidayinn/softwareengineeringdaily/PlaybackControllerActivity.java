@@ -103,6 +103,9 @@ public class PlaybackControllerActivity extends AppCompatActivity {
         if (MediaControllerCompat.getMediaController(this) != null) {
             MediaControllerCompat.getMediaController(this).unregisterCallback(controllerCallback);
         }
+
+        if (mMediaBrowser == null) return;
+
         mMediaBrowser.disconnect();
     }
 
