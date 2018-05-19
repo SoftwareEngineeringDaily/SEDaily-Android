@@ -22,7 +22,6 @@ import com.koalatea.thehollidayinn.softwareengineeringdaily.playbar.PlaybarFragm
 public class PlaybackControllerActivity extends AppCompatActivity {
     private MediaBrowserCompat mMediaBrowser;
     private PlaybarFragment mControlsFragment;
-    private String mCurrentMediaId = "";
 
     private final MediaBrowserCompat.ConnectionCallback mConnectionCallbacks =
             new MediaBrowserCompat.ConnectionCallback() {
@@ -78,7 +77,7 @@ public class PlaybackControllerActivity extends AppCompatActivity {
         super.onStart();
         if (mControlsFragment == null) {
             mControlsFragment = (PlaybarFragment) getSupportFragmentManager()
-                    .findFragmentById(R.id.fragment_playback_controls);
+                .findFragmentById(R.id.fragment_playback_controls);
         }
 
         // Handle showing here?
@@ -175,7 +174,6 @@ public class PlaybackControllerActivity extends AppCompatActivity {
 
         if (!isSameMedia) {
             controls.playFromMediaId(item.getMediaId(), null);
-            mCurrentMediaId = item.getMediaId();
             return;
         }
 
@@ -185,7 +183,7 @@ public class PlaybackControllerActivity extends AppCompatActivity {
             controls.pause();
             return;
         }
-        
+
         controls.play();
     }
 
