@@ -2,6 +2,7 @@ package com.koalatea.thehollidayinn.softwareengineeringdaily.subscription
 
 import android.content.Intent
 import android.os.Bundle
+import android.support.v4.app.Fragment
 import android.support.v7.app.AppCompatActivity
 import com.koalatea.thehollidayinn.softwareengineeringdaily.MainActivity
 import com.koalatea.thehollidayinn.softwareengineeringdaily.R
@@ -41,22 +42,21 @@ class SubscriptionActivity : AppCompatActivity(),
                 .commit()
     }
 
+    private fun showFragement(fragment: Fragment) {
+        this.supportFragmentManager
+            .beginTransaction()
+            .replace(R.id.fragment_container, fragment)
+            .commit()
+    }
+
     private fun showPlanOptions () {
         // @TODO: save instance?
-        val planFragment = PlanFragment.newInstance()
-        this.supportFragmentManager
-                .beginTransaction()
-                .replace(R.id.fragment_container, planFragment)
-                .commit()
+        showFragement(PlanFragment.newInstance())
     }
 
     private fun showPayment (type: String) {
         // @TODO: save instance?
-        val fragment = PaymentFragment.newInstance(type)
-        this.supportFragmentManager
-                .beginTransaction()
-                .replace(R.id.fragment_container, fragment)
-                .commit()
+        showFragement(PaymentFragment.newInstance(type))
     }
 
     override fun paymentSuccess() {
