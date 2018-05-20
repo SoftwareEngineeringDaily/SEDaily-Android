@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -31,7 +30,6 @@ import timber.log.Timber;
  */
 
 public class TopRecListFragment extends Fragment {
-    private static String TAG = "PodList";
     private String title;
     private String tagId;
     private PodcastAdapter podcastAdapter;
@@ -51,21 +49,36 @@ public class TopRecListFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater,
-                             ViewGroup container, Bundle savedInstanceState) {
+                             ViewGroup container,
+                             Bundle savedInstanceState) {
+
         View rootView = inflater.inflate(
-                R.layout.fragment_toprec_list, container, false);
+                R.layout.fragment_toprec_list,
+                container,
+                false);
 
         ButterKnife.bind(this, rootView);
 
-        RecyclerView recyclerView = (RecyclerView) rootView.findViewById(R.id.my_recycler_view);
-        recyclerView.setHasFixedSize(true);
+        RecyclerView recyclerView = getRecycleView(rootView);
+        setUpSkeletonLoading(recyclerView, rootView);
+        setUpViewModel();
+        this.setUpSubscription();
 
+        return rootView;
+    }
+
+    private RecyclerView getRecycleView(View rootView) {
+        RecyclerView recyclerView = rootView.findViewById(R.id.my_recycler_view);
+        recyclerView.setHasFixedSize(true);
         GridLayoutManager mLayoutManager = new GridLayoutManager(this.getContext(), 2);
         recyclerView.setLayoutManager(mLayoutManager);
-
         podcastAdapter = new PodcastAdapter();
         recyclerView.setAdapter(podcastAdapter);
 
+        return recyclerView;
+    }
+
+    private void setUpSkeletonLoading(RecyclerView recyclerView, View rootView) {
         skeletonScreen = Skeleton.bind(recyclerView)
                 .adapter(podcastAdapter)
                 .load(R.layout.item_skeleton_news)
@@ -81,18 +94,15 @@ public class TopRecListFragment extends Fragment {
                     }
                 }
         );
+    }
 
+    private void setUpViewModel() {
         podcastListViewModel = ViewModelProviders
                 .of(this)
                 .get(PodcastListViewModel.class);
         podcastListViewModel.getPostList().observe(this, posts -> {
-            Timber.v("podcastListViewModel" + tagId);
             if (posts != null) updatePosts(posts);
         });
-
-        this.setUpSubscription();
-
-        return rootView;
     }
 
     public void setUpSubscription() {

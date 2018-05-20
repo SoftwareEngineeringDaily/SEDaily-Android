@@ -2,6 +2,7 @@ package com.koalatea.thehollidayinn.softwareengineeringdaily.podcast;
 
 import android.arch.lifecycle.ViewModelProviders;
 import android.arch.persistence.room.Room;
+import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -42,7 +43,6 @@ import io.reactivex.schedulers.Schedulers;
  */
 
 public class PodListFragment extends Fragment {
-  private static String TAG = "PodList";
   private String title;
   private String tagId;
   private PodcastAdapter podcastAdapter;
@@ -66,6 +66,16 @@ public class PodListFragment extends Fragment {
     View rootView = inflater.inflate(
       R.layout.fragment_podcast_horizontal, container, false);
 
+    getRecylceView(rootView);
+    createSkeltonScreen(rootView);
+    setUpSwipeRefresh(rootView);
+    setUpViewModel();
+    this.setUpSubscription();
+
+    return rootView;
+  }
+
+  private void getRecylceView(View rootView) {
     RecyclerView recyclerView = rootView.findViewById(R.id.my_recycler_view);
     recyclerView.setHasFixedSize(true);
 
@@ -78,37 +88,40 @@ public class PodListFragment extends Fragment {
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(ReactiveUtil.toDetailObservable(getActivity()));
+  }
 
+  private void createSkeltonScreen(View rootView) {
     skeletonScreen = Skeleton.bind(recyclerView)
-        .adapter(podcastAdapter)
-        .load(R.layout.item_skeleton_news)
-        .shimmer(true)
-        .show();
+            .adapter(podcastAdapter)
+            .load(R.layout.item_skeleton_news)
+            .shimmer(true)
+            .show();
+  }
 
+  private void setUpSwipeRefresh(View rootView) {
     swipeRefreshLayout = rootView.findViewById(R.id.swiperefresh);
     swipeRefreshLayout.setOnRefreshListener(
-      new SwipeRefreshLayout.OnRefreshListener() {
-        @Override
-        public void onRefresh() {
-          if (title != null && title.equals("Bookmarks")) {
-            getPosts("");
-            return;
-          }
-          podcastListViewModel.getPosts("", title, tagId);
-        }
-      }
+            new SwipeRefreshLayout.OnRefreshListener() {
+              @Override
+              public void onRefresh() {
+                // @TODO: make bookmark fragment
+                if (title != null && title.equals("Bookmarks")) {
+                  getPosts("");
+                  return;
+                }
+                podcastListViewModel.getPosts("", title, tagId);
+              }
+            }
     );
+  }
 
+  private void setUpViewModel() {
     podcastListViewModel = ViewModelProviders
             .of(this)
             .get(PodcastListViewModel.class);
     podcastListViewModel.getPostList().observe(this, posts -> {
       if (posts != null) updatePosts(posts);
     });
-
-    this.setUpSubscription();
-
-    return rootView;
   }
 
   public void setUpSubscription() {
@@ -161,16 +174,12 @@ public class PodListFragment extends Fragment {
     skeletonScreen.hide();
   }
 
-  private void getPosts(String search) {
+  private Observable<List<Post>> getQuery(String search) {
     APIInterface mService = SEDApp.component.kibblService();
-
-    // @TODO: Replace tmp with query
-
     Map<String, String> data = new HashMap<>();
     Observable<List<Post>> query = mService.getPosts(data);
 
     UserRepository userRepository = SEDApp.component.userRepository();
-    PostRepository postRepository = PostRepository.getInstance();
 
     if (this.title != null && this.title.equals("Greatest Hits")) {
       data.put("type", "top");
@@ -186,7 +195,36 @@ public class PodListFragment extends Fragment {
       data.put("search", search);
     }
 
-    query
+    return query;
+  }
+
+  private void setUpBookmarks(List<Post> posts) {
+    ArrayList<Bookmark> bookmarks = new ArrayList<>();
+    for(Post post: posts) {
+      bookmarks.add(new Bookmark(post));
+    }
+
+    insertBookmarks(bookmarks);
+
+    podcastListViewModel.setPostList(posts);
+    podcastAdapter.setPosts(posts);
+  }
+
+  private void insertBookmarks(ArrayList<Bookmark> bookmarks) {
+    Context context = SEDApp.component.context();
+    AppDatabase db = Room.databaseBuilder(context,
+            AppDatabase.class,
+            "sed-db").build();
+    Observable.just(db)
+            .subscribeOn(Schedulers.io())
+            .subscribe(bookmarkdb -> {
+              BookmarkDao bookmarkDao = db.bookmarkDao();
+              bookmarkDao.insertAll(bookmarks);
+            });
+  }
+
+  private void getPosts(String search) {
+    getQuery(search)
       .subscribeOn(Schedulers.io())
       .observeOn(AndroidSchedulers.mainThread())
       .subscribe(new DisposableObserver<List<Post>>() {
@@ -196,31 +234,19 @@ public class PodListFragment extends Fragment {
         }
 
         @Override
-        public void onError(Throwable e) {
-            Log.v(TAG, e.toString());
-        }
+        public void onError(Throwable e) {}
 
         @Override
         public void onNext(List<Post> posts) {
           podcastAdapter.setPosts(posts);
+
+          PostRepository postRepository = PostRepository.getInstance();
           postRepository.setPosts(posts);
+
           if (title != null && title.equals("Bookmarks")) {
-            ArrayList<Bookmark> bookmarks = new ArrayList<>();
-            for(Post post: posts) {
-              bookmarks.add(new Bookmark(post));
-            }
-
-            AppDatabase db = Room.databaseBuilder(SEDApp.component.context(), AppDatabase.class, "sed-db").build();
-            Observable.just(db)
-                    .subscribeOn(Schedulers.io())
-                    .subscribe(bookmarkdb -> {
-                      BookmarkDao bookmarkDao = db.bookmarkDao();
-                      bookmarkDao.insertAll(bookmarks);
-                    });
-
-            podcastListViewModel.setPostList(posts);
-            podcastAdapter.setPosts(posts);
+            setUpBookmarks(posts);
           }
+
           swipeRefreshLayout.setRefreshing(false);
         }
       });
