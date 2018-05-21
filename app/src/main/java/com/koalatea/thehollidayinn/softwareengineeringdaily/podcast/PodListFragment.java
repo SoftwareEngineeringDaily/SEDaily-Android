@@ -66,8 +66,8 @@ public class PodListFragment extends Fragment {
     View rootView = inflater.inflate(
       R.layout.fragment_podcast_horizontal, container, false);
 
-    getRecylceView(rootView);
-    createSkeltonScreen(rootView);
+    RecyclerView recyclerView  = getRecylceView(rootView);
+    createSkeltonScreen(recyclerView);
     setUpSwipeRefresh(rootView);
     setUpViewModel();
     this.setUpSubscription();
@@ -75,7 +75,7 @@ public class PodListFragment extends Fragment {
     return rootView;
   }
 
-  private void getRecylceView(View rootView) {
+  private RecyclerView getRecylceView(View rootView) {
     RecyclerView recyclerView = rootView.findViewById(R.id.my_recycler_view);
     recyclerView.setHasFixedSize(true);
 
@@ -88,9 +88,11 @@ public class PodListFragment extends Fragment {
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(ReactiveUtil.toDetailObservable(getActivity()));
+
+    return recyclerView;
   }
 
-  private void createSkeltonScreen(View rootView) {
+  private void createSkeltonScreen(RecyclerView recyclerView) {
     skeletonScreen = Skeleton.bind(recyclerView)
             .adapter(podcastAdapter)
             .load(R.layout.item_skeleton_news)
