@@ -1,5 +1,6 @@
 package com.koalatea.thehollidayinn.softwareengineeringdaily.util;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Build;
@@ -12,6 +13,14 @@ import android.support.v7.app.AlertDialog;
 public class AlertUtil {
   public static void displayMessage (Context context, String message) {
     AlertDialog.Builder builder;
+
+    // Ensure context is active
+    if ( context instanceof Activity ) {
+      Activity activity = (Activity) context;
+      if (activity.isFinishing()) {
+        return;
+      }
+    }
 
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
       builder = new AlertDialog.Builder(context, android.R.style.Theme_Material_Dialog_Alert);
