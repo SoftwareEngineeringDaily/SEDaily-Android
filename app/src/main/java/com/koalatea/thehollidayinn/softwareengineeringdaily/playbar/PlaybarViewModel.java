@@ -71,4 +71,23 @@ public class PlaybarViewModel extends ViewModel {
             controller.getTransportControls().pause();
         }
     }
+
+    public void back15(Activity activity) {
+        movePlayback(activity, "MOVE_BACK");
+    }
+
+    public void skip15(Activity activity) {
+        movePlayback(activity, "MOVE_FORWARD");
+    }
+
+    private void movePlayback(Activity activity, String action) {
+        MediaControllerCompat controller = MediaControllerCompat.getMediaController(activity);
+        if (controller == null) return;
+
+        Bundle args = new Bundle();
+        args.putInt("DISTANCE", 15000);
+        // @TODO: Make constant
+        controller.getTransportControls().sendCustomAction(action, args);
+
+    }
 }

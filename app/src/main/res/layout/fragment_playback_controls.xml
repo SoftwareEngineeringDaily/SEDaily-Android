@@ -72,24 +72,23 @@
 
         </RelativeLayout>
 
-        <TextView
-            tools:text="John Doe and Band"
-            android:ellipsize="end"
-            android:maxLines="1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:contentDescription="@string/currently_playing_artist"
-            android:textAppearance="?android:attr/textAppearanceSmall"/>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/back15"
+                style="@style/Widget.AppCompat.Button.Borderless.Colored"
+                android:text="Back 15" />
 
-        <TextView
-            tools:text="casting to MyCast"
-            android:ellipsize="end"
-            android:maxLines="1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:visibility="gone"
-            android:contentDescription="@string/currently_playing_extra_info"
-            android:textAppearance="?android:attr/textAppearanceSmall"/>
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/skip15"
+                style="@style/Widget.AppCompat.Button.Borderless.Colored"
+                android:text="Skip 15" />
+        </LinearLayout>
     </LinearLayout>
 
     <Button
