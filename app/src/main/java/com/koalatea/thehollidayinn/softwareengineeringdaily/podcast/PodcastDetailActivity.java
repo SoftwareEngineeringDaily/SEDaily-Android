@@ -28,6 +28,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
+import com.koalatea.thehollidayinn.softwareengineeringdaily.MainActivity;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.PlaybackControllerActivity;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.R;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.app.SEDApp;
@@ -242,7 +243,10 @@ public class PodcastDetailActivity extends PlaybackControllerActivity {
 
   private void loadPost (final String postId) {
     post = postRepository.getPostById(postId);
+
     if (post == null) {
+      Intent intent = new Intent(this, MainActivity.class);
+      startActivity(intent);
       return;
     }
 
