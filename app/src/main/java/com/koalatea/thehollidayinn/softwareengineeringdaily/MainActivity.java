@@ -1,5 +1,6 @@
 package com.koalatea.thehollidayinn.softwareengineeringdaily;
 
+import android.app.Fragment;
 import android.app.SearchManager;
 import android.arch.persistence.room.Room;
 import android.content.Context;
@@ -152,6 +153,10 @@ public class MainActivity extends PlaybackControllerActivity
         subscribeItem = new SecondaryDrawerItem().withIdentifier(5).withIcon(GoogleMaterial.Icon.gmd_monetization_on).withName(R.string.subscribe);
 
         SecondaryDrawerItem bookmarkItem = new SecondaryDrawerItem().withIdentifier(6).withIcon(GoogleMaterial.Icon.gmd_bookmark).withName(R.string.bookmarks);
+        SecondaryDrawerItem downloadItem = new SecondaryDrawerItem()
+                .withIdentifier(8)
+                .withIcon(GoogleMaterial.Icon.gmd_file_download)
+                .withName(R.string.downloads);
         SecondaryDrawerItem notificationItem = new SecondaryDrawerItem()
                 .withIdentifier(7)
                 .withIcon(GoogleMaterial.Icon.gmd_notifications)
@@ -197,6 +202,7 @@ public class MainActivity extends PlaybackControllerActivity
                         item2,
                         item3,
                         bookmarkItem,
+                        downloadItem,
                         notificationItem,
                         new DividerDrawerItem(),
                         loginItem,
@@ -278,6 +284,17 @@ public class MainActivity extends PlaybackControllerActivity
                 break;
             case 7:
                 startActivity(new Intent(this, NotificationActivity.class));
+                break;
+            case 8:
+                toolbar.setTitle("Bookmarks");
+                tabLayout.setVisibility(View.GONE);
+
+                PodListFragment fragment = PodListFragment.newInstance("Downloads", "");
+
+                this.getSupportFragmentManager()
+                        .beginTransaction()
+                        .replace(R.id.fragment_container, fragment)
+                        .commit();
                 break;
         }
 

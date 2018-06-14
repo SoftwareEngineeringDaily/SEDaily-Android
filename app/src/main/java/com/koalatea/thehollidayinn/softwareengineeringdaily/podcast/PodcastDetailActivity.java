@@ -140,8 +140,7 @@ public class PodcastDetailActivity extends PlaybackControllerActivity {
 
     String postId = post.get_id();
 
-    AppDatabase db = Room.databaseBuilder(getApplicationContext(),
-            AppDatabase.class, "sed-db").build();
+    AppDatabase db = AppDatabase.getDatabase();
 
     Observable.just(db)
       .subscribeOn(Schedulers.io())
@@ -537,8 +536,7 @@ public class PodcastDetailActivity extends PlaybackControllerActivity {
       .observeOn(AndroidSchedulers.mainThread())
       .subscribe(ReactiveUtil.getEmptyObservable());
 
-    AppDatabase db = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "sed-db")
-            .build();
+    AppDatabase db = AppDatabase.getDatabase();
 
     Observable.just(db)
       .subscribeOn(Schedulers.io())
@@ -566,8 +564,7 @@ public class PodcastDetailActivity extends PlaybackControllerActivity {
       bookmarkItem.setIcon(bookmarkIcon);
     }
 
-    AppDatabase db = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "sed-db")
-            .build();
+    AppDatabase db = AppDatabase.getDatabase();
 
     Observable.just(db)
       .subscribeOn(Schedulers.io())

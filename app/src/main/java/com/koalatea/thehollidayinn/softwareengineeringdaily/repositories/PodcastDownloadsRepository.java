@@ -12,7 +12,12 @@ import com.downloader.PRDownloader;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.R;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.app.AppComponent;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.app.SEDApp;
+import com.koalatea.thehollidayinn.softwareengineeringdaily.data.AppDatabase;
+import com.koalatea.thehollidayinn.softwareengineeringdaily.data.models.Download;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.data.models.Post;
+import com.koalatea.thehollidayinn.softwareengineeringdaily.data.repositories.BookmarkDao;
+import com.koalatea.thehollidayinn.softwareengineeringdaily.data.repositories.DownloadDao;
+import com.koalatea.thehollidayinn.softwareengineeringdaily.data.repositories.DownloadRepository;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.downloads.MP3FileManager;
 
 import java.io.File;
@@ -35,10 +40,12 @@ public class PodcastDownloadsRepository {
   private final PublishSubject<String> changeObservable = PublishSubject.create();
   private int currentDownloadId;
   private DownloadNotificationManager downloadNotificationManager;
+  private DownloadRepository downloadRepository;
 
   private PodcastDownloadsRepository() {
     PRDownloader.initialize(SEDApp.component.context());
     downloadNotificationManager = DownloadNotificationManager.getInstance();
+    downloadRepository = new DownloadRepository();
   }
 
   public static PodcastDownloadsRepository getInstance() {
@@ -48,16 +55,21 @@ public class PodcastDownloadsRepository {
     return instance;
   }
 
+  // @TOOD: We have so many states
   public void setPodcastDownload(String podcastId) {
     this.filesLoaded.put(podcastId, true);
     this.downloading.put(podcastId, false);
     changeObservable.onNext(podcastId);
+
+    Download download = new Download(podcastId);
+    downloadRepository.insert(download);
   }
 
   public void removePodcastDownload(String podcastId) {
     this.downloading.put(podcastId, false);
     this.filesLoaded.put(podcastId, false);
     changeObservable.onNext(podcastId);
+    downloadRepository.remove(podcastId);
   }
 
   public Boolean isDownloading(String podcastId) {
