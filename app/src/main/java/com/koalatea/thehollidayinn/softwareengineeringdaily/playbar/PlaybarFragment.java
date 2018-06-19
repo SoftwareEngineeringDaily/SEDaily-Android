@@ -406,4 +406,14 @@ public class PlaybarFragment extends Fragment {
           break;
       }
     }
+
+    @OnClick(R.id.back15)
+    public void back15() {
+      playbarViewModel.back15(this.getActivity());
+    }
+
+    @OnClick(R.id.skip15)
+    public void skip15() {
+      playbarViewModel.skip15(this.getActivity());
+    }
 }

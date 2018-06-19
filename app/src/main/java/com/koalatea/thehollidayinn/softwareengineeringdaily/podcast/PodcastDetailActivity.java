@@ -28,6 +28,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
+import com.koalatea.thehollidayinn.softwareengineeringdaily.MainActivity;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.PlaybackControllerActivity;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.R;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.app.SEDApp;
@@ -140,8 +141,7 @@ public class PodcastDetailActivity extends PlaybackControllerActivity {
 
     String postId = post.get_id();
 
-    AppDatabase db = Room.databaseBuilder(getApplicationContext(),
-            AppDatabase.class, "sed-db").build();
+    AppDatabase db = AppDatabase.getDatabase();
 
     Observable.just(db)
       .subscribeOn(Schedulers.io())
@@ -243,7 +243,10 @@ public class PodcastDetailActivity extends PlaybackControllerActivity {
 
   private void loadPost (final String postId) {
     post = postRepository.getPostById(postId);
+
     if (post == null) {
+      Intent intent = new Intent(this, MainActivity.class);
+      startActivity(intent);
       return;
     }
 
@@ -537,8 +540,7 @@ public class PodcastDetailActivity extends PlaybackControllerActivity {
       .observeOn(AndroidSchedulers.mainThread())
       .subscribe(ReactiveUtil.getEmptyObservable());
 
-    AppDatabase db = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "sed-db")
-            .build();
+    AppDatabase db = AppDatabase.getDatabase();
 
     Observable.just(db)
       .subscribeOn(Schedulers.io())
@@ -566,8 +568,7 @@ public class PodcastDetailActivity extends PlaybackControllerActivity {
       bookmarkItem.setIcon(bookmarkIcon);
     }
 
-    AppDatabase db = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "sed-db")
-            .build();
+    AppDatabase db = AppDatabase.getDatabase();
 
     Observable.just(db)
       .subscribeOn(Schedulers.io())

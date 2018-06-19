@@ -179,28 +179,29 @@ public class LoginRegisterActivity extends AppCompatActivity {
     private void loadBookmarks() {
       APIInterface service = SEDApp.component().kibblService();
       service.getBookmarks()
-              .subscribeOn(Schedulers.io())
-              .subscribe(new DisposableObserver<List<Post>>() {
-                @Override
-                public void onComplete() {
-                }
+        .subscribeOn(Schedulers.io())
+        .subscribe(new DisposableObserver<List<Post>>() {
+          @Override
+          public void onComplete() {
+          }
 
-                @Override
-                public void onError(Throwable e) {
-                }
+          @Override
+          public void onError(Throwable e) {
+          }
 
-                @Override
-                public void onNext(List<Post> posts) {
-                  ArrayList<Bookmark> bookmarks = new ArrayList<>();
-                  for(Post post: posts) {
-                    bookmarks.add(new Bookmark(post));
-                  }
-                  AppDatabase db = Room.databaseBuilder(getApplicationContext(),
-                          AppDatabase.class,"sed-db").build();
-                  BookmarkDao bookmarkDao = db.bookmarkDao();
-                  bookmarkDao.insertAll(bookmarks);
-                }
-              });
+          @Override
+          public void onNext(List<Post> posts) {
+            ArrayList<Bookmark> bookmarks = new ArrayList<>();
+
+            for(Post post: posts) {
+              bookmarks.add(new Bookmark(post));
+            }
+
+            AppDatabase db = AppDatabase.getDatabase();
+            BookmarkDao bookmarkDao = db.bookmarkDao();
+            bookmarkDao.insertAll(bookmarks);
+          }
+        });
     }
 
     private void logLoginRegAnalytics(String username, String type) {

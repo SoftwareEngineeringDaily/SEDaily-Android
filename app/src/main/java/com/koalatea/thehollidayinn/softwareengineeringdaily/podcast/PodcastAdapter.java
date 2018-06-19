@@ -86,7 +86,8 @@ class PodcastAdapter extends RecyclerView.Adapter<PodcastAdapter.ViewHolder> {
 
     Picasso.with(SEDApp.component.context())
         .load(imageLink)
-        .fit()
+        .resize(100, 100)
+        .centerCrop()
         .into(holder.imageView);
   }
 

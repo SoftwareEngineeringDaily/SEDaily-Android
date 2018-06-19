@@ -64,6 +64,10 @@ public interface Playback {
 
   void setSpeed(int speed);
 
+  void moveForward(int distance);
+
+  void moveBack(int distance);
+
   interface Callback {
     /**
      * On current music completed.

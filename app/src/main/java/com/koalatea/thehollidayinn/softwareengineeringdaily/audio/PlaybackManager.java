@@ -5,9 +5,6 @@ import android.os.Bundle;
 import android.os.SystemClock;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
-import android.util.Log;
-
-import com.koalatea.thehollidayinn.softwareengineeringdaily.R;
 
 import timber.log.Timber;
 
@@ -268,8 +265,13 @@ public class PlaybackManager implements Playback.Callback {
                                 Bundle extras) {
       if (action.equals("SPEED_CHANGE")) {
         int speed = extras.getInt("SPEED");
-//        handleSpeedChange(speed);
         mPlayback.setSpeed(speed);
+      } else if (action.equals("MOVE_BACK")) {
+        int speed = extras.getInt("DISTANCE");
+        mPlayback.moveBack(speed);
+      } else if (action.equals("MOVE_FORWARD")) {
+        int speed = extras.getInt("DISTANCE");
+        mPlayback.moveForward(speed);
       }
     }
 

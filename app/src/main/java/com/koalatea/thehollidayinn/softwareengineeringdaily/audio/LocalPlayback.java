@@ -16,7 +16,6 @@ import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.text.TextUtils;
-import android.util.Log;
 
 import com.google.android.exoplayer2.DefaultLoadControl;
 import com.google.android.exoplayer2.ExoPlaybackException;
@@ -98,7 +97,7 @@ class LocalPlayback implements Playback {
           };
 
   // Not in UAMP
-  private volatile long mCurrentPosition;
+  public volatile long mCurrentPosition;
 
   // Make a class or something else?
   private String currentSource = "";
@@ -291,6 +290,16 @@ class LocalPlayback implements Playback {
 
     registerAudioNoisyReceiver();
     mExoPlayer.seekTo(position);
+  }
+
+  public void moveForward(int distance) {
+    long currentPos = mExoPlayer.getCurrentPosition();
+    this.seekTo(currentPos + distance);
+  }
+
+  public void moveBack(int distance) {
+    long currentPos = mExoPlayer.getCurrentPosition();
+    this.seekTo(currentPos - distance);
   }
 
   public void setSpeed(int speed) {
