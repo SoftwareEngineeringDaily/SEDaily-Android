@@ -202,7 +202,7 @@ public class MainActivity extends PlaybackControllerActivity
                         item2,
                         item3,
                         bookmarkItem,
-                        downloadItem,
+                        // downloadItem,
                         notificationItem,
                         new DividerDrawerItem(),
                         loginItem,
@@ -303,7 +303,7 @@ public class MainActivity extends PlaybackControllerActivity
 
     private void logout() {
         userRepository.setToken("");
-        AppDatabase db = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "sed-db").build();
+        AppDatabase db = AppDatabase.getDatabase();
         Observable.just(db)
             .subscribeOn(Schedulers.io())
             .subscribe(bookmarkdb -> {

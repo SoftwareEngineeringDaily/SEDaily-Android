@@ -214,9 +214,7 @@ public class PodListFragment extends Fragment {
 
   private void insertBookmarks(ArrayList<Bookmark> bookmarks) {
     Context context = SEDApp.component.context();
-    AppDatabase db = Room.databaseBuilder(context,
-            AppDatabase.class,
-            "sed-db").build();
+    AppDatabase db = AppDatabase.getDatabase();
     Observable.just(db)
             .subscribeOn(Schedulers.io())
             .subscribe(bookmarkdb -> {
