@@ -57,4 +57,5 @@
     <string name="notification_channel_description">sedaily_player_notifications</string>
     <string name="label_next">Next</string>
 
+    <string name="freshchat_file_provider_authority">com.koalatea.thehollidayinn.softwareengineeringdaily.provider</string>
 </resources>

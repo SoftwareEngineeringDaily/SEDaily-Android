@@ -120,11 +120,12 @@ dependencies {
     implementation "com.android.support:support-v4:$rootProject.supportLibraryVersion"
     implementation "android.arch.lifecycle:runtime:$rootProject.architectureComponents"
     implementation "android.arch.lifecycle:extensions:$rootProject.architectureComponents"
+    implementation 'com.google.firebase:firebase-messaging:17.0.0'
     kapt "android.arch.lifecycle:common-java8:$rootProject.architectureComponents"
 
     // Audio
     implementation 'com.google.android.exoplayer:exoplayer:r2.5.4'
-    
+
     //Persistence
     implementation "android.arch.persistence.room:runtime:$rootProject.androidRoomRersistenceVersion"
     kapt "android.arch.persistence.room:compiler:$rootProject.androidRoomRersistenceVersion"
@@ -191,6 +192,7 @@ dependencies {
 
     // Rating
     implementation 'com.github.hotchemi:android-rate:1.0.1'
+    implementation 'com.github.freshdesk:freshchat-android:1.4.0'
 
     //Testing
     testImplementation "junit:junit:$rootProject.junitVersion"
