@@ -293,11 +293,13 @@ class LocalPlayback implements Playback {
   }
 
   public void moveForward(int distance) {
+    if (mExoPlayer == null) return;
     long currentPos = mExoPlayer.getCurrentPosition();
     this.seekTo(currentPos + distance);
   }
 
   public void moveBack(int distance) {
+    if (mExoPlayer == null) return;
     long currentPos = mExoPlayer.getCurrentPosition();
     this.seekTo(currentPos - distance);
   }
