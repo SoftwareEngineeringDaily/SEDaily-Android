@@ -138,7 +138,6 @@ public class PodcastDetailActivity extends PlaybackControllerActivity {
     String postId = post.get_id();
 
     AppDatabase db = AppDatabase.getDatabase();
-
     Observable.just(db)
       .subscribeOn(Schedulers.io())
       .subscribe(bookmarkdb -> {
@@ -147,12 +146,7 @@ public class PodcastDetailActivity extends PlaybackControllerActivity {
 
         if (bookmark != null) {  // the post has been bookmarked before
           if (bookmarkItem != null) {
-            runOnUiThread(new Runnable() {
-              @Override
-              public void run() {
-                markBookmarked();
-              }
-            });
+            runOnUiThread(() -> markBookmarked());
           }
           bookmarked = true;
         }
@@ -160,11 +154,25 @@ public class PodcastDetailActivity extends PlaybackControllerActivity {
   }
 
   private void markBookmarked () {
+    bookmarked = false;
+    if (bookmarkItem == null) return;
     IconicsDrawable bookmarkIcon = new IconicsDrawable(this)
             .icon(GoogleMaterial.Icon.gmd_bookmark)
             .color(getResources().getColor(R.color.accent))
             .sizeDp(24);
     bookmarkItem.setIcon(bookmarkIcon);
+    bookmarkItem.setTitle("Bookmarked");
+  }
+
+  private void markNotBookmarked () {
+    bookmarked = false;
+    if (bookmarkItem == null) return;
+    IconicsDrawable bookmarkIcon = new IconicsDrawable(this)
+            .icon(GoogleMaterial.Icon.gmd_bookmark)
+            .color(getResources().getColor(R.color.white))
+            .sizeDp(24);
+    bookmarkItem.setIcon(bookmarkIcon);
+    bookmarkItem.setTitle("NotBookmarked");
   }
 
   @Override
@@ -176,13 +184,7 @@ public class PodcastDetailActivity extends PlaybackControllerActivity {
     checkDownloadState();
 
     bookmarkItem = menu.findItem(R.id.menu_item_bookmark);
-    if (bookmarkItem != null) {
-      IconicsDrawable bookmarkIcon = new IconicsDrawable(this)
-              .icon(GoogleMaterial.Icon.gmd_bookmark)
-              .color(getResources().getColor(R.color.white))
-              .sizeDp(24);
-      bookmarkItem.setIcon(bookmarkIcon);
-    }
+    markNotBookmarked();
     checkForBookMarks();
 
     // Share button
@@ -520,13 +522,7 @@ public class PodcastDetailActivity extends PlaybackControllerActivity {
     if (post == null) return;
 
     bookmarked = true;
-    if (bookmarkItem != null) {
-      IconicsDrawable bookmarkIcon = new IconicsDrawable(this)
-              .icon(GoogleMaterial.Icon.gmd_bookmark)
-              .color(getResources().getColor(R.color.accent))
-              .sizeDp(24);
-      bookmarkItem.setIcon(bookmarkIcon);
-    }
+    if (bookmarkItem != null) markBookmarked();
 
     BookmarkHelper.getInstance().addBookmark(post, mService);
   }
@@ -534,14 +530,7 @@ public class PodcastDetailActivity extends PlaybackControllerActivity {
   private void removeBookmark(Post post) {
     if (post == null) return;
 
-    bookmarked = false;
-    if (bookmarkItem != null) {
-      IconicsDrawable bookmarkIcon = new IconicsDrawable(this)
-              .icon(GoogleMaterial.Icon.gmd_bookmark)
-              .color(getResources().getColor(R.color.white))
-              .sizeDp(24);
-      bookmarkItem.setIcon(bookmarkIcon);
-    }
+     markNotBookmarked();
 
     BookmarkHelper.getInstance().removeBookmark(post, mService);
   }
