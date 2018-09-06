@@ -104,19 +104,6 @@ public class PlaybackManager implements Playback.Callback {
 
     String mediaId = currentMusic.getDescription().getMediaId();
     if (mediaId == null) return;
-
-//    String musicId = MediaIDHelper.extractMusicIDFromMediaID(mediaId);
-//
-//    int favoriteIcon = mMusicProvider.isFavorite(musicId) ?
-//            R.drawable.ic_startOn : R.drawable.ic_star_off;
-//
-//    Bundle customActionExtras = new Bundle();
-////    WearHelper.setShowCustomActionOnWear(customActionExtras, true);
-//    stateBuilder.addCustomAction(new PlaybackStateCompat.CustomAction.Builder(
-//            CUSTOM_ACTION_THUMBS_UP, mResources.getString(R.string.favorite, favoriteIcon)
-//            .setExtras(customerActionExtras)
-//            .build());
-//    ));
   }
 
   private long getAvailableActions() {
@@ -138,7 +125,6 @@ public class PlaybackManager implements Playback.Callback {
 
   @Override
   public void onCompletion() {
-    Timber.v("keithtest-onComplete");
     if (mQueueManager.skipQueuePosition(1)) {
       handlePlayRequest();
       mQueueManager.updateMetadata();

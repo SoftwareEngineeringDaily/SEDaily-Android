@@ -1,22 +1,13 @@
 package com.koalatea.thehollidayinn.softwareengineeringdaily.repositories;
 
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
 import android.content.Context;
-import android.os.Build;
-import android.support.v4.app.NotificationCompat;
 
 import com.downloader.Error;
 import com.downloader.OnDownloadListener;
 import com.downloader.PRDownloader;
-import com.koalatea.thehollidayinn.softwareengineeringdaily.R;
-import com.koalatea.thehollidayinn.softwareengineeringdaily.app.AppComponent;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.app.SEDApp;
-import com.koalatea.thehollidayinn.softwareengineeringdaily.data.AppDatabase;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.data.models.Download;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.data.models.Post;
-import com.koalatea.thehollidayinn.softwareengineeringdaily.data.repositories.BookmarkDao;
-import com.koalatea.thehollidayinn.softwareengineeringdaily.data.repositories.DownloadDao;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.data.repositories.DownloadRepository;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.downloads.MP3FileManager;
 
@@ -26,7 +17,6 @@ import java.util.Map;
 
 import io.reactivex.Observable;
 import io.reactivex.subjects.PublishSubject;
-import timber.log.Timber;
 
 /*
  * Created by keithholliday on 11/3/17.

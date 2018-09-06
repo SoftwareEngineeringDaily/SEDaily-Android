@@ -2,13 +2,13 @@ package com.koalatea.thehollidayinn.softwareengineeringdaily;
 
 import android.content.ComponentName;
 import android.os.RemoteException;
-import android.support.annotation.Nullable;
 import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaControllerCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 
 import com.koalatea.thehollidayinn.softwareengineeringdaily.audio.MusicService;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.playbar.PlaybarFragment;
@@ -87,11 +87,6 @@ public class PlaybackControllerActivity extends AppCompatActivity {
         } catch (RuntimeException e) {
             // @TODO: log?
         }
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
     }
 
     @Override

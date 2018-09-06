@@ -13,8 +13,8 @@ android {
         applicationId "com.koalatea.thehollidayinn.softwareengineeringdaily"
         minSdkVersion rootProject.minSdkVersion
         targetSdkVersion rootProject.targetSdkVersion
-        versionCode 30
-        versionName "1.5.7"
+        versionCode 31
+        versionName "1.5.8"
         multiDexEnabled true
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
@@ -109,6 +109,7 @@ dependencies {
     implementation 'com.android.support:multidex:1.0.3'
 
     // Android
+    implementation 'com.android.support:appcompat-v7:27.1.1'
     implementation "com.android.support:design:$rootProject.supportLibraryVersion"
     implementation "com.android.support:appcompat-v7:$rootProject.supportLibraryVersion"
     implementation "com.android.support.constraint:constraint-layout:$rootProject.constraintlayoutVersion"
@@ -144,7 +145,6 @@ dependencies {
 
     //Presentation
     implementation "com.squareup.picasso:picasso:$rootProject.picassoVersion"
-//    implementation "com.google.android.gms:play-services-oss-licenses:$rootProject.playVersion"
     implementation 'com.ethanhua:skeleton:1.0.0'
     implementation 'de.hdodenhof:circleimageview:2.2.0'
 

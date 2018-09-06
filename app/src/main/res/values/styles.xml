@@ -34,4 +34,9 @@
         <item name="windowNoTitle">true</item>
     </style>
 
+    <style name="TextAppearance.SEDaily.EpisodeTitle" parent="@style/TextAppearance.AppCompat.Subhead">
+        <item name="android:fontFamily">@font/open_sans_light</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
 </resources>
