@@ -420,23 +420,15 @@ public class PodcastDetailActivity extends PlaybackControllerActivity {
     deleteButton.setVisibility(View.INVISIBLE);
   }
 
-  private boolean hasValidMp3() {
-    if (post == null || post.getMp3() == null || post.getMp3().isEmpty()) {
-      return false;
-    }
-
-    return true;
-  }
-
   @OnClick(R.id.playButton)
   public void playClick () {
-    if (!hasValidMp3()) return;
+    if (!PodcastHelper.Companion.hasValidMp3(post)) return;
     playButton.toggle();
     playMedia();
   }
 
   public void downloadMp3 () {
-    if (!hasValidMp3()) return;
+    if (!PodcastHelper.Companion.hasValidMp3(post)) return;
     if (downloadItem == null) return;
 
     if (podcastDownloadsRepository.isDownloading(post.get_id())) {
@@ -449,7 +441,7 @@ public class PodcastDetailActivity extends PlaybackControllerActivity {
   }
 
   public void playMedia () {
-    if (!hasValidMp3()) return;
+    if (!PodcastHelper.Companion.hasValidMp3(post)) return;
 
     String source = post.getMp3();
     String id = String.valueOf(source.hashCode());
@@ -462,7 +454,7 @@ public class PodcastDetailActivity extends PlaybackControllerActivity {
       File file = new File(mp3FileManager.getRootDirPath(context), filename);
       mediaUri = file.getAbsolutePath();
     }
-    Log.v("keithtest", String.valueOf(podcastDownloadsRepository.isPodcastDownloaded(post)));
+
     MusicProvider mMusicProvider = MusicProvider.getInstance();
     MediaMetadataCompat item; // = mMusicProvider.getMusic(id);
 
@@ -529,9 +521,7 @@ public class PodcastDetailActivity extends PlaybackControllerActivity {
 
   private void removeBookmark(Post post) {
     if (post == null) return;
-
-     markNotBookmarked();
-
+    markNotBookmarked();
     BookmarkHelper.getInstance().removeBookmark(post, mService);
   }
 }
