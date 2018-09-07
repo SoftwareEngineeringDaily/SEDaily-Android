@@ -434,10 +434,11 @@ public class PodcastDetailActivity extends PlaybackControllerActivity {
     if (podcastDownloadsRepository.isDownloading(post.get_id())) {
       setUpNotDownloadedState();
       podcastDownloadsRepository.cancelDownload(post);
-    } else {
-      setUpDownloadedState();
-      podcastDownloadsRepository.downloadPostMP3(post);
+      return;
     }
+
+    setUpDownloadedState();
+    podcastDownloadsRepository.downloadPostMP3(post);
   }
 
   public void playMedia () {

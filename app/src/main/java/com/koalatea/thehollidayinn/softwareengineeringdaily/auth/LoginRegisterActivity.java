@@ -14,17 +14,11 @@ import com.google.firebase.analytics.FirebaseAnalytics;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.MainActivity;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.R;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.app.SEDApp;
-import com.koalatea.thehollidayinn.softwareengineeringdaily.data.AppDatabase;
-import com.koalatea.thehollidayinn.softwareengineeringdaily.data.models.Bookmark;
-import com.koalatea.thehollidayinn.softwareengineeringdaily.data.models.Post;
+import com.koalatea.thehollidayinn.softwareengineeringdaily.bookmarks.BookmarksRepository;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.data.models.User;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.data.remote.APIInterface;
-import com.koalatea.thehollidayinn.softwareengineeringdaily.data.repositories.BookmarkDao;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.repositories.UserRepository;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.util.AlertUtil;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -67,7 +61,7 @@ public class LoginRegisterActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
       super.onCreate(savedInstanceState);
       setContentView(R.layout.activity_login_register);
-      Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+      Toolbar toolbar = findViewById(R.id.toolbar);
       setSupportActionBar(toolbar);
       getSupportActionBar().setDisplayShowTitleEnabled(false);
 
@@ -76,26 +70,20 @@ public class LoginRegisterActivity extends AppCompatActivity {
       mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
       userRepository = UserRepository.getInstance(this);
 
-      loginRegButton.setOnClickListener(new View.OnClickListener() {
-          @Override
-          public void onClick(View v) {
-              String username = usernameEditText.getText().toString();
-              String password = passwordEditText.getText().toString();
-              String email = emailEditText.getText().toString();
+      loginRegButton.setOnClickListener(v -> {
+          String username = usernameEditText.getText().toString();
+          String password = passwordEditText.getText().toString();
+          String email = emailEditText.getText().toString();
 
-              loginReg(username, email, password);
-          }
+          loginReg(username, email, password);
       });
 
-      toggleButton.setOnClickListener(new View.OnClickListener() {
-          @Override
-          public void onClick(View v) {
-            if (register) {
-                setUpLoginView();
-                return;
-            }
-            setUpRegisterView();
-          }
+      toggleButton.setOnClickListener(v -> {
+        if (register) {
+            setUpLoginView();
+            return;
+        }
+        setUpRegisterView();
       });
 
       setUpLoginView();
@@ -164,39 +152,11 @@ public class LoginRegisterActivity extends AppCompatActivity {
                 @Override
                 public void onNext(User user) {
                     userRepository.setToken(user.getToken());
-                    loadBookmarks();
+                    BookmarksRepository.Companion.loadBookmarks();
                     Intent intent = new Intent(LoginRegisterActivity.this, MainActivity.class);
                     startActivity(intent);
                 }
             });
-    }
-
-    private void loadBookmarks() {
-      APIInterface service = SEDApp.component().kibblService();
-      service.getBookmarks()
-        .subscribeOn(Schedulers.io())
-        .subscribe(new DisposableObserver<List<Post>>() {
-          @Override
-          public void onComplete() {
-          }
-
-          @Override
-          public void onError(Throwable e) {
-          }
-
-          @Override
-          public void onNext(List<Post> posts) {
-            ArrayList<Bookmark> bookmarks = new ArrayList<>();
-
-            for(Post post: posts) {
-              bookmarks.add(new Bookmark(post));
-            }
-
-            AppDatabase db = AppDatabase.getDatabase();
-            BookmarkDao bookmarkDao = db.bookmarkDao();
-            bookmarkDao.insertAll(bookmarks);
-          }
-        });
     }
 
     private void logLoginRegAnalytics(String username, String type) {
