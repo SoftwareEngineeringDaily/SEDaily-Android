@@ -23,9 +23,10 @@ import com.koalatea.thehollidayinn.softwareengineeringdaily.util.AlertUtil;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import io.reactivex.Observable;
+import io.reactivex.Single;
 import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.observers.DisposableObserver;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 import retrofit2.HttpException;
 import retrofit2.Response;
@@ -56,6 +57,7 @@ public class LoginRegisterActivity extends AppCompatActivity {
 
     private UserRepository userRepository;
     private FirebaseAnalytics mFirebaseAnalytics;
+    private CompositeDisposable compositeDisposable = new CompositeDisposable();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -89,6 +91,12 @@ public class LoginRegisterActivity extends AppCompatActivity {
       setUpLoginView();
     }
 
+    @Override
+    protected void onDestroy() {
+        compositeDisposable.dispose();
+        super.onDestroy();
+    }
+
     private void setUpLoginView () {
         register = false;
         title.setText(getString(R.string.login));
@@ -113,6 +121,35 @@ public class LoginRegisterActivity extends AppCompatActivity {
       AlertUtil.displayMessage(this, message);
     }
 
+    private void handleLoginComplete() {
+        loginRegButton.setEnabled(true);
+    }
+
+    private void handleLoginSuccess(User user) {
+        this.handleLoginComplete();
+        userRepository.setToken(user.getToken());
+        BookmarksRepository.Companion.loadBookmarks();
+        Intent intent = new Intent(LoginRegisterActivity.this, MainActivity.class);
+        startActivity(intent);
+    }
+
+    private void handleLoginError(Throwable error) {
+        this.handleLoginComplete();
+
+        try {
+            // We had non-200 http error
+            if (error instanceof HttpException) {
+                HttpException httpException = (HttpException) error;
+                Response response = httpException.response();
+                displayMessage(response.errorBody().string());
+            } else {
+                displayMessage(error.getMessage());
+            }
+        } catch (Exception e) {
+            displayMessage(e.getMessage());
+        }
+    }
+
     private void loginReg(String username, String email, String password) {
         loginRegButton.setEnabled(false);
 
@@ -124,39 +161,11 @@ public class LoginRegisterActivity extends AppCompatActivity {
             email = username;
         }
 
-        getQuery(username, email, password)
+        Disposable disposable =  getQuery(username, email, password)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(new DisposableObserver<User>() {
-                @Override
-                public void onComplete() {
-                    loginRegButton.setEnabled(true);
-                }
-
-                @Override
-                public void onError(Throwable error) {
-                    try {
-                        // We had non-200 http error
-                        if (error instanceof HttpException) {
-                            HttpException httpException = (HttpException) error;
-                            Response response = httpException.response();
-                            displayMessage(response.errorBody().string());
-                        } else {
-                            displayMessage(error.getMessage());
-                        }
-                    } catch (Exception e) {
-                        displayMessage(e.getMessage());
-                    }
-                }
-
-                @Override
-                public void onNext(User user) {
-                    userRepository.setToken(user.getToken());
-                    BookmarksRepository.Companion.loadBookmarks();
-                    Intent intent = new Intent(LoginRegisterActivity.this, MainActivity.class);
-                    startActivity(intent);
-                }
-            });
+            .subscribe(this::handleLoginSuccess, this::handleLoginError);
+        compositeDisposable.add(disposable);
     }
 
     private void logLoginRegAnalytics(String username, String type) {
@@ -174,7 +183,7 @@ public class LoginRegisterActivity extends AppCompatActivity {
         return getString(R.string.login);
     }
 
-    private Observable<User> getQuery (String username, String email, String password) {
+    private Single<User> getQuery (String username, String email, String password) {
       APIInterface mService = SEDApp.component.kibblService();
       if (register) {
         return mService.register(username, email, password);

@@ -103,17 +103,14 @@ public class PodListFragment extends Fragment {
   private void setUpSwipeRefresh(View rootView) {
     swipeRefreshLayout = rootView.findViewById(R.id.swiperefresh);
     swipeRefreshLayout.setOnRefreshListener(
-            new SwipeRefreshLayout.OnRefreshListener() {
-              @Override
-              public void onRefresh() {
-                // @TODO: make bookmark fragment
-                if (title != null && title.equals("Bookmarks")) {
-                  getPosts("");
-                  return;
-                }
-                podcastListViewModel.getPosts("", title, tagId);
-              }
-            }
+        () -> {
+          // @TODO: make bookmark fragment
+          if (title != null && title.equals("Bookmarks")) {
+            getPosts("");
+            return;
+          }
+          podcastListViewModel.getPosts("", title, tagId);
+        }
     );
   }
 
