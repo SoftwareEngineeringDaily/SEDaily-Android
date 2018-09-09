@@ -14,7 +14,6 @@ import dagger.Provides;
  */
 @Module
 public class AnalyticsModule {
-
   @Provides
   @Singleton
   FirebaseAnalytics providesFirebaseAnalytics(@NonNull Context context) {

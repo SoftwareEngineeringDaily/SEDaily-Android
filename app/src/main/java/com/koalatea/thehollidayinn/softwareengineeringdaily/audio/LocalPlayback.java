@@ -16,6 +16,7 @@ import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.text.TextUtils;
+import android.util.Log;
 
 import com.google.android.exoplayer2.DefaultLoadControl;
 import com.google.android.exoplayer2.ExoPlaybackException;
@@ -46,7 +47,7 @@ import static com.google.android.exoplayer2.C.USAGE_MEDIA;
  * A class that implements local media playback using {@link android.media.MediaPlayer}
  */
 
-class LocalPlayback implements Playback {
+public class LocalPlayback implements Playback {
 
   private static final String TAG = LocalPlayback.class.getSimpleName();
 
@@ -82,29 +83,26 @@ class LocalPlayback implements Playback {
   private final IntentFilter mAudioNoisyIntentFilter = new IntentFilter(AudioManager.ACTION_AUDIO_BECOMING_NOISY);
 
   private final BroadcastReceiver mAudioNoisyReceiver =
-          new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-              if (!AudioManager.ACTION_AUDIO_BECOMING_NOISY.equals(intent.getAction())) return;
+    new BroadcastReceiver() {
+      @Override
+      public void onReceive(Context context, Intent intent) {
+        if (!AudioManager.ACTION_AUDIO_BECOMING_NOISY.equals(intent.getAction())) return;
 
-              if (!isPlaying()) return;
+        if (!isPlaying()) return;
 
-              Intent i = new Intent(context, MusicService.class);
-              i.setAction(MusicService.ACTION_CMD);
-              i.putExtra(MusicService.CMD_NAME, MusicService.CMD_PAUSE);
-              mContext.startService(i);
-            }
-          };
-
-  // Not in UAMP
-  public volatile long mCurrentPosition;
+        Intent i = new Intent(context, MusicService.class);
+        i.setAction(MusicService.ACTION_CMD);
+        i.putExtra(MusicService.CMD_NAME, MusicService.CMD_PAUSE);
+        mContext.startService(i);
+      }
+    };
 
   // Make a class or something else?
   private String currentSource = "";
   private MediaSessionCompat.QueueItem currentQueueItem;
   private String currentMediaId;
 
-  LocalPlayback(Context context, MusicProvider musicProvider) {
+  public LocalPlayback(Context context, MusicProvider musicProvider) {
     Context applicationContext = context.getApplicationContext();
     this.mContext = applicationContext;
     this.mMusicProvider = musicProvider;
@@ -128,9 +126,7 @@ class LocalPlayback implements Playback {
   }
 
   @Override
-  public void setState(int state) {
-
-  }
+  public void setState(int state) {}
 
   @Override
   public int getState() {
@@ -187,21 +183,17 @@ class LocalPlayback implements Playback {
     currentMediaId = mediaId;
     boolean mediaHasChanged = !TextUtils.equals(mediaId, mCurrentMediaId);
     if (mediaHasChanged) {
-      mCurrentMediaId = mediaId;
+        mCurrentMediaId = mediaId;
     }
 
     if (mediaHasChanged || mExoPlayer == null) {
       releaseResources(false);
 
+      // Do we need this? I think it ensures we have the latest data
       MediaMetadataCompat track = mMusicProvider.getMusic(mediaId);
       if (track == null) return;
-//      MediaMetadataCompat track =
-//              mMusicProvider.getMusic(
-//                      MediaIDHelper.extractMusicIDFromMediaID(
-//                              item.getDescription().getMediaId()));
 
       String source = track.getString(MediaMetadataCompat.METADATA_KEY_MEDIA_URI);
-//      String source = track.getString(MusicProviderSource.CUSTOM_METADATA_TRACK_SOURCE);
       if (source != null) {
         source = source.replaceAll(" ", "%20"); // Escape spaces for URLs
       }
@@ -212,15 +204,11 @@ class LocalPlayback implements Playback {
         mExoPlayer.addListener(mEventListener);
       }
 
-      // @TODO: can we min 21 now?
-      if (Build.VERSION.SDK_INT > 21) {
-        final AudioAttributes audioAttributes = new AudioAttributes.Builder()
-                .setContentType(CONTENT_TYPE_SPEECH) // For podcasts
-                .setUsage(USAGE_MEDIA)
-                .build();
-        mExoPlayer.setAudioAttributes(audioAttributes);
-      }
-
+      final AudioAttributes audioAttributes = new AudioAttributes.Builder()
+              .setContentType(CONTENT_TYPE_SPEECH) // For podcasts
+              .setUsage(USAGE_MEDIA)
+              .build();
+      mExoPlayer.setAudioAttributes(audioAttributes);
 
       // @TODO: Here we use uamp. I think that need to be something else
       DataSource.Factory dataSourceFactory =
@@ -283,9 +271,6 @@ class LocalPlayback implements Playback {
 
   @Override
   public void seekTo(long position) {
-    // @TODO: UAMP doesn't have this, do we need it?
-    mCurrentPosition = position;
-
     if (mExoPlayer == null) return;
 
     registerAudioNoisyReceiver();

@@ -8,14 +8,12 @@ import android.os.Handler;
 import android.os.Message;
 import android.os.RemoteException;
 import android.support.annotation.NonNull;
-import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.MediaBrowserServiceCompat;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaButtonReceiver;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
-
 
 import com.koalatea.thehollidayinn.softwareengineeringdaily.MainActivity;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.R;
@@ -212,17 +210,7 @@ public class MusicService extends MediaBrowserServiceCompat implements
                                @NonNull final Result<List<MediaBrowserCompat.MediaItem>> result) {
 
         if (MEDIA_ID_EMPTY_ROOT.equals(parentMediaId)) {
-            result.sendResult(new ArrayList<MediaBrowserCompat.MediaItem>());
-        } else if (mMusicProvider.isInitialized()) {
-//            result.sendResult(mMusicProvider.getChildren(parentMediaId, getResources()));
-        } else {
-            result.detach();
-//            mMusicProvider.retrieveMediaAsync(new MusicProvider.Callback() {
-//                @Override
-//                public void onMusicCatalogReady(boolean success) {
-//                    result.sendResult(mMusicProvider.getChildren(parentMediaId, getResources()));
-//                }
-//            });
+            result.sendResult(new ArrayList<>());
         }
     }
 
