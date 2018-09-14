@@ -196,14 +196,7 @@ public class MainActivity extends PlaybackControllerActivity
             );
         }
 
-        AccountHeader headerResult = accountHeaderBuilder
-//                .withOnAccountHeaderListener(new AccountHeader.OnAccountHeaderListener() {
-//                    @Override
-//                    public boolean onProfileChanged(View view, IProfile profile, boolean currentProfile) {
-//                        return false;
-//                    }
-//                })
-                .build();
+        AccountHeader headerResult = accountHeaderBuilder.build();
 
         drawer = new DrawerBuilder()
                 .withActivity(this)

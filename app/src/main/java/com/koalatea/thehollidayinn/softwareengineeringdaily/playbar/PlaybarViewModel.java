@@ -36,11 +36,7 @@ public class PlaybarViewModel extends ViewModel {
             currentPosition += (int) timeDelta * mLastPlaybackState.getPlaybackSpeed();
         }
 
-        // Save progress for episode
-        String postTile = PodcastSessionStateManager.getInstance().getCurrentTitle();
-        if (!postTile.isEmpty()) {
-            PodcastSessionStateManager.getInstance().setProgressForEpisode(postTile, currentPosition);
-        }
+        PodcastSessionStateManager.getInstance().saveEpisodeProgress(currentPosition);
 
         return currentPosition;
     }

@@ -12,6 +12,8 @@ import android.media.AudioManager;
 import android.net.Uri;
 import android.net.wifi.WifiManager;
 import android.os.Build;
+import android.os.Handler;
+import android.os.HandlerThread;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
@@ -23,6 +25,7 @@ import com.google.android.exoplayer2.ExoPlaybackException;
 import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.ExoPlayerFactory;
 import com.google.android.exoplayer2.PlaybackParameters;
+import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.exoplayer2.Timeline;
 import com.google.android.exoplayer2.audio.AudioAttributes;
@@ -49,40 +52,40 @@ import static com.google.android.exoplayer2.C.USAGE_MEDIA;
 
 public class LocalPlayback implements Playback {
 
-  private static final String TAG = LocalPlayback.class.getSimpleName();
+    private static final String TAG = LocalPlayback.class.getSimpleName();
 
-  // The volume we set the media player to when we lose audio focus, but are
-  // allowed to reduce the volume instead of stopping playback.
-  private static final float VOLUME_DUCK = 0.2f;
-  // The volume we set the media player when we have audio focus.
-  private static final float VOLUME_NORMAL = 1.0f;
+    // The volume we set the media player to when we lose audio focus, but are
+    // allowed to reduce the volume instead of stopping playback.
+    private static final float VOLUME_DUCK = 0.2f;
+    // The volume we set the media player when we have audio focus.
+    private static final float VOLUME_NORMAL = 1.0f;
 
-  // we don't have audio focus, and can't duck (play at a low volume)
-  private static final int AUDIO_NO_FOCUS_NO_DUCK = 0;
-  // we don't have focus, but can duck (play at a low volume)
-  private static final int AUDIO_NO_FOCUS_CAN_DUCK = 1;
-  // we have full audio focus
-  private static final int AUDIO_FOCUSED = 2;
+    // we don't have audio focus, and can't duck (play at a low volume)
+    private static final int AUDIO_NO_FOCUS_NO_DUCK = 0;
+    // we don't have focus, but can duck (play at a low volume)
+    private static final int AUDIO_NO_FOCUS_CAN_DUCK = 1;
+    // we have full audio focus
+    private static final int AUDIO_FOCUSED = 2;
 
-  private final Context mContext;
-  private final WifiManager.WifiLock mWifiLock;
-  private boolean mPlayOnFocusGain;
-  private Callback mCallback;
-  private final MusicProvider mMusicProvider;
-  private boolean mAudioNoisyReceiverRegistered;
-  private volatile String mCurrentMediaId;
+    private final Context mContext;
+    private final WifiManager.WifiLock mWifiLock;
+    private boolean mPlayOnFocusGain;
+    private Callback mCallback;
+    private final MusicProvider mMusicProvider;
+    private boolean mAudioNoisyReceiverRegistered;
+    private volatile String mCurrentMediaId;
 
-  private int mCurrentAudioFocusState = AUDIO_NO_FOCUS_NO_DUCK;
-  private final AudioManager mAudioManager;
-  private SimpleExoPlayer mExoPlayer;
-  private final ExoPlayerEventListener mEventListener = new ExoPlayerEventListener();
+    private int mCurrentAudioFocusState = AUDIO_NO_FOCUS_NO_DUCK;
+    private final AudioManager mAudioManager;
+    private SimpleExoPlayer mExoPlayer;
+    private final ExoPlayerEventListener mEventListener = new ExoPlayerEventListener();
 
-  // Whether to return STATE_NONE or STATE_STOPPED when mExoPlayer is null;
-  private boolean mExoPlayerNullIsStopped =  false;
+    // Whether to return STATE_NONE or STATE_STOPPED when mExoPlayer is null;
+    private boolean mExoPlayerNullIsStopped =  false;
 
-  private final IntentFilter mAudioNoisyIntentFilter = new IntentFilter(AudioManager.ACTION_AUDIO_BECOMING_NOISY);
+    private final IntentFilter mAudioNoisyIntentFilter = new IntentFilter(AudioManager.ACTION_AUDIO_BECOMING_NOISY);
 
-  private final BroadcastReceiver mAudioNoisyReceiver =
+    private final BroadcastReceiver mAudioNoisyReceiver =
     new BroadcastReceiver() {
       @Override
       public void onReceive(Context context, Intent intent) {
@@ -97,23 +100,34 @@ public class LocalPlayback implements Playback {
       }
     };
 
-  // Make a class or something else?
-  private String currentSource = "";
-  private MediaSessionCompat.QueueItem currentQueueItem;
-  private String currentMediaId;
+    // Make a class or something else?
+    private String currentSource = "";
+    private MediaSessionCompat.QueueItem currentQueueItem;
+    private String currentMediaId;
+    private Handler handler;
+    private HandlerThread mHandlerThread;
+    private final Runnable updateProgressAction = () -> updateProgressBar();
 
-  public LocalPlayback(Context context, MusicProvider musicProvider) {
-    Context applicationContext = context.getApplicationContext();
-    this.mContext = applicationContext;
-    this.mMusicProvider = musicProvider;
+    public LocalPlayback(Context context, MusicProvider musicProvider) {
+        Context applicationContext = context.getApplicationContext();
+        this.mContext = applicationContext;
+        this.mMusicProvider = musicProvider;
 
 
-    this.mAudioManager = (AudioManager) applicationContext.getSystemService(Context.AUDIO_SERVICE);
+        this.mAudioManager = (AudioManager) applicationContext.getSystemService(Context.AUDIO_SERVICE);
 
-    // Create the Wifi lock (this does not acquire the lock, this just creates it).
-    this.mWifiLock = ((WifiManager) applicationContext.getSystemService(Context.WIFI_SERVICE))
-            .createWifiLock(WifiManager.WIFI_MODE_FULL, "sample_lock");
-  }
+        // Create the Wifi lock (this does not acquire the lock, this just creates it).
+        this.mWifiLock = ((WifiManager) applicationContext.getSystemService(Context.WIFI_SERVICE))
+                .createWifiLock(WifiManager.WIFI_MODE_FULL, "sample_lock");
+
+        startHandlerThread();
+    }
+
+    public void startHandlerThread(){
+        mHandlerThread = new HandlerThread("HandlerThread");
+        mHandlerThread.start();
+        handler = new Handler(mHandlerThread.getLooper());
+    }
 
   @Override
   public void start() {}
@@ -442,77 +456,96 @@ public class LocalPlayback implements Playback {
     mAudioNoisyReceiverRegistered = false;
   }
 
-  private final class ExoPlayerEventListener implements ExoPlayer.EventListener {
-    @Override
-    public void onTimelineChanged(Timeline timeline, Object manifest) {
+    private void updateProgressBar() {
+        long position = mExoPlayer == null ? 0 : mExoPlayer.getCurrentPosition();
 
+        handler.removeCallbacks(updateProgressAction);
+
+        PodcastSessionStateManager.getInstance().saveEpisodeProgress(position);
+
+        // Schedule an update if necessary.
+        int playbackState = mExoPlayer == null ? Player.STATE_IDLE : mExoPlayer.getPlaybackState();
+        if (playbackState != Player.STATE_IDLE && playbackState != Player.STATE_ENDED) {
+            long delayMs;
+            if (mExoPlayer.getPlayWhenReady() && playbackState == Player.STATE_READY) {
+                delayMs = 1000 - (position % 1000);
+                if (delayMs < 200) {
+                    delayMs += 1000;
+                }
+            } else {
+                delayMs = 1000;
+            }
+            handler.postDelayed(updateProgressAction, delayMs);
+        }
     }
 
-    @Override
-    public void onTracksChanged(
-            TrackGroupArray trackGroups, TrackSelectionArray trackSelections) {
-      // Nothing to do.
-    }
+    private final class ExoPlayerEventListener implements ExoPlayer.EventListener {
+        @Override
+        public void onTimelineChanged(Timeline timeline, Object manifest) {
 
-    @Override
-    public void onLoadingChanged(boolean isLoading) {
-      // Nothing to do.
-    }
+        }
 
-    @Override
-    public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
-      switch(playbackState) {
-        case ExoPlayer.STATE_IDLE:
-        case ExoPlayer.STATE_BUFFERING:
-        case ExoPlayer.STATE_READY:
-          setDuration();
-          if (mCallback != null) {
-            mCallback.onPlaybackStatusChanged(getState());
+        @Override
+        public void onTracksChanged(TrackGroupArray trackGroups, TrackSelectionArray trackSelections) {
+          // Nothing to do.
+        }
+
+        @Override
+        public void onLoadingChanged(boolean isLoading) {
+          // Nothing to do.
+        }
+
+        @Override
+        public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
+          switch(playbackState) {
+            case ExoPlayer.STATE_IDLE:
+            case ExoPlayer.STATE_BUFFERING:
+            case ExoPlayer.STATE_READY:
+                updateProgressBar();
+                setDuration();
+                if (mCallback != null)  mCallback.onPlaybackStatusChanged(getState());
+                break;
+            case ExoPlayer.STATE_ENDED:
+                if (mCallback != null) mCallback.onCompletion();
+                break;
           }
-          break;
-        case ExoPlayer.STATE_ENDED:
-          if (mCallback != null) {
-            mCallback.onCompletion();
+        }
+
+        @Override
+        public void onPlayerError(ExoPlaybackException error) {
+          final String what;
+          switch (error.type) {
+            case ExoPlaybackException.TYPE_SOURCE:
+              what = error.getSourceException().getMessage();
+              break;
+            case ExoPlaybackException.TYPE_RENDERER:
+              what = error.getRendererException().getMessage();
+              break;
+            case ExoPlaybackException.TYPE_UNEXPECTED:
+              what = error.getUnexpectedException().getMessage();
+              break;
+            default:
+              what = "Unknown: " + error;
           }
-          break;
-      }
-    }
 
-    @Override
-    public void onPlayerError(ExoPlaybackException error) {
-      final String what;
-      switch (error.type) {
-        case ExoPlaybackException.TYPE_SOURCE:
-          what = error.getSourceException().getMessage();
-          break;
-        case ExoPlaybackException.TYPE_RENDERER:
-          what = error.getRendererException().getMessage();
-          break;
-        case ExoPlaybackException.TYPE_UNEXPECTED:
-          what = error.getUnexpectedException().getMessage();
-          break;
-        default:
-          what = "Unknown: " + error;
-      }
+          if (mCallback != null) {
+            mCallback.onError("ExoPlayer error " + what);
+          }
+        }
 
-      if (mCallback != null) {
-        mCallback.onError("ExoPlayer error " + what);
-      }
-    }
+        @Override
+        public void onPositionDiscontinuity() {
+          // Nothing to do.
+        }
 
-    @Override
-    public void onPositionDiscontinuity() {
-      // Nothing to do.
-    }
+        @Override
+        public void onPlaybackParametersChanged(PlaybackParameters playbackParameters) {
+          // Nothing to do.
+        }
 
-    @Override
-    public void onPlaybackParametersChanged(PlaybackParameters playbackParameters) {
-      // Nothing to do.
+        @Override
+        public void onRepeatModeChanged(int repeatMode) {
+          // Nothing to do.
+        }
     }
-
-    @Override
-    public void onRepeatModeChanged(int repeatMode) {
-      // Nothing to do.
-    }
-  }
 }

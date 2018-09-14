@@ -90,7 +90,7 @@ public class PodcastSessionStateManager {
     mediaMetaDataChange.onNext(mediaMetaData);
   }
 
-  public void setProgressForEpisode(String _id, long currentProgress) {
+  private void setProgressForEpisode(String _id, long currentProgress) {
     this.episodeProgress.put(_id, currentProgress);
 
     // Save every 10 seconds
@@ -131,5 +131,11 @@ public class PodcastSessionStateManager {
 
   public String getCurrentTitle() {
     return this.currentTitle;
+  }
+
+  public void saveEpisodeProgress(long currentPosition) {
+    String postTile = getCurrentTitle();
+    if (postTile.isEmpty()) return;
+    setProgressForEpisode(postTile, currentPosition);
   }
 }
