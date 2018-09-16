@@ -28,7 +28,7 @@ $ cd SEDaily-Android
 
 Compile the project with Gradle using
 ```sh
-./gradelw build
+./gradlew build
 ```
 
 
