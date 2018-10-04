@@ -1,8 +1,7 @@
 package com.koalatea.thehollidayinn.softwareengineeringdaily.podcast;
 
-import android.arch.lifecycle.MutableLiveData;
-import android.arch.lifecycle.ViewModel;
-import android.util.Log;
+import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.ViewModel;
 
 import com.koalatea.thehollidayinn.softwareengineeringdaily.app.SEDApp;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.data.models.Post;

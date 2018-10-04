@@ -1,14 +1,13 @@
 package com.koalatea.thehollidayinn.softwareengineeringdaily;
 
 import android.content.Context;
-import android.support.test.InstrumentationRegistry;
-import android.support.test.rule.ServiceTestRule;
-import android.support.test.runner.AndroidJUnit4;
+import androidx.test.InstrumentationRegistry;
+import androidx.test.rule.ServiceTestRule;
+import androidx.test.runner.AndroidJUnit4;
 import android.support.v4.media.MediaDescriptionCompat;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
-import android.util.Log;
 
 import com.koalatea.thehollidayinn.softwareengineeringdaily.audio.LocalPlayback;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.audio.MusicProvider;

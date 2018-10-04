@@ -1,10 +1,10 @@
 package com.koalatea.thehollidayinn.softwareengineeringdaily.data.models;
 
-import android.arch.persistence.room.ColumnInfo;
-import android.arch.persistence.room.Entity;
-import android.arch.persistence.room.PrimaryKey;
 
-import org.jetbrains.annotations.NotNull;
+import androidx.annotation.NonNull;
+import androidx.room.ColumnInfo;
+import androidx.room.Entity;
+import androidx.room.PrimaryKey;
 
 /**
  * Created by samuelrey on 11/30/17.
@@ -13,13 +13,13 @@ import org.jetbrains.annotations.NotNull;
 @Entity(tableName = "bookmark")
 public class Bookmark {
     @PrimaryKey
-    @NotNull
+    @NonNull
     private String postId;
 
     @ColumnInfo(name = "active")
     private Boolean active;
 
-    public Bookmark(@NotNull Post post) {
+    public Bookmark(@NonNull Post post) {
         this.postId = post.get_id();
     }
 

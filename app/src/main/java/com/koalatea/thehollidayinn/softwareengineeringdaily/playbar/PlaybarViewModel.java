@@ -1,7 +1,7 @@
 package com.koalatea.thehollidayinn.softwareengineeringdaily.playbar;
 
 import android.app.Activity;
-import android.arch.lifecycle.ViewModel;
+import androidx.lifecycle.ViewModel;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.support.v4.media.session.MediaControllerCompat;

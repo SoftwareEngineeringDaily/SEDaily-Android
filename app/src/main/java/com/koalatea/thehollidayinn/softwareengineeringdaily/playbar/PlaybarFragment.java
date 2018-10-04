@@ -1,12 +1,12 @@
 package com.koalatea.thehollidayinn.softwareengineeringdaily.playbar;
 
 import android.app.Activity;
-import android.arch.lifecycle.ViewModelProviders;
+import androidx.lifecycle.ViewModelProviders;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.SystemClock;
-import android.support.v4.app.Fragment;
-import android.support.v4.content.ContextCompat;
+import androidx.fragment.app.Fragment;
+import androidx.core.content.ContextCompat;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaControllerCompat;
 import android.support.v4.media.session.PlaybackStateCompat;

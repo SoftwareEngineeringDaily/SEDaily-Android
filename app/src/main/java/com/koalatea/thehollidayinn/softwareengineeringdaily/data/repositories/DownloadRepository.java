@@ -1,6 +1,5 @@
 package com.koalatea.thehollidayinn.softwareengineeringdaily.data.repositories;
 
-import android.arch.lifecycle.LiveData;
 import android.os.AsyncTask;
 
 import com.koalatea.thehollidayinn.softwareengineeringdaily.data.AppDatabase;

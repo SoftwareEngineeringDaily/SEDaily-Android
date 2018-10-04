@@ -13,7 +13,7 @@
         android:icon="@android:drawable/ic_menu_search"
         android:iconTint="@color/white"
         app:showAsAction="collapseActionView|ifRoom"
-        app:actionViewClass="android.support.v7.widget.SearchView" />
+        app:actionViewClass="androidx.appcompat.widget.SearchView" />
 
     <!--<item android:id="@+id/opensource"-->
         <!--android:orderInCategory="103"-->

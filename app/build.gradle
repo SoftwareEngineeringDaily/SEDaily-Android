@@ -8,7 +8,7 @@ apply plugin: 'io.fabric'
 
 android {
     compileSdkVersion rootProject.compileSdkVersion
-    buildToolsVersion rootProject.buildToolsVersion
+    buildToolsVersion '28.0.2'
     defaultConfig {
         applicationId "com.koalatea.thehollidayinn.softwareengineeringdaily"
         minSdkVersion rootProject.minSdkVersion
@@ -16,7 +16,7 @@ android {
         versionCode 31
         versionName "1.5.8"
         multiDexEnabled true
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
         //Note this will be deprecated soon....
         javaCompileOptions {
@@ -106,33 +106,28 @@ if (build_param != "dev") {
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
 
-    implementation 'com.android.support:multidex:1.0.3'
+    implementation 'androidx.multidex:multidex:2.0.0'
 
     // Android
-    implementation 'com.android.support:appcompat-v7:27.1.1'
-    implementation "com.android.support:design:$rootProject.supportLibraryVersion"
-    implementation "com.android.support:appcompat-v7:$rootProject.supportLibraryVersion"
-    implementation "com.android.support.constraint:constraint-layout:$rootProject.constraintlayoutVersion"
-    implementation "com.android.support:cardview-v7:$rootProject.supportLibraryVersion"
-    implementation "com.android.support:recyclerview-v7:$rootProject.supportLibraryVersion"
+    implementation "androidx.appcompat:appcompat:$rootProject.supportLibraryVersion"
+    implementation "androidx.constraintlayout:constraintlayout:$rootProject.constraintlayoutVersion"
+    implementation "androidx.cardview:cardview:$rootProject.supportLibraryVersion"
+    implementation "androidx.recyclerview:recyclerview:$rootProject.supportLibraryVersion"
+    implementation "com.google.android.material:material:$rootProject.supportLibraryVersion"
 
     // Android Architecture
-    implementation "com.android.support.constraint:constraint-layout:$rootProject.constraintlayoutVersion"
-    implementation "com.android.support:support-v4:$rootProject.supportLibraryVersion"
-    implementation "android.arch.lifecycle:runtime:$rootProject.architectureComponents"
-    implementation "android.arch.lifecycle:extensions:$rootProject.architectureComponents"
-    implementation 'com.google.firebase:firebase-messaging:17.0.0'
-    kapt "android.arch.lifecycle:common-java8:$rootProject.architectureComponents"
+    implementation "androidx.lifecycle:lifecycle-runtime:$rootProject.architectureComponents"
+    implementation "androidx.lifecycle:lifecycle-extensions:$rootProject.architectureComponents"
+    implementation 'com.google.firebase:firebase-messaging:17.3.1'
+    kapt 'androidx.lifecycle:lifecycle-common-java8:2.0.0-rc01'
 
     // Audio
     implementation 'com.google.android.exoplayer:exoplayer:r2.5.4'
 
     //Persistence
-    implementation "android.arch.persistence.room:runtime:$rootProject.androidRoomRersistenceVersion"
-    kapt "android.arch.persistence.room:compiler:$rootProject.androidRoomRersistenceVersion"
+    implementation "androidx.room:room-runtime:$rootProject.architectureComponents"
+    kapt "androidx.room:room-compiler:$rootProject.architectureComponents"
 
-    //Kotlin
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jre8:$rootProject.kotlinVersion"
     //Rx Java
     implementation "io.reactivex.rxjava2:rxjava:$rootProject.rxjava2Version"
     implementation "io.reactivex.rxjava2:rxandroid:$rootProject.rxAndroid2Version"
@@ -162,6 +157,7 @@ dependencies {
     implementation 'com.mikepenz:google-material-typeface:3.0.1.2.original@aar'
     implementation 'com.github.ohoussein.playpauseview:playpauseview:1.0.2'
     implementation 'uk.co.chrisjenx:calligraphy:2.3.0'
+    implementation 'androidx.annotation:annotation:1.0.0-rc02'
 
     //Firebase
     implementation('com.crashlytics.sdk.android:crashlytics:2.7.1@aar') {
@@ -199,14 +195,14 @@ dependencies {
     testImplementation "org.jetbrains.kotlin:kotlin-test-junit:$kotlinVersion"
     testImplementation "org.jetbrains.kotlin:kotlin-stdlib-jre8:$rootProject.kotlinVersion"
     testImplementation "org.mockito:mockito-core:$rootProject.mockitoVersion"
-    testImplementation "android.arch.core:core-testing:$rootProject.architectureComponents"
-    androidTestImplementation("com.android.support.test.espresso:espresso-core:$rootProject.espressoVersion", {
+//    testImplementation "android.arch.core:core-testing:$rootProject.architectureComponents"
+    androidTestImplementation('androidx.test.espresso:espresso-core:3.1.0-alpha4', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
-    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
-    androidTestImplementation 'com.android.support.test.espresso:espresso-contrib:3.0.2'
-    androidTestImplementation 'com.android.support.test:rules:1.0.2'
-    androidTestImplementation 'com.android.support.test:runner:1.0.2'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.0-alpha4'
+    androidTestImplementation 'androidx.test.espresso:espresso-contrib:3.1.0-alpha4'
+    androidTestImplementation 'androidx.test:rules:1.1.0-alpha4'
+    androidTestImplementation 'androidx.test:runner:1.1.0-alpha4'
 }
 apply plugin: 'com.google.gms.google-services'
 
