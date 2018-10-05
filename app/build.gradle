@@ -24,6 +24,12 @@ android {
                 includeCompileClasspath false
             }
         }
+
+        kapt {
+            arguments {
+                arg("room.schemaLocation", "$projectDir/schemas".toString())
+            }
+        }
     }
 
     buildTypes {

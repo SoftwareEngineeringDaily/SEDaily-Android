@@ -54,7 +54,7 @@ class DailyAlarmReceiver: BroadcastReceiver() {
         val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val importance = NotificationManagerCompat.IMPORTANCE_DEFAULT
+            val importance = NotificationManager.IMPORTANCE_DEFAULT
             val channel = NotificationChannel(CHANNEL_ID, CHANNEL_ID, importance)
 //            val notificationManager = NotificationManagerCompat.from(context)
             notificationManager.createNotificationChannel(channel)

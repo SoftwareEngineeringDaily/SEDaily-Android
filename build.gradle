@@ -36,11 +36,13 @@ ext {
   targetSdkVersion = 28
   compileSdkVersion = 28
   buildToolsVersion = '28.0.2'
+  
   //Android
   supportLibraryVersion = '1.0.0'
   architectureComponents = '2.0.0'
   constraintlayoutVersion = '1.1.3'
   androidRoomRersistenceVersion = '1.1.0'
+  
   //Kotlin
   kotlinVersion = '1.2.71'
   //Firebase
