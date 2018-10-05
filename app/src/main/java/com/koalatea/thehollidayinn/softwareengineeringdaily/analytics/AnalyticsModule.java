@@ -1,7 +1,7 @@
 package com.koalatea.thehollidayinn.softwareengineeringdaily.analytics;
 
 import android.content.Context;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 import com.google.firebase.analytics.FirebaseAnalytics;
 
 import javax.inject.Singleton;
@@ -14,7 +14,6 @@ import dagger.Provides;
  */
 @Module
 public class AnalyticsModule {
-
   @Provides
   @Singleton
   FirebaseAnalytics providesFirebaseAnalytics(@NonNull Context context) {

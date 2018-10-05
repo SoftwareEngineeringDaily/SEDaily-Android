@@ -24,10 +24,7 @@ import java.net.URLConnection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 
-import timber.log.Timber;
-
 public class MusicProvider {
-
     private static final String TAG = MusicProvider.class.getSimpleName();
 
     public static final String MEDIA_ID_ROOT = "__ROOT__";
@@ -91,11 +88,6 @@ public class MusicProvider {
         //MediaMetadataCompat track = mMusicListById.get(musicId);
         mMusicListById.put(musicId, metadata);
     }
-
-    public boolean isInitialized() {
-        return mCurrentState == State.INITIALIZED;
-    }
-
 
     public void retrieveMediaAsync(final Callback callback) {
         if (mCurrentState == State.INITIALIZED) {

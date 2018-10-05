@@ -1,12 +1,12 @@
 package com.koalatea.thehollidayinn.softwareengineeringdaily.playbar;
 
 import android.app.Activity;
-import android.arch.lifecycle.ViewModelProviders;
+import androidx.lifecycle.ViewModelProviders;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.SystemClock;
-import android.support.v4.app.Fragment;
-import android.support.v4.content.ContextCompat;
+import androidx.fragment.app.Fragment;
+import androidx.core.content.ContextCompat;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaControllerCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
@@ -31,7 +31,6 @@ import java.util.concurrent.TimeUnit;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-
 import butterknife.OnClick;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.observers.DisposableObserver;
@@ -68,12 +67,7 @@ public class PlaybarFragment extends Fragment {
     private ScheduledFuture<?> mScheduleFuture;
     private final ScheduledExecutorService mExecutorService =
           Executors.newSingleThreadScheduledExecutor();
-    private final Runnable mUpdateProgressTask = new Runnable() {
-      @Override
-      public void run() {
-        updateProgress();
-      }
-    };
+    private final Runnable mUpdateProgressTask = () -> updateProgress();
     private DisposableObserver speedSubscription;
     private DisposableObserver mediaItemSubscription;
 
@@ -205,8 +199,6 @@ public class PlaybarFragment extends Fragment {
 
     public void updateWithMeta(MediaMetadataCompat metadata) {
       if (getActivity() == null) {
-          // "onMetadataChanged called when getActivity null," +
-          // "this should not happen if the callback was properly unregistered. Ignoring.");
           return;
       }
 
@@ -286,13 +278,7 @@ public class PlaybarFragment extends Fragment {
       stopSeekbarUpdate();
 
       if (!mExecutorService.isShutdown()) {
-        mScheduleFuture = mExecutorService.scheduleAtFixedRate(
-          new Runnable() {
-            @Override
-            public void run() {
-              mHandler.post(mUpdateProgressTask);
-            }
-          },
+        mScheduleFuture = mExecutorService.scheduleAtFixedRate(() -> mHandler.post(mUpdateProgressTask),
           PROGRESS_UPDATE_INITIAL_INTERVAL,
           PROGRESS_UPDATE_INTERNAL,
           TimeUnit.MILLISECONDS

@@ -6,16 +6,12 @@ import android.os.SystemClock;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 
-import timber.log.Timber;
-
 /**
  * Created by keithholliday on 4/29/18.
  */
 
 public class PlaybackManager implements Playback.Callback {
   private static final String TAG = "PlaybackManager";
-
-  private static final String CUSTOM_ACTION_THUMBS_UP = "com.koalatea.thumbsup";
 
   private MusicProvider mMusicProvider;
   private QueueManager mQueueManager;
@@ -104,19 +100,6 @@ public class PlaybackManager implements Playback.Callback {
 
     String mediaId = currentMusic.getDescription().getMediaId();
     if (mediaId == null) return;
-
-//    String musicId = MediaIDHelper.extractMusicIDFromMediaID(mediaId);
-//
-//    int favoriteIcon = mMusicProvider.isFavorite(musicId) ?
-//            R.drawable.ic_startOn : R.drawable.ic_star_off;
-//
-//    Bundle customActionExtras = new Bundle();
-////    WearHelper.setShowCustomActionOnWear(customActionExtras, true);
-//    stateBuilder.addCustomAction(new PlaybackStateCompat.CustomAction.Builder(
-//            CUSTOM_ACTION_THUMBS_UP, mResources.getString(R.string.favorite, favoriteIcon)
-//            .setExtras(customerActionExtras)
-//            .build());
-//    ));
   }
 
   private long getAvailableActions() {
@@ -138,7 +121,6 @@ public class PlaybackManager implements Playback.Callback {
 
   @Override
   public void onCompletion() {
-    Timber.v("keithtest-onComplete");
     if (mQueueManager.skipQueuePosition(1)) {
       handlePlayRequest();
       mQueueManager.updateMetadata();
@@ -160,46 +142,6 @@ public class PlaybackManager implements Playback.Callback {
   @Override
   public void setCurrentMediaId(String mediaId) {
     mQueueManager.setQueueFromMusic(mediaId);
-  }
-
-  public void switchToPlayback(Playback playback, boolean resumePlaying) {
-    if (playback == null) {
-      throw new IllegalArgumentException("Playback cannot be null");
-    }
-
-    int oldSate = mPlayback.getState();
-    long pos = mPlayback.getCurrentStreamPosition();
-    String currentMediaId = mPlayback.getCurrentMediaId();
-
-    mPlayback.stop(false);
-    playback.setCallback(this);
-    playback.setCurrentMediaId(currentMediaId);
-    playback.seekTo(pos < 0 ? 0 : pos);
-    playback.start();
-
-    mPlayback = playback;
-    switch (oldSate) {
-      case PlaybackStateCompat.STATE_BUFFERING:
-      case PlaybackStateCompat.STATE_CONNECTING:
-      case PlaybackStateCompat.STATE_PAUSED:
-        mPlayback.pause();
-        break;
-      case PlaybackStateCompat.STATE_PLAYING:
-        MediaSessionCompat.QueueItem currentMusic = mQueueManager.getCurrentMusic();
-
-        if (resumePlaying && currentMusic != null) {
-          mPlayback.play(currentMusic);
-        } else if (!resumePlaying) {
-          mPlayback.pause();
-        } else {
-          mPlayback.stop(true);
-        }
-        break;
-      case PlaybackStateCompat.STATE_NONE:
-        break;
-      default:
-        break;
-    }
   }
 
   private class MediaSessionCallback extends MediaSessionCompat.Callback {

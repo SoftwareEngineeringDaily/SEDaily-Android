@@ -1,21 +1,20 @@
 package com.koalatea.thehollidayinn.softwareengineeringdaily;
 
-import android.app.Fragment;
 import android.app.SearchManager;
-import android.arch.persistence.room.Room;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.design.widget.TabLayout;
-import android.support.v4.view.MenuItemCompat;
-import android.support.v7.widget.SearchView;
-import android.support.v7.widget.Toolbar;
+import androidx.annotation.NonNull;
+import com.google.android.material.tabs.TabLayout;
+import androidx.core.view.MenuItemCompat;
+import androidx.appcompat.widget.SearchView;
+import androidx.appcompat.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-
+import com.freshchat.consumer.sdk.Freshchat;
+import com.freshchat.consumer.sdk.FreshchatConfig;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.app.SEDApp;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.auth.LoginRegisterActivity;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.data.models.SubscriptionResponse;
@@ -75,6 +74,8 @@ public class MainActivity extends PlaybackControllerActivity
 
         this.setUp();
 
+        checkShowSupport();
+
         userRepository = SEDApp.component.userRepository();
         filterRepository = FilterRepository.getInstance();
 
@@ -85,6 +86,17 @@ public class MainActivity extends PlaybackControllerActivity
 
         showInitialPage();
         setUpReviewWatch();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        checkShowSupport();
+    }
+
+    private void checkShowSupport() {
+        FreshchatConfig freshchatConfig = new FreshchatConfig("d379964f-02a8-4a8b-8a39-89a16c9d0dfd","1ad965e3-0ed8-40f7-9d20-7f37186e371c");
+        Freshchat.getInstance(getApplicationContext()).init(freshchatConfig);
     }
 
     private void setUpReviewWatch() {
@@ -184,14 +196,7 @@ public class MainActivity extends PlaybackControllerActivity
             );
         }
 
-        AccountHeader headerResult = accountHeaderBuilder
-//                .withOnAccountHeaderListener(new AccountHeader.OnAccountHeaderListener() {
-//                    @Override
-//                    public boolean onProfileChanged(View view, IProfile profile, boolean currentProfile) {
-//                        return false;
-//                    }
-//                })
-                .build();
+        AccountHeader headerResult = accountHeaderBuilder.build();
 
         drawer = new DrawerBuilder()
                 .withActivity(this)
@@ -353,6 +358,21 @@ public class MainActivity extends PlaybackControllerActivity
         loadMe();
 
         return true;
+    }
+
+    private void showSupportChat() {
+      Freshchat.showConversations(getApplicationContext());
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.help:
+                showSupportChat();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
     @Override

@@ -1,14 +1,14 @@
 package com.koalatea.thehollidayinn.softwareengineeringdaily.app;
 
 import android.app.Application;
-import android.support.annotation.VisibleForTesting;
+import androidx.annotation.VisibleForTesting;
 
 import com.akaita.java.rxjava2debug.RxJava2Debug;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.BuildConfig;
 
 import com.koalatea.thehollidayinn.softwareengineeringdaily.R;
-import com.koalatea.thehollidayinn.softwareengineeringdaily.data.AppDatabase;
 import com.squareup.leakcanary.LeakCanary;
+
 import timber.log.Timber;
 import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
 

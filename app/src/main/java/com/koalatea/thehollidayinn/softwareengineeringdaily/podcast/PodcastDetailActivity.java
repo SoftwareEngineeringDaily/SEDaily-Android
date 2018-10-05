@@ -1,32 +1,25 @@
 package com.koalatea.thehollidayinn.softwareengineeringdaily.podcast;
 
-import android.arch.persistence.room.Room;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.v4.app.ShareCompat;
-import android.support.v4.content.ContextCompat;
+import androidx.core.app.ShareCompat;
+import androidx.core.content.ContextCompat;
 import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.widget.Toolbar;
-import android.text.Html;
-import android.text.Spanned;
-import android.view.MenuInflater;
-import android.view.View;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.widget.Toolbar;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
 
 import com.koalatea.thehollidayinn.softwareengineeringdaily.MainActivity;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.PlaybackControllerActivity;
@@ -37,11 +30,11 @@ import com.koalatea.thehollidayinn.softwareengineeringdaily.data.AppDatabase;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.data.models.Bookmark;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.data.models.Post;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.data.remote.APIInterface;
+import com.koalatea.thehollidayinn.softwareengineeringdaily.data.repositories.BookmarkDao;
+import com.koalatea.thehollidayinn.softwareengineeringdaily.downloads.MP3FileManager;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.repositories.PodcastDownloadsRepository;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.repositories.PostRepository;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.repositories.UserRepository;
-import com.koalatea.thehollidayinn.softwareengineeringdaily.data.repositories.BookmarkDao;
-import com.koalatea.thehollidayinn.softwareengineeringdaily.downloads.MP3FileManager;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.util.AlertUtil;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.util.ReactiveUtil;
 import com.mikepenz.google_material_typeface_library.GoogleMaterial;
@@ -50,11 +43,13 @@ import com.ohoussein.playpause.PlayPauseView;
 
 import java.io.File;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.observers.DisposableObserver;
 import io.reactivex.schedulers.Schedulers;
-import timber.log.Timber;
 
 public class PodcastDetailActivity extends PlaybackControllerActivity {
   private PostRepository postRepository;
@@ -142,7 +137,6 @@ public class PodcastDetailActivity extends PlaybackControllerActivity {
     String postId = post.get_id();
 
     AppDatabase db = AppDatabase.getDatabase();
-
     Observable.just(db)
       .subscribeOn(Schedulers.io())
       .subscribe(bookmarkdb -> {
@@ -151,12 +145,7 @@ public class PodcastDetailActivity extends PlaybackControllerActivity {
 
         if (bookmark != null) {  // the post has been bookmarked before
           if (bookmarkItem != null) {
-            runOnUiThread(new Runnable() {
-              @Override
-              public void run() {
-                markBookmarked();
-              }
-            });
+            runOnUiThread(() -> markBookmarked());
           }
           bookmarked = true;
         }
@@ -164,11 +153,25 @@ public class PodcastDetailActivity extends PlaybackControllerActivity {
   }
 
   private void markBookmarked () {
+    bookmarked = false;
+    if (bookmarkItem == null) return;
     IconicsDrawable bookmarkIcon = new IconicsDrawable(this)
             .icon(GoogleMaterial.Icon.gmd_bookmark)
             .color(getResources().getColor(R.color.accent))
             .sizeDp(24);
     bookmarkItem.setIcon(bookmarkIcon);
+    bookmarkItem.setTitle("Bookmarked");
+  }
+
+  private void markNotBookmarked () {
+    bookmarked = false;
+    if (bookmarkItem == null) return;
+    IconicsDrawable bookmarkIcon = new IconicsDrawable(this)
+            .icon(GoogleMaterial.Icon.gmd_bookmark)
+            .color(getResources().getColor(R.color.white))
+            .sizeDp(24);
+    bookmarkItem.setIcon(bookmarkIcon);
+    bookmarkItem.setTitle("NotBookmarked");
   }
 
   @Override
@@ -180,13 +183,7 @@ public class PodcastDetailActivity extends PlaybackControllerActivity {
     checkDownloadState();
 
     bookmarkItem = menu.findItem(R.id.menu_item_bookmark);
-    if (bookmarkItem != null) {
-      IconicsDrawable bookmarkIcon = new IconicsDrawable(this)
-              .icon(GoogleMaterial.Icon.gmd_bookmark)
-              .color(getResources().getColor(R.color.white))
-              .sizeDp(24);
-      bookmarkItem.setIcon(bookmarkIcon);
-    }
+    markNotBookmarked();
     checkForBookMarks();
 
     // Share button
@@ -216,9 +213,6 @@ public class PodcastDetailActivity extends PlaybackControllerActivity {
     return super.onOptionsItemSelected(item);
   }
 
-  /*
-   * Start a share intent
-   */
   public void startShareIntent() {
     if (post == null) return;
     String shareContent = "Check out this episode of Software Engineering Daily: ";
@@ -377,10 +371,7 @@ public class PodcastDetailActivity extends PlaybackControllerActivity {
     new AlertDialog.Builder(this)
       .setMessage(R.string.confirm_remove_download)
       .setIcon(android.R.drawable.ic_dialog_alert)
-      .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-        public void onClick(DialogInterface dialog, int whichButton) {
-          PodcastDownloadsRepository.getInstance().removeFileForPost(post);
-        }})
+      .setPositiveButton(android.R.string.yes, (dialog, whichButton) -> PodcastDownloadsRepository.getInstance().removeFileForPost(post))
       .setNegativeButton(android.R.string.no, null).show();
   }
 
@@ -398,10 +389,10 @@ public class PodcastDetailActivity extends PlaybackControllerActivity {
       public void onError(Throwable e) { }
     };
     podcastDownloadsRepository
-            .getDownloadChanges()
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(myDisposableObserver);
+      .getDownloadChanges()
+      .subscribeOn(Schedulers.io())
+      .observeOn(AndroidSchedulers.mainThread())
+      .subscribe(myDisposableObserver);
   }
 
   public void setUpDownloadedState() {
@@ -428,36 +419,29 @@ public class PodcastDetailActivity extends PlaybackControllerActivity {
     deleteButton.setVisibility(View.INVISIBLE);
   }
 
-  private boolean hasValidMp3() {
-    if (post == null || post.getMp3() == null || post.getMp3().isEmpty()) {
-      return false;
-    }
-
-    return true;
-  }
-
   @OnClick(R.id.playButton)
   public void playClick () {
-    if (!hasValidMp3()) return;
+    if (!PodcastHelper.Companion.hasValidMp3(post)) return;
     playButton.toggle();
     playMedia();
   }
 
   public void downloadMp3 () {
-    if (!hasValidMp3()) return;
+    if (!PodcastHelper.Companion.hasValidMp3(post)) return;
     if (downloadItem == null) return;
 
     if (podcastDownloadsRepository.isDownloading(post.get_id())) {
       setUpNotDownloadedState();
       podcastDownloadsRepository.cancelDownload(post);
-    } else {
-      setUpDownloadedState();
-      podcastDownloadsRepository.downloadPostMP3(post);
+      return;
     }
+
+    setUpDownloadedState();
+    podcastDownloadsRepository.downloadPostMP3(post);
   }
 
   public void playMedia () {
-    if (!hasValidMp3()) return;
+    if (!PodcastHelper.Companion.hasValidMp3(post)) return;
 
     String source = post.getMp3();
     String id = String.valueOf(source.hashCode());
@@ -500,12 +484,14 @@ public class PodcastDetailActivity extends PlaybackControllerActivity {
 
   private void handleDownloadStateChange (String state) {
     if (post == null) return;
+
     Boolean downloaded = podcastDownloadsRepository.isPodcastDownloaded(post);
     if (downloaded) {
       setUpDownloadedState();
-    } else {
-      setUpNotDownloadedState();
+      return;
     }
+
+    setUpNotDownloadedState();
   }
 
   public void onClickBookmarkButton() {
@@ -518,69 +504,24 @@ public class PodcastDetailActivity extends PlaybackControllerActivity {
 
     if (bookmarked) {
       removeBookmark(post);
-    } else {
-      addBookmark(post);
+      return;
     }
+
+    addBookmark(post);
   }
 
   private void addBookmark(Post post) {
     if (post == null) return;
 
     bookmarked = true;
-    if (bookmarkItem != null) {
-      IconicsDrawable bookmarkIcon = new IconicsDrawable(this)
-              .icon(GoogleMaterial.Icon.gmd_bookmark)
-              .color(getResources().getColor(R.color.accent))
-              .sizeDp(24);
-      bookmarkItem.setIcon(bookmarkIcon);
-    }
+    if (bookmarkItem != null) markBookmarked();
 
-    mService.addBookmark(post.get_id())
-      .subscribeOn(Schedulers.io())
-      .observeOn(AndroidSchedulers.mainThread())
-      .subscribe(ReactiveUtil.getEmptyObservable());
-
-    AppDatabase db = AppDatabase.getDatabase();
-
-    Observable.just(db)
-      .subscribeOn(Schedulers.io())
-      .subscribe(bookmarkdb -> {
-        BookmarkDao bookmarkDao = db.bookmarkDao();
-        Bookmark bookmarkFound = bookmarkDao.loadById(post.get_id());
-
-        if (bookmarkFound != null) return;
-
-        Bookmark bookmark = new Bookmark(post);
-        bookmarkDao.insertOne(bookmark);
-      });
-
+    BookmarkHelper.getInstance().addBookmark(post, mService);
   }
 
   private void removeBookmark(Post post) {
     if (post == null) return;
-
-    bookmarked = false;
-    if (bookmarkItem != null) {
-      IconicsDrawable bookmarkIcon = new IconicsDrawable(this)
-              .icon(GoogleMaterial.Icon.gmd_bookmark)
-              .color(getResources().getColor(R.color.white))
-              .sizeDp(24);
-      bookmarkItem.setIcon(bookmarkIcon);
-    }
-
-    AppDatabase db = AppDatabase.getDatabase();
-
-    Observable.just(db)
-      .subscribeOn(Schedulers.io())
-      .subscribe(bookmarkdb -> {
-        BookmarkDao bookmarkDao = db.bookmarkDao();
-        Bookmark bookmark = bookmarkDao.loadById(post.get_id());
-        if (bookmark != null) bookmarkDao.delete(bookmark);
-      });
-
-    mService.removeBookmark(post.get_id())
-      .subscribeOn(Schedulers.io())
-      .observeOn(AndroidSchedulers.mainThread())
-      .subscribe(ReactiveUtil.getEmptyObservable());
+    markNotBookmarked();
+    BookmarkHelper.getInstance().removeBookmark(post, mService);
   }
 }

@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Software Daily</string>
     <string name="item_title">Software Daily</string>
@@ -57,4 +58,5 @@
     <string name="notification_channel_description">sedaily_player_notifications</string>
     <string name="label_next">Next</string>
 
+    <string name="freshchat_file_provider_authority">com.koalatea.thehollidayinn.softwareengineeringdaily.provider</string>
 </resources>

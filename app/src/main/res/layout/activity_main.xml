@@ -7,13 +7,13 @@
     android:layout_height="match_parent"
     tools:context="com.koalatea.thehollidayinn.softwareengineeringdaily.MainActivity">
 
-    <android.support.design.widget.AppBarLayout
+    <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:elevation="0dp"
         android:theme="@style/AppTheme.AppBarOverlay">
 
-        <android.support.v7.widget.Toolbar
+        <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
@@ -29,9 +29,9 @@
                 android:textAllCaps="true"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
-        </android.support.v7.widget.Toolbar>
+        </androidx.appcompat.widget.Toolbar>
 
-        <android.support.design.widget.TabLayout
+        <com.google.android.material.tabs.TabLayout
             android:id="@+id/tabs"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -40,7 +40,7 @@
             app:elevation="0dp"
             android:background="@color/accent"
             />
-    </android.support.design.widget.AppBarLayout>
+    </com.google.android.material.appbar.AppBarLayout>
 
     <FrameLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
@@ -50,7 +50,7 @@
         android:id="@+id/fragment_container">
     </FrameLayout>
 
-    <android.support.v7.widget.CardView
+    <androidx.appcompat.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
@@ -63,5 +63,5 @@
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
             tools:layout="@layout/fragment_playback_controls"/>
-    </android.support.v7.widget.CardView>
+    </androidx.appcompat.widget.CardView>
 </RelativeLayout>

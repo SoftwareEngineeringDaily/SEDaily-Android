@@ -1,6 +1,6 @@
 package com.koalatea.thehollidayinn.softwareengineeringdaily.podcast;
 
-import android.support.v7.widget.RecyclerView;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -35,9 +35,6 @@ class PodcastAdapter extends RecyclerView.Adapter<PodcastAdapter.ViewHolder> {
 
     @BindView(R.id.card_image)
     ImageView imageView;
-
-//    @BindView(R.id.card_desc)
-//    TextView description;
 
     private ViewHolder(View v) {
         super(v);
@@ -77,7 +74,6 @@ class PodcastAdapter extends RecyclerView.Adapter<PodcastAdapter.ViewHolder> {
     if (postTitle == null) return;
 
     holder.mTextView.setText(postTitle.getRendered());
-//    holder.description.setText(postTitle.getRendered());
 
     String imageLink = "https://softwareengineeringdaily.com/wp-content/uploads/2015/08/sed21.png";
     if (post.getFeaturedImage() != null) {

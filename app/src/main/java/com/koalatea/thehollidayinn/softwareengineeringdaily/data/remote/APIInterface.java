@@ -9,6 +9,7 @@ import java.util.Map;
 
 import io.reactivex.Completable;
 import io.reactivex.Observable;
+import io.reactivex.Single;
 import retrofit2.http.DELETE;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
@@ -36,11 +37,11 @@ public interface APIInterface {
 
     @FormUrlEncoded
     @POST("auth/login")
-    Observable<User> login(@Field("username") String username, @Field("email") String email, @Field("password") String password);
+    Single<User> login(@Field("username") String username, @Field("email") String email, @Field("password") String password);
 
     @FormUrlEncoded
     @POST("auth/register")
-    Observable<User> register(@Field("username") String username, @Field("email") String email, @Field("password") String password);
+    Single<User> register(@Field("username") String username, @Field("email") String email, @Field("password") String password);
 
     @FormUrlEncoded
     @POST("subscription")

@@ -1,21 +1,13 @@
 package com.koalatea.thehollidayinn.softwareengineeringdaily.audio;
 
-import android.content.res.Resources;
-import android.media.session.MediaSession;
-import android.os.Bundle;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaSessionCompat;
-import android.util.Log;
-
-import com.koalatea.thehollidayinn.softwareengineeringdaily.R;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-
-import timber.log.Timber;
 
 /**
  * Created by keithholliday on 4/29/18.

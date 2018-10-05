@@ -1,6 +1,6 @@
 package com.koalatea.thehollidayinn.softwareengineeringdaily.analytics;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 /**
  * Facade to capture events for use in any analytics processing

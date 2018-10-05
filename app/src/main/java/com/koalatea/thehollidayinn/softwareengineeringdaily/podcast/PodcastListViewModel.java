@@ -1,8 +1,7 @@
 package com.koalatea.thehollidayinn.softwareengineeringdaily.podcast;
 
-import android.arch.lifecycle.MutableLiveData;
-import android.arch.lifecycle.ViewModel;
-import android.util.Log;
+import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.ViewModel;
 
 import com.koalatea.thehollidayinn.softwareengineeringdaily.app.SEDApp;
 import com.koalatea.thehollidayinn.softwareengineeringdaily.data.models.Post;
@@ -62,23 +61,23 @@ public class PodcastListViewModel extends ViewModel {
         }
 
         query
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new DisposableObserver<List<Post>>() {
-                    @Override
-                    public void onComplete() {
-                    }
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(new DisposableObserver<List<Post>>() {
+                @Override
+                public void onComplete() {
+                }
 
-                    @Override
-                    public void onError(Throwable e) {
+                @Override
+                public void onError(Throwable e) {
 //                        Log.v(TAG, e.toString());
-                    }
+                }
 
-                    @Override
-                    public void onNext(List<Post> posts) {
-                        setPostList(posts);
-                        postRepository.setPosts(posts);
-                    }
-                });
+                @Override
+                public void onNext(List<Post> posts) {
+                    setPostList(posts);
+                    postRepository.setPosts(posts);
+                }
+            });
     }
 }
