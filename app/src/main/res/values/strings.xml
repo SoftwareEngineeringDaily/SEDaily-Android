@@ -26,4 +26,7 @@
 
     <!-- Error messages -->
     <string name="error_media_not_found">Could not locate requested media.</string>
+
+    <!-- Playbar -->
+    <string name="speed">Speed</string>
 </resources>

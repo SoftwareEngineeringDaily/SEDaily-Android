@@ -34,17 +34,13 @@ import android.support.v4.media.session.PlaybackStateCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.media.AudioAttributesCompat
 import androidx.media.MediaBrowserServiceCompat
-import com.google.android.exoplayer2.DefaultLoadControl
-import com.google.android.exoplayer2.DefaultRenderersFactory
-import com.google.android.exoplayer2.ExoPlayer
-import com.google.android.exoplayer2.ExoPlayerFactory
-import com.google.android.exoplayer2.Player
-import com.google.android.exoplayer2.Timeline
+import com.google.android.exoplayer2.*
 import com.google.android.exoplayer2.ext.mediasession.MediaSessionConnector
 import com.google.android.exoplayer2.ext.mediasession.TimelineQueueNavigator
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
 import com.google.android.exoplayer2.util.Util
+import com.koalatea.sedaily.R
 import com.koalatea.sedaily.media.audiofocus.AudioFocusExoPlayerDecorator
 import com.koalatea.sedaily.media.extensions.flag
 import com.koalatea.sedaily.media.library.BrowseTree
@@ -149,9 +145,96 @@ class MusicService : MediaBrowserServiceCompat() {
                     exoPlayer,
                     dataSourceFactory)
 
-            it.setPlayer(exoPlayer, playbackPreparer)
+            val speedChangeAction = object: MediaSessionConnector.CustomActionProvider {
+                override fun getCustomAction(): PlaybackStateCompat.CustomAction {
+                    return PlaybackStateCompat.CustomAction.Builder("SPEED_CHANGE", "SPEED_CHANGE", R.drawable.exo_icon_fastforward)
+                            .build()
+                }
+
+                override fun onCustomAction(action: String?, extras: Bundle?) {
+                    when (action) {
+                        "SPEED_CHANGE" -> {
+                            val speed = extras?.getInt("SPEED")
+                            speed?.run {
+                                setSpeed(speed)
+                            }
+                        }
+                    }
+                }
+            }
+
+            val moveForwardAction = object: MediaSessionConnector.CustomActionProvider {
+                override fun getCustomAction(): PlaybackStateCompat.CustomAction {
+                    return PlaybackStateCompat.CustomAction.Builder("MOVE_BACK", "MOVE_BACK", R.drawable.exo_controls_rewind)
+                            .build()
+                }
+
+                override fun onCustomAction(action: String?, extras: Bundle?) {
+                    when (action) {
+                        "MOVE_BACK" -> {
+                            val speed = extras?.getInt("DISTANCE")
+                            speed?.run {
+                                moveBack(speed)
+                            }
+
+                        }
+                    }
+                }
+            }
+
+            val moveBackwardAction = object: MediaSessionConnector.CustomActionProvider {
+                override fun getCustomAction(): PlaybackStateCompat.CustomAction {
+                    return PlaybackStateCompat.CustomAction.Builder("MOVE_FORWARD", "MOVE_FORWARD", R.drawable.exo_icon_fastforward)
+                            .build()
+                }
+
+                override fun onCustomAction(action: String?, extras: Bundle?) {
+                    when (action) {
+                        "MOVE_FORWARD" -> {
+                            val speed = extras?.getInt("DISTANCE")
+                            speed?.run {
+                                moveForward(speed)
+                            }
+                        }
+                    }
+                }
+            }
+
+            it.setPlayer(exoPlayer, playbackPreparer, speedChangeAction, moveForwardAction, moveBackwardAction)
+
             it.setQueueNavigator(UampQueueNavigator(mediaSession))
         }
+    }
+
+    // Custom Actions
+    fun setSpeed(speed: Int) {
+        var speedFloat = 1f
+
+        if (speed == 1) {
+            speedFloat = 1.5f
+        } else if (speed == 2) {
+            speedFloat = 2f
+        }
+
+        try {
+            val current = exoPlayer.getPlaybackParameters()
+            val newParams = PlaybackParameters(speedFloat, current.pitch)
+            exoPlayer.setPlaybackParameters(newParams)
+        } catch (e: Exception) {
+//            FirebaseCrash.report(Exception(e))
+        }
+    }
+
+    fun moveForward(distance: Int) {
+        if (exoPlayer == null) return
+        val currentPos = exoPlayer.getCurrentPosition()
+        exoPlayer.seekTo(currentPos + distance)
+    }
+
+    fun moveBack(distance: Int) {
+        if (exoPlayer == null) return
+        val currentPos = exoPlayer.getCurrentPosition()
+        exoPlayer.seekTo(currentPos - distance)
     }
 
     override fun onTaskRemoved(rootIntent: Intent) {

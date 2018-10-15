@@ -8,11 +8,14 @@ import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.MediaControllerCompat
 import android.support.v4.media.session.MediaSessionCompat
 import android.support.v4.media.session.PlaybackStateCompat
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import com.koalatea.sedaily.media.MusicService
 import com.koalatea.sedaily.media.library.PodcastSource
 import com.koalatea.sedaily.models.DownloadDao
 import com.koalatea.sedaily.models.Episode
+import com.koalatea.sedaily.playbar.PodcastSessionStateManager
+import kotlinx.android.synthetic.main.activity_main.*
 
 @SuppressLint("Registered")
 open class PlaybackActivity : AppCompatActivity() {
@@ -22,7 +25,7 @@ open class PlaybackActivity : AppCompatActivity() {
             try {
                 connectToSession(mMediaBrowser?.sessionToken)
             } catch (e: RemoteException) {
-//                hidePlaybackControls(null)
+                hidePlaybackControls(null)
             }
 
         }
@@ -44,12 +47,13 @@ open class PlaybackActivity : AppCompatActivity() {
         }
 
         override fun onPlaybackStateChanged(state: PlaybackStateCompat?) {
-//            if (shouldShowControls()) {
-//                showPlaybackControls(state)
-//                return
-//            }
-//
-//            hidePlaybackControls(state)
+            if (shouldShowControls()) {
+                PodcastSessionStateManager.getInstance().lastPlaybackState = state
+                showPlaybackControls(state)
+                return
+            }
+
+            hidePlaybackControls(state)
         }
     }
 
@@ -73,11 +77,10 @@ open class PlaybackActivity : AppCompatActivity() {
 
         PodcastSource.setItem(item)
 
-//        val podcastSessionStateManager = PodcastSessionStateManager.getInstance()
-//        val currentPLayingTitle = podcastSessionStateManager.getCurrentTitle()
-//        val isSameMedia = currentPLayingTitle == post.getTitle().getRendered()
-        val isSameMedia = false
-//
+        val podcastSessionStateManager = PodcastSessionStateManager.getInstance()
+        val currentPLayingTitle = podcastSessionStateManager.currentTitle
+        val isSameMedia = currentPLayingTitle == episode.title?.rendered
+
         onMediaItemSelected(bItem, isSameMedia)
     }
 
@@ -95,11 +98,10 @@ open class PlaybackActivity : AppCompatActivity() {
 
         PodcastSource.setItem(item)
 
-//        val podcastSessionStateManager = PodcastSessionStateManager.getInstance()
-//        val currentPLayingTitle = podcastSessionStateManager.getCurrentTitle()
-//        val isSameMedia = currentPLayingTitle == post.getTitle().getRendered()
-        val isSameMedia = false
-//
+        val podcastSessionStateManager = PodcastSessionStateManager.getInstance()
+        val currentPLayingTitle = podcastSessionStateManager.currentTitle
+        val isSameMedia = currentPLayingTitle == episode.title
+
         onMediaItemSelected(bItem, isSameMedia)
     }
 
@@ -111,17 +113,11 @@ open class PlaybackActivity : AppCompatActivity() {
         MediaControllerCompat.setMediaController(this, mediaController)
         mediaController.registerCallback(controllerCallback)
 
-//        if (shouldShowControls()) {
-//            showPlaybackControls(null)
-//        } else {
-//            hidePlaybackControls(null)
-//        }
-//
-//        if (mControlsFragment != null) {
-//            mControlsFragment.onConnected()
-//        }
-
-        //        @TODO: onMediaControllerConnected();
+        if (shouldShowControls()) {
+            showPlaybackControls(null)
+        } else {
+            hidePlaybackControls(null)
+        }
     }
 
     private fun onMediaItemSelected(item: MediaBrowserCompat.MediaItem, isSameMedia: Boolean) {
@@ -147,7 +143,28 @@ open class PlaybackActivity : AppCompatActivity() {
     }
 
     private fun updateWithMeta(metadata: MediaMetadataCompat) {
-//        if (mControlsFragment == null) return
-//        mControlsFragment.updateWithMeta(metadata)
+        PodcastSessionStateManager.getInstance().setMediaMetaData(metadata)
+    }
+
+    // Playbar stuffs
+    private fun showPlaybackControls(state: PlaybackStateCompat?) {
+        playbarControls.visibility = View.VISIBLE
+    }
+
+    private fun hidePlaybackControls(state: PlaybackStateCompat?) {
+        playbarControls.visibility = View.GONE
+    }
+
+    private fun shouldShowControls(): Boolean {
+        val mediaController = MediaControllerCompat.getMediaController(this)
+        if (mediaController == null ||
+                mediaController.metadata == null ||
+                mediaController.playbackState == null) {
+            return false
+        }
+        when (mediaController.playbackState.state) {
+            PlaybackStateCompat.STATE_ERROR, PlaybackStateCompat.STATE_NONE, PlaybackStateCompat.STATE_STOPPED -> return false
+            else -> return true
+        }
     }
 }

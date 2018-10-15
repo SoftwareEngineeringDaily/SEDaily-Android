@@ -94,7 +94,6 @@ class UampPlaybackPreparer(
                     }
 
                     override fun onSeekProcessed() {
-                        Log.v("keithtest", "onSeekProcessed")
                          //To change body of created functions use File | Settings | File Templates.
                     }
 
@@ -103,12 +102,10 @@ class UampPlaybackPreparer(
                     }
 
                     override fun onPlayerError(error: ExoPlaybackException?) {
-                        Log.v("keithtest", error.toString())
                          //To change body of created functions use File | Settings | File Templates.
                     }
 
                     override fun onLoadingChanged(isLoading: Boolean) {
-                        Log.v("keithtest", "onLoadingChanged")
                          //To change body of created functions use File | Settings | File Templates.
                     }
 
@@ -129,7 +126,6 @@ class UampPlaybackPreparer(
                     }
 
                     override fun onPlayerStateChanged(playWhenReady: Boolean, playbackState: Int) {
-                        Log.v("keithtest", "onPlayerStateChanged" + playbackState.toString())
                          //To change body of created functions use File | Settings | File Templates.
                     }
 
