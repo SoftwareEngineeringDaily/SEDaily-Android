@@ -30,10 +30,9 @@ class DownloadTask(
             connection.connect()
             // expect HTTP 200 OK, so we don't mistakenly save error report
             // instead of the file
-            if (connection.getResponseCode() !== HttpURLConnection.HTTP_OK)
-            {
-                return ("Server returned HTTP " + connection.getResponseCode()
-                        + " " + connection.getResponseMessage())
+            if (connection.responseCode !== HttpURLConnection.HTTP_OK) {
+                return ("Server returned HTTP " + connection.responseCode
+                        + " " + connection.responseMessage)
             }
             // this will be useful to display download percentage
             // might be -1: server did not report the length
@@ -82,6 +81,6 @@ class DownloadTask(
     override fun onProgressUpdate(vararg values: Int?) {
         super.onProgressUpdate(*values)
 
-        downloadListener?.onProgressUpdate(values?.get(0), downloadId)
+        downloadListener?.onProgressUpdate(values[0], downloadId)
     }
 }

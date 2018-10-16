@@ -2,6 +2,7 @@ package com.koalatea.sedaily
 
 import android.annotation.SuppressLint
 import android.content.ComponentName
+import android.content.Context
 import android.os.RemoteException
 import android.support.v4.media.MediaBrowserCompat
 import android.support.v4.media.MediaMetadataCompat
@@ -20,12 +21,12 @@ import kotlinx.android.synthetic.main.activity_main.*
 @SuppressLint("Registered")
 open class PlaybackActivity : AppCompatActivity() {
     private var mMediaBrowser: MediaBrowserCompat? = null
-    private val mConnectionCallbacks = object : MediaBrowserCompat.ConnectionCallback() {
+    private val mConnectionCallbacks: MediaBrowserCompat.ConnectionCallback = object : MediaBrowserCompat.ConnectionCallback() {
         override fun onConnected() {
             try {
                 connectToSession(mMediaBrowser?.sessionToken)
             } catch (e: RemoteException) {
-                hidePlaybackControls(null)
+                hidePlaybackControls()
             }
 
         }
@@ -39,7 +40,7 @@ open class PlaybackActivity : AppCompatActivity() {
         }
     }
 
-    private val controllerCallback = object : MediaControllerCompat.Callback() {
+    private val controllerCallback: MediaControllerCompat.Callback = object : MediaControllerCompat.Callback() {
         override fun onMetadataChanged(metadata: MediaMetadataCompat?) {
             metadata?.apply {
                 updateWithMeta(metadata)
@@ -49,18 +50,18 @@ open class PlaybackActivity : AppCompatActivity() {
         override fun onPlaybackStateChanged(state: PlaybackStateCompat?) {
             if (shouldShowControls()) {
                 PodcastSessionStateManager.getInstance().lastPlaybackState = state
-                showPlaybackControls(state)
+                showPlaybackControls()
                 return
             }
 
-            hidePlaybackControls(state)
+            hidePlaybackControls()
         }
     }
 
     protected fun setUp() {
         if (mMediaBrowser == null) {
             mMediaBrowser = MediaBrowserCompat(SEDApp.appContext,
-                    ComponentName(SEDApp.appContext, MusicService::class.java),
+                    ComponentName(SEDApp.appContext as Context, MusicService::class.java),
                     mConnectionCallbacks, null).apply { connect() }
         }
     }
@@ -114,9 +115,9 @@ open class PlaybackActivity : AppCompatActivity() {
         mediaController.registerCallback(controllerCallback)
 
         if (shouldShowControls()) {
-            showPlaybackControls(null)
+            showPlaybackControls()
         } else {
-            hidePlaybackControls(null)
+            hidePlaybackControls()
         }
     }
 
@@ -147,11 +148,11 @@ open class PlaybackActivity : AppCompatActivity() {
     }
 
     // Playbar stuffs
-    private fun showPlaybackControls(state: PlaybackStateCompat?) {
+    private fun showPlaybackControls() {
         playbarControls.visibility = View.VISIBLE
     }
 
-    private fun hidePlaybackControls(state: PlaybackStateCompat?) {
+    private fun hidePlaybackControls() {
         playbarControls.visibility = View.GONE
     }
 

@@ -37,9 +37,7 @@ class EpisodeDetailFragment : Fragment() {
         ).apply {
             viewModel = detailViewModel
             setLifecycleOwner(this@EpisodeDetailFragment)
-            fab.setOnClickListener{view ->
-
-            }
+            fab.setOnClickListener{}
             removeDownload = View.OnClickListener {
                 queryRemoveDownload()
             }

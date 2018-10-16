@@ -1,8 +1,10 @@
 package com.koalatea.sedaily
 
 import android.Manifest
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
+import android.util.Log
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
@@ -11,6 +13,7 @@ import androidx.drawerlayout.widget.DrawerLayout
 import androidx.navigation.Navigation
 import androidx.navigation.ui.NavigationUI
 import androidx.navigation.ui.setupWithNavController
+import com.koalatea.sedaily.auth.UserRepository
 import com.koalatea.sedaily.databinding.ActivityMainBinding
 
 class MainActivity : PlaybackActivity() {
@@ -33,6 +36,18 @@ class MainActivity : PlaybackActivity() {
 
         // Set up nav menu
         binding.navigationView.setupWithNavController(navController)
+
+        UserRepository.getInstance().getToken()?.apply {
+            if (UserRepository.getInstance().getToken() == "") return
+            val authItem = binding.navigationView.menu.getItem(2)
+            authItem?.title = "Logout"
+            authItem.setOnMenuItemClickListener {
+                UserRepository.getInstance().setToken("")
+                val intent = Intent(this@MainActivity, MainActivity::class.java)
+                startActivity(intent)
+                false
+            }
+        }
 
         checkForPermissions()
 
