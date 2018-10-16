@@ -1,20 +1,28 @@
 package com.koalatea.sedaily
 
 import android.Manifest
+import android.app.SearchManager
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.util.Log
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
 import androidx.databinding.DataBindingUtil
 import androidx.drawerlayout.widget.DrawerLayout
+import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.Navigation
 import androidx.navigation.ui.NavigationUI
 import androidx.navigation.ui.setupWithNavController
 import com.koalatea.sedaily.auth.UserRepository
 import com.koalatea.sedaily.databinding.ActivityMainBinding
+import com.koalatea.sedaily.home.HomeFeedViewModel
+import com.koalatea.sedaily.home.PodcastSearchRepo
 
 class MainActivity : PlaybackActivity() {
 
@@ -51,11 +59,47 @@ class MainActivity : PlaybackActivity() {
 
         checkForPermissions()
 
+        handleIntent(intent)
+
         // Set up media
         this.setUp()
     }
 
-    fun checkForPermissions() {
+    override fun onNewIntent(intent: Intent) {
+        setIntent(intent)
+        handleIntent(intent)
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        val inflater: MenuInflater = menuInflater
+        inflater.inflate(R.menu.menu_main, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        // Handle item selection
+        return when (item.itemId) {
+            R.id.search -> {
+                onSearchRequested()
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
+
+    private fun handleIntent(intent: Intent) {
+        if (Intent.ACTION_SEARCH == intent.action) {
+            intent.getStringExtra(SearchManager.QUERY)?.also { query ->
+                searchPodcasts(query)
+            }
+        }
+    }
+
+    private fun searchPodcasts(query: String) {
+        PodcastSearchRepo.getInstance().setSearch(query)
+    }
+
+    private fun checkForPermissions() {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
                 != PackageManager.PERMISSION_GRANTED) {
             // Permission is not granted

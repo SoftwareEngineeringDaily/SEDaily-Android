@@ -65,9 +65,8 @@ class EpisodeViewModel: ViewModel() {
                     if (it != null) downloadVisible.value =  View.GONE
                     playVisible.value = View.VISIBLE
                 }, {
-                    error ->
-                    // @TODO: Log distributedly
-                    Log.v("keithtest", error.toString())
+                    _ ->
+                    // @TODO: Log distrbute
                 })
         }
 

@@ -38,7 +38,9 @@ class NetworkHelper {
                     ongoing.addHeader("Accept", "application/json;versions=1")
 
                     userLogin.getToken()?.apply {
-                        ongoing.addHeader("Authorization", "Bearer ${userLogin.getToken()}")
+                        if (userLogin.getToken() != "") {
+                            ongoing.addHeader("Authorization", "Bearer ${userLogin.getToken()}")
+                        }
                     }
 
                     chain.proceed(ongoing.build())

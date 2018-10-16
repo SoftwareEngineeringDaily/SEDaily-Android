@@ -15,20 +15,17 @@ class HomeFeedListAdapter (
         private val homeFeedViewModel: HomeFeedViewModel
 ): ListAdapter<Episode, HomeFeedListAdapter.ViewHolder>(EpisodeDiffCallback()) {
     // @TODO: Currently public for HomeFeedModel,but we probably need a better way to get last element
-    lateinit var postList: List<Episode>
-
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): HomeFeedListAdapter.ViewHolder {
-        val binding: ItemEpisodeBinding = DataBindingUtil.inflate(LayoutInflater.from(parent.context), R.layout.item_episode, parent, false)
+        val binding: ItemEpisodeBinding = DataBindingUtil.inflate(
+                LayoutInflater.from(parent.context),
+                R.layout.item_episode, parent,
+                false)
         return ViewHolder(binding)
     }
 
     override fun onBindViewHolder(holder: HomeFeedListAdapter.ViewHolder, position: Int) {
-        val episode = postList[position]
+        val episode = getItem(position)
         holder.bind(createOnClickListener(episode._id), createPlayClickListener(episode), episode)
-    }
-
-    override fun getItemCount(): Int {
-        return if(::postList.isInitialized) postList.size else 0
     }
 
     private fun createOnClickListener(episodeId: String): View.OnClickListener {
@@ -42,11 +39,6 @@ class HomeFeedListAdapter (
         return View.OnClickListener {
            homeFeedViewModel.play(episode)
         }
-    }
-
-    fun updateFeedList(postList: List<Episode>) {
-        this.postList = postList
-        notifyDataSetChanged()
     }
 
     class ViewHolder(

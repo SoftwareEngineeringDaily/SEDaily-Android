@@ -16,11 +16,13 @@ import com.google.android.material.snackbar.Snackbar
 import com.koalatea.sedaily.PlaybackActivity
 import com.koalatea.sedaily.ViewModelFactory
 import com.koalatea.sedaily.databinding.FragmentMainBinding
+import io.reactivex.disposables.CompositeDisposable
 
 class MainFragment : Fragment() {
     private lateinit var binding: FragmentMainBinding
     private lateinit var viewModel: HomeFeedViewModel
     private var errorSnackbar: Snackbar? = null
+    private val compositeDisposable = CompositeDisposable()
 
     override fun onCreateView(
             inflater: LayoutInflater,
@@ -30,6 +32,7 @@ class MainFragment : Fragment() {
         binding.hasPlantings = false
 
         binding.postList.layoutManager = LinearLayoutManager(this.activity, RecyclerView.VERTICAL, false)
+
         val scrollListener = object : RecyclerView.OnScrollListener() {
             override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
                 super.onScrollStateChanged(recyclerView, newState)
@@ -47,6 +50,14 @@ class MainFragment : Fragment() {
         binding.postList.addOnScrollListener(scrollListener)
 
         viewModel = ViewModelProviders.of(this, ViewModelFactory(this.activity as AppCompatActivity)).get(HomeFeedViewModel::class.java)
+
+        val adapter = HomeFeedListAdapter(viewModel)
+        binding.postList.adapter = adapter
+
+        viewModel.episodes.observe(this, Observer { results ->
+            if (results != null && results.isNotEmpty())
+                adapter.submitList(results)
+        })
         viewModel.errorMessage.observe(this, Observer {
             errorMessage -> if(errorMessage != null) showError(errorMessage) else hideError()
         })
@@ -55,9 +66,21 @@ class MainFragment : Fragment() {
             (this.activity as PlaybackActivity).playMedia(it)
         })
 
+        val disposable = PodcastSearchRepo
+            .getInstance().getSearchChange
+            .subscribe { query ->
+                viewModel.performSearch(query)
+            }
+        compositeDisposable.add(disposable)
+
         binding.viewModel = viewModel
 
         return binding.root
+    }
+
+    override fun onDestroy() {
+        compositeDisposable.dispose()
+        super.onDestroy()
     }
 
     private fun showError(@StringRes errorMessage:Int){

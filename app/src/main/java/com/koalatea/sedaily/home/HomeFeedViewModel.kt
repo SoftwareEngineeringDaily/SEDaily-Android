@@ -12,21 +12,20 @@ import com.koalatea.sedaily.network.NetworkHelper
 import com.koalatea.sedaily.network.SEDailyApi
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.Disposable
+import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 
 class HomeFeedViewModel internal constructor(
     private val episodeDao: EpisodeDao
 ) : ViewModel() {
     var sedailyApi: SEDailyApi = NetworkHelper.getApi()
-    val homeFeedListAdapter: HomeFeedListAdapter = HomeFeedListAdapter(this)
 
     val loadingVisibility: MutableLiveData<Int> = MutableLiveData()
     val errorMessage: MutableLiveData<Int> = MutableLiveData()
-    val errorClickListener = View.OnClickListener { loadHomeFeed() }
     val playRequested = SingleLiveEvent<Episode>()
+    val episodes: MutableLiveData<List<Episode>> = MutableLiveData()
 
-    private lateinit var subscription: Disposable
+    private val compositeDisposable = CompositeDisposable()
 
     init {
         loadHomeFeed()
@@ -34,13 +33,13 @@ class HomeFeedViewModel internal constructor(
 
     override fun onCleared() {
         super.onCleared()
-        subscription.dispose()
+        compositeDisposable.dispose()
     }
 
     private fun loadHomeFeed() {
         val map = mutableMapOf<String, String>()
 
-        subscription = Observable.fromCallable { episodeDao.all }
+        val subscription = Observable.fromCallable { episodeDao.all }
                 .concatMap {
                     dbEpisodeList ->
                         if (dbEpisodeList.isEmpty()) {
@@ -63,18 +62,22 @@ class HomeFeedViewModel internal constructor(
                         onRetrievePostListError()
                     }
                 )
+
+        compositeDisposable.add(subscription)
     }
 
     fun loadHomeFeedAfter() {
         if (loadingVisibility.value == View.VISIBLE) return
 
+        loadingVisibility.value = View.VISIBLE
+
         val map = mutableMapOf<String, String>()
 
-        val lastIndex = homeFeedListAdapter.postList.size - 1
-        val lastEpisode = homeFeedListAdapter.postList[lastIndex]
-        map.set("createdAtBefore", lastEpisode.date!!)
+        val lastIndex = episodes.value?.size?.minus(1)
+        val lastEpisode = lastIndex?.let { episodes.value?.get(it) }
+        map.set("createdAtBefore", lastEpisode?.date as String)
 
-        subscription = sedailyApi.getPosts(map)
+        val subscription = sedailyApi.getPosts(map)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnSubscribe { onRetrivePostListStart() }
@@ -88,10 +91,37 @@ class HomeFeedViewModel internal constructor(
                         onRetrievePostListError()
                     }
                 )
+
+        compositeDisposable.add(subscription)
+    }
+
+    fun performSearch(query: String) {
+        if (loadingVisibility.value == View.VISIBLE) return
+
+        loadingVisibility.value = View.VISIBLE
+
+        val map = mutableMapOf<String, String>()
+        map.set("search", query)
+
+        val subscription = sedailyApi.getPosts(map)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .doOnSubscribe { onRetrivePostListStart() }
+            .doOnTerminate { onRetrievePostListFinish() }
+            .subscribe(
+                {
+                    result -> onRetrievePostSearchSuccess(result)
+                },
+                {
+                    Log.v("keithtest", it.localizedMessage)
+                    onRetrievePostListError()
+                }
+            )
+
+        compositeDisposable.add(subscription)
     }
 
     private fun onRetrivePostListStart() {
-        loadingVisibility.value = View.VISIBLE
         errorMessage.value = null
     }
 
@@ -100,12 +130,15 @@ class HomeFeedViewModel internal constructor(
     }
 
     private fun onRetrievePostListSuccess(feedList: List<Episode>) {
-        homeFeedListAdapter.updateFeedList(feedList)
+        episodes.postValue(feedList)
     }
 
     private fun onRetrievePostPageSuccess(feedList: List<Episode>) {
-        val newList = homeFeedListAdapter.postList + feedList
-        homeFeedListAdapter.updateFeedList(newList)
+        episodes.postValue(episodes.value?.plus(feedList))
+    }
+
+    private fun onRetrievePostSearchSuccess(feedList: List<Episode>) {
+        episodes.postValue(feedList)
     }
 
     private fun onRetrievePostListError() {
