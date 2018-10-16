@@ -1,9 +1,7 @@
 package com.koalatea.sedaily.util
 
 import android.view.View
-import android.widget.ImageView
-import android.widget.ProgressBar
-import android.widget.TextView
+import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.BindingAdapter
 import androidx.lifecycle.MutableLiveData
@@ -48,6 +46,22 @@ fun setMutableText(view: TextView, text: MutableLiveData<String>?) {
     val parentActivity: AppCompatActivity? = view.getParentActivity()
     if(parentActivity != null && text != null) {
         text.observe(parentActivity, Observer { value -> view.text = value?:""})
+    }
+}
+
+@BindingAdapter("mutableText")
+fun setMutableText(view: Button, text: MutableLiveData<String>?) {
+    val parentActivity: AppCompatActivity? = view.getParentActivity()
+    if(parentActivity != null && text != null) {
+        text.observe(parentActivity, Observer { value -> view.text = value?:""})
+    }
+}
+
+@BindingAdapter("mutableHint")
+fun setMutableHint(view: EditText, text: MutableLiveData<String>?) {
+    val parentActivity: AppCompatActivity? = view.getParentActivity()
+    if(parentActivity != null && text != null) {
+        text.observe(parentActivity, Observer { value -> view.hint = value?:""})
     }
 }
 

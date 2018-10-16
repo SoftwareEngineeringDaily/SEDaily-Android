@@ -6,4 +6,8 @@
     <item
         android:id="@+id/downloads_fragment"
         android:title="@string/downloads_title"/>
+
+    <item
+        android:id="@+id/auth_fragment"
+        android:title="@string/auth_title"/>
 </menu>

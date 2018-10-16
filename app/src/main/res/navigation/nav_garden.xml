@@ -32,6 +32,13 @@
     </fragment>
 
     <fragment
+        android:id="@+id/auth_fragment"
+        android:name="com.koalatea.sedaily.auth.AuthFragment"
+        android:label="@string/auth_title"
+        tools:layout="@layout/fragment_auth">
+    </fragment>
+
+    <fragment
         android:id="@+id/episode_detail_fragment"
         android:name="com.koalatea.sedaily.episodedetail.EpisodeDetailFragment"
         android:label="@string/episode_details_title"
@@ -40,5 +47,4 @@
             android:name="episodeId"
             app:argType="string" />
     </fragment>
-
 </navigation>

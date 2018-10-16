@@ -3,6 +3,7 @@ package com.koalatea.sedaily
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import com.koalatea.sedaily.auth.AuthViewModel
 import com.koalatea.sedaily.downloads.DownloadsViewModel
 import com.koalatea.sedaily.episodedetail.EpisodeDetailViewModel
 import com.koalatea.sedaily.home.HomeFeedViewModel
@@ -26,7 +27,11 @@ class ViewModelFactory(private val activity: AppCompatActivity): ViewModelProvid
             return EpisodeDetailViewModel(DatabaseModule.getDatabase().episodeDao()) as T
         }
 
-        throw IllegalArgumentException("Unknown ViewModel class")
+        if (modelClass.isAssignableFrom(AuthViewModel::class.java)) {
+            @Suppress("UNCHECKED_CAST")
+            return AuthViewModel() as T
+        }
 
+        throw IllegalArgumentException("Unknown ViewModel class")
     }
 }
