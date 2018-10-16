@@ -38,7 +38,6 @@ class MainFragment : Fragment() {
                     val layoutManager = recyclerView.layoutManager as LinearLayoutManager
                     val lastVisibleItemPosition = layoutManager.findLastVisibleItemPosition()
                     if (totalItemCount == lastVisibleItemPosition + 1) {
-                        Log.d("keithtest", "Load new list")
                         binding.viewModel?.loadHomeFeedAfter()
 //                    binding.postList.removeOnScrollListener(scrollListener)
                     }

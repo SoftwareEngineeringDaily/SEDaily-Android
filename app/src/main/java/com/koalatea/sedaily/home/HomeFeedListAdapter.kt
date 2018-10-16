@@ -5,6 +5,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.navigation.findNavController
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.koalatea.sedaily.R
 import com.koalatea.sedaily.databinding.ItemEpisodeBinding
@@ -12,7 +13,7 @@ import com.koalatea.sedaily.models.Episode
 
 class HomeFeedListAdapter (
         private val homeFeedViewModel: HomeFeedViewModel
-): RecyclerView.Adapter<HomeFeedListAdapter.ViewHolder>() {
+): ListAdapter<Episode, HomeFeedListAdapter.ViewHolder>(EpisodeDiffCallback()) {
     // @TODO: Currently public for HomeFeedModel,but we probably need a better way to get last element
     lateinit var postList: List<Episode>
 

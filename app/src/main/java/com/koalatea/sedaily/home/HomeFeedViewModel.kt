@@ -66,6 +66,8 @@ class HomeFeedViewModel internal constructor(
     }
 
     fun loadHomeFeedAfter() {
+        if (loadingVisibility.value == View.VISIBLE) return
+
         val map = mutableMapOf<String, String>()
 
         val lastIndex = homeFeedListAdapter.postList.size - 1
