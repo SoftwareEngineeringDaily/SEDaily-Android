@@ -3,6 +3,7 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
 apply plugin: 'androidx.navigation.safeargs'
+apply plugin: 'com.google.gms.google-services'
 
 android {
     compileSdkVersion 28
@@ -53,7 +54,6 @@ dependencies {
 
     // Media
     implementation 'androidx.media2:media2:1.0.0-alpha03'
-//    implementation 'androidx.media2:media2-exoplayer:1.0.0-alpha01'
 
     // Downloads
     implementation 'br.com.bemobi:medescope:1.1.0'
@@ -67,7 +67,7 @@ dependencies {
     implementation "com.squareup.retrofit2:converter-moshi:$retrofit_version"
 
     //Rx
-    implementation "io.reactivex.rxjava2:rxjava:2.2.0"
+    implementation "io.reactivex.rxjava2:rxjava:2.2.2"
     implementation "io.reactivex.rxjava2:rxandroid:2.1.0"
 
     // Audio
@@ -80,6 +80,10 @@ dependencies {
         api "com.google.android.exoplayer:exoplayer-ui:$exoplayer_version"
         api "com.google.android.exoplayer:extension-mediasession:$exoplayer_version"
     }
+
+    // Firebase
+    implementation 'com.google.firebase:firebase-core:16.0.4'
+    implementation 'com.google.firebase:firebase-crash:16.2.1'
 
     // Testing
     testImplementation 'junit:junit:4.12'
