@@ -10,7 +10,7 @@ import com.google.gson.reflect.TypeToken
 import com.koalatea.sedaily.SEDApp
 import io.reactivex.Observable
 import io.reactivex.subjects.PublishSubject
-import java.util.HashMap
+import java.util.*
 
 /*
  * @Desc this helps share state between service and front end
@@ -61,10 +61,8 @@ class PodcastSessionStateManager private constructor() {
         gson = GsonBuilder().create()
         val progressString = preferences.getString(PROGRESS_KEY, "")
         if (!progressString!!.isEmpty()) {
-            val typeOfHashMap = object : TypeToken<Map<String, Long>>() {
-
-            }.type
-//            episodeProgress = gson.fromJson<Map<String, Long>>(progressString, typeOfHashMap)
+            val typeOfHashMap = object : TypeToken<Map<String, Long>>() {}.type
+            episodeProgress = gson.fromJson<Map<String, Long>>(progressString, typeOfHashMap) as MutableMap<String, Long>?
         }
     }
 
@@ -74,7 +72,9 @@ class PodcastSessionStateManager private constructor() {
     }
 
     private fun setProgressForEpisode(_id: String, currentProgress: Long) {
-        this.episodeProgress!![_id] = currentProgress
+        if (currentProgress == 0L) return
+
+        this.episodeProgress?.set(_id, currentProgress)
 
         // Save every 10 seconds
         val progress = currentProgress / 1000
@@ -94,9 +94,7 @@ class PodcastSessionStateManager private constructor() {
 
     fun getProgressForEpisode(_id: String): Long {
         // @TODO: Null checks
-        return if (this.episodeProgress!![_id] == null) {
-            0
-        } else this.episodeProgress!![_id]!!
+        return this.episodeProgress?.get(_id) ?: 0
     }
 
     fun saveEpisodeProgress(currentPosition: Long) {

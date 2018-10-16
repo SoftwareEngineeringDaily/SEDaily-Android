@@ -18,6 +18,8 @@ package com.koalatea.sedaily.media
 
 import android.net.Uri
 import android.os.Bundle
+import android.os.Handler
+import android.os.HandlerThread
 import android.os.ResultReceiver
 import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.MediaSessionCompat
@@ -33,6 +35,7 @@ import com.koalatea.sedaily.media.extensions.id
 import com.koalatea.sedaily.media.extensions.toMediaSource
 import com.koalatea.sedaily.media.extensions.trackNumber
 import com.koalatea.sedaily.media.library.MusicSource
+import com.koalatea.sedaily.playbar.PodcastSessionStateManager
 
 /**
  * Class to bridge UAMP to the ExoPlayer MediaSession extension.
@@ -42,6 +45,14 @@ class UampPlaybackPreparer(
         private val exoPlayer: ExoPlayer,
         private val dataSourceFactory: DataSource.Factory
 ) : MediaSessionConnector.PlaybackPreparer {
+
+    private var handler: Handler? = null
+    private var mHandlerThread: HandlerThread? = null
+    private val updateProgressAction = { updateProgressBar() }
+
+    init {
+        startHandlerThread()
+    }
 
     /**
      * UAMP supports preparing (and playing) from search, as well as media ID, so those
@@ -127,6 +138,17 @@ class UampPlaybackPreparer(
 
                     override fun onPlayerStateChanged(playWhenReady: Boolean, playbackState: Int) {
                          //To change body of created functions use File | Settings | File Templates.
+                        when (playbackState) {
+                            Player.STATE_READY -> {
+                                val trackIndex = exoPlayer.currentWindowIndex
+                                // @TODO: Why does exo let this go out of bounds?
+                                if (trackIndex < metadataList.size) {
+                                    val track = metadataList[trackIndex]
+                                    loadPreviousProgress(track.description.title.toString())
+                                    updateProgressBar()
+                                }
+                            }
+                        }
                     }
 
                 })
@@ -177,6 +199,47 @@ class UampPlaybackPreparer(
      */
     private fun buildPlaylist(item: MediaMetadataCompat): List<MediaMetadataCompat> =
             musicSource.filter { it.album == item.album }.sortedBy { it.trackNumber }
+
+    fun loadPreviousProgress(loadingTitle: String) {
+        val psm = PodcastSessionStateManager.getInstance()
+        val title = psm.currentTitle
+
+        if (loadingTitle.equals(title)) {
+            val currentProgress: Long? = psm.getProgressForEpisode(title)
+            currentProgress?.run {
+                exoPlayer.seekTo(currentProgress)
+            }
+        }
+    }
+
+    fun startHandlerThread() {
+        mHandlerThread = HandlerThread("HandlerThread")
+        mHandlerThread?.start()
+        handler = Handler(mHandlerThread?.getLooper())
+    }
+
+    private fun updateProgressBar() {
+        val position = if (exoPlayer == null) 0 else exoPlayer.currentPosition
+
+        handler?.removeCallbacks(updateProgressAction)
+
+        PodcastSessionStateManager.getInstance().saveEpisodeProgress(position)
+
+        // Schedule an update if necessary.
+        val playbackState = if (exoPlayer == null) Player.STATE_IDLE else exoPlayer.currentPosition
+        if (playbackState != Player.STATE_IDLE && playbackState != Player.STATE_ENDED) {
+            var delayMs: Long
+            if (exoPlayer.getPlayWhenReady() && playbackState == Player.STATE_READY) {
+                delayMs = 1000 - position % 1000
+                if (delayMs < 200) {
+                    delayMs += 1000
+                }
+            } else {
+                delayMs = 1000
+            }
+            handler?.postDelayed(updateProgressAction, delayMs)
+        }
+    }
 }
 
 private const val TAG = "MediaSessionHelper"
