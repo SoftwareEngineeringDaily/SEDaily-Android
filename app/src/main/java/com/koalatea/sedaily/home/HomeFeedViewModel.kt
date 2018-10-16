@@ -65,6 +65,29 @@ class HomeFeedViewModel internal constructor(
                 )
     }
 
+    fun loadHomeFeedAfter() {
+        val map = mutableMapOf<String, String>()
+
+        val lastIndex = homeFeedListAdapter.postList.size - 1
+        val lastEpisode = homeFeedListAdapter.postList[lastIndex]
+        map.set("createdAtBefore", lastEpisode.date!!)
+
+        subscription = sedailyApi.getPosts(map)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .doOnSubscribe { onRetrivePostListStart() }
+                .doOnTerminate { onRetrievePostListFinish() }
+                .subscribe(
+                    {
+                        result -> onRetrievePostPageSuccess(result)
+                    },
+                    {
+                        Log.v("keithtest", it.localizedMessage)
+                        onRetrievePostListError()
+                    }
+                )
+    }
+
     private fun onRetrivePostListStart() {
         loadingVisibility.value = View.VISIBLE
         errorMessage.value = null
@@ -76,6 +99,11 @@ class HomeFeedViewModel internal constructor(
 
     private fun onRetrievePostListSuccess(feedList: List<Episode>) {
         homeFeedListAdapter.updateFeedList(feedList)
+    }
+
+    private fun onRetrievePostPageSuccess(feedList: List<Episode>) {
+        val newList = homeFeedListAdapter.postList + feedList
+        homeFeedListAdapter.updateFeedList(newList)
     }
 
     private fun onRetrievePostListError() {

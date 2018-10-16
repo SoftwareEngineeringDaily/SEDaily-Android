@@ -13,7 +13,8 @@ import com.koalatea.sedaily.models.Episode
 class HomeFeedListAdapter (
         private val homeFeedViewModel: HomeFeedViewModel
 ): RecyclerView.Adapter<HomeFeedListAdapter.ViewHolder>() {
-    private lateinit var postList: List<Episode>
+    // @TODO: Currently public for HomeFeedModel,but we probably need a better way to get last element
+    lateinit var postList: List<Episode>
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): HomeFeedListAdapter.ViewHolder {
         val binding: ItemEpisodeBinding = DataBindingUtil.inflate(LayoutInflater.from(parent.context), R.layout.item_episode, parent, false)

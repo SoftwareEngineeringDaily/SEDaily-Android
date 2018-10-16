@@ -30,6 +30,22 @@ class MainFragment : Fragment() {
         binding.hasPlantings = false
 
         binding.postList.layoutManager = LinearLayoutManager(this.activity, RecyclerView.VERTICAL, false)
+        val scrollListener = object : RecyclerView.OnScrollListener() {
+            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+                super.onScrollStateChanged(recyclerView, newState)
+                val totalItemCount = recyclerView.layoutManager?.itemCount
+                recyclerView.layoutManager.apply {
+                    val layoutManager = recyclerView.layoutManager as LinearLayoutManager
+                    val lastVisibleItemPosition = layoutManager.findLastVisibleItemPosition()
+                    if (totalItemCount == lastVisibleItemPosition + 1) {
+                        Log.d("keithtest", "Load new list")
+                        binding.viewModel?.loadHomeFeedAfter()
+//                    binding.postList.removeOnScrollListener(scrollListener)
+                    }
+                }
+            }
+        }
+        binding.postList.addOnScrollListener(scrollListener)
 
         viewModel = ViewModelProviders.of(this, ViewModelFactory(this.activity as AppCompatActivity)).get(HomeFeedViewModel::class.java)
         viewModel.errorMessage.observe(this, Observer {
